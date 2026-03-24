@@ -5,16 +5,34 @@ generated = []
 id = "cNMXIRvmRQosS3s-_Vmpx"
 uri = "file://.canvas/assets/logo-a.png"
 type = "image"
-title = "Logo A — Lens & Ledger"
+title = "Logo A — Lens & Ledger (800×400 wide)"
 
 [[outputs]]
 id = "Q9R9NXEMFpig_MWAgRkwG"
 uri = "file://.canvas/assets/logo-b.png"
 type = "image"
-title = "Logo B — Fork & Chart"
+title = "Logo B — Fork & Chart (800×400 wide)"
 
 [[outputs]]
 id = "FRpOzwqQRXwI_7sh-Qh5g"
 uri = "file://.canvas/assets/logo-c.png"
 type = "image"
-title = "Logo C — Plate & Pulse"
+title = "Logo C — Plate & Pulse (800×400 wide)"
+
+[[outputs]]
+id = "R1pA9qt15Ct5N1g5gIDBQ"
+uri = "file://.canvas/assets/logo-a-icon.png"
+type = "image"
+title = "Logo A — Lens & Ledger (512×512 icon)"
+
+[[outputs]]
+id = "OCVb6MA7UgN4ar3R-kV2T"
+uri = "file://.canvas/assets/logo-b-icon.png"
+type = "image"
+title = "Logo B — Fork & Chart (512×512 icon)"
+
+[[outputs]]
+id = "AeD79xg2Y4_7-C1joNg_I"
+uri = "file://.canvas/assets/logo-c-icon.png"
+type = "image"
+title = "Logo C — Plate & Pulse (512×512 icon)"

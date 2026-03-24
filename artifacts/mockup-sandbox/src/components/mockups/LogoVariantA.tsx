@@ -1,8 +1,20 @@
+import { useRef } from "react";
+import { toPng } from "html-to-image";
+
 export default function LogoVariantA() {
   const green = "#1a5c38";
   const orange = "#f97316";
-  const lightGreen = "#2d7a4e";
   const bars = [38, 52, 44, 68, 80, 60, 90];
+  const logoRef = useRef<HTMLDivElement>(null);
+
+  const handleExport = async () => {
+    if (!logoRef.current) return;
+    const dataUrl = await toPng(logoRef.current, { cacheBust: true });
+    const a = document.createElement("a");
+    a.download = "kitchen-cfo-logo-a.png";
+    a.href = dataUrl;
+    a.click();
+  };
 
   return (
     <div
@@ -10,12 +22,15 @@ export default function LogoVariantA() {
         minHeight: "100vh",
         background: "#f8faf8",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+        gap: 20,
       }}
     >
       <div
+        ref={logoRef}
         id="logo-a"
         style={{
           width: 520,
@@ -67,110 +82,44 @@ export default function LogoVariantA() {
             );
           })}
 
-          <line
-            x1="68"
-            y1="120"
-            x2="132"
-            y2="120"
-            stroke="#ffffff"
-            strokeWidth="1.5"
-            strokeOpacity="0.4"
-          />
+          <line x1="68" y1="120" x2="132" y2="120" stroke="#ffffff" strokeWidth="1.5" strokeOpacity="0.4" />
 
-          <circle
-            cx="100"
-            cy="100"
-            r="96"
-            stroke={lightGreen}
-            strokeWidth="0"
-            fill="none"
-          />
-          <circle
-            cx="100"
-            cy="100"
-            r="96"
-            stroke="#ffffff"
-            strokeWidth="0"
-            fill="none"
-            strokeOpacity="0.15"
-          />
-
-          <circle
-            cx="160"
-            cy="40"
-            r="12"
-            fill={orange}
-            stroke="#ffffff"
-            strokeWidth="2"
-          />
-          <line
-            x1="155"
-            y1="44"
-            x2="158"
-            y2="40"
-            stroke="#ffffff"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-          <line
-            x1="158"
-            y1="40"
-            x2="163"
-            y2="36"
-            stroke="#ffffff"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
+          <circle cx="160" cy="40" r="12" fill={orange} stroke="#ffffff" strokeWidth="2" />
+          <polyline points="155,44 158,40 163,36" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </svg>
 
         <div style={{ marginTop: 32, textAlign: "center" }}>
-          <div
-            style={{
-              fontSize: 36,
-              fontWeight: 800,
-              letterSpacing: "-0.5px",
-              color: green,
-              lineHeight: 1,
-            }}
-          >
+          <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.5px", color: green, lineHeight: 1 }}>
             Kitchen
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 4 }}>
-            <div
-              style={{
-                fontSize: 36,
-                fontWeight: 800,
-                letterSpacing: "-0.5px",
-                color: green,
-                lineHeight: 1,
-              }}
-            >
+            <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: "-0.5px", color: green, lineHeight: 1 }}>
               CFO
             </div>
-            <div
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: orange,
-                marginBottom: 2,
-              }}
-            />
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: orange, marginBottom: 2 }} />
           </div>
-          <div
-            style={{
-              marginTop: 10,
-              fontSize: 11,
-              letterSpacing: "3px",
-              textTransform: "uppercase",
-              color: "#6b9c7e",
-              fontWeight: 600,
-            }}
-          >
+          <div style={{ marginTop: 10, fontSize: 11, letterSpacing: "3px", textTransform: "uppercase", color: "#6b9c7e", fontWeight: 600 }}>
             Nutrition Intelligence
           </div>
         </div>
       </div>
+
+      <button
+        onClick={handleExport}
+        style={{
+          padding: "10px 24px",
+          background: green,
+          color: "white",
+          border: "none",
+          borderRadius: 8,
+          cursor: "pointer",
+          fontSize: 13,
+          fontWeight: 600,
+          fontFamily: "inherit",
+        }}
+      >
+        ↓ Export PNG
+      </button>
     </div>
   );
 }
