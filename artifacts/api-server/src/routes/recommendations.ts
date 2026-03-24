@@ -1,12 +1,17 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { profilesTable, inventoryTable, foodLogsTable } from "@workspace/db/schema";
+import { profilesTable, inventoryTable, foodLogsTable, recommendationsTable } from "@workspace/db/schema";
 import { desc, sql } from "drizzle-orm";
 import { generateText } from "../lib/gemini";
 
 const router: IRouter = Router();
 
-async function buildRecommendationPrompt(): Promise<string> {
+async function buildRecommendationPrompt(): Promise<{
+  prompt: string;
+  profileComplete: boolean;
+  inventoryItemCount: number;
+  recentLogCount: number;
+}> {
   const [profile] = await db.select().from(profilesTable).limit(1);
   const inventory = await db.select().from(inventoryTable).orderBy(desc(inventoryTable.addedAt));
   const recentLogs = await db
@@ -31,10 +36,12 @@ async function buildRecommendationPrompt(): Promise<string> {
       }
     : null;
 
-  const inventorySummary = inventory.map((i) => `${i.name} (${i.category}${i.quantity ? ", " + i.quantity : ""})`).join(", ");
+  const inventorySummary = inventory
+    .map((i) => `${i.name} (${i.category}${i.quantity ? ", " + i.quantity : ""})`)
+    .join(", ");
   const recentFoods = recentLogs.map((l) => l.foodName).join(", ");
 
-  return `You are a personalized nutrition advisor. Based on the following user data, generate 6 food recommendations.
+  const prompt = `You are a personalized nutrition advisor. Based on the following user data, generate 6 food recommendations.
 
 USER PROFILE:
 ${JSON.stringify(profileSummary, null, 2)}
@@ -67,24 +74,51 @@ Return ONLY valid JSON in this exact format:
 }
 
 Prioritize high-value recommendations specific to their health goals and what's in their kitchen.`;
+
+  return {
+    prompt,
+    profileComplete: !!(profile?.healthGoals?.length),
+    inventoryItemCount: inventory.length,
+    recentLogCount: recentLogs.length,
+  };
 }
 
 router.get("/recommendations", async (req, res) => {
   try {
-    const prompt = await buildRecommendationPrompt();
+    const [cached] = await db
+      .select()
+      .from(recommendationsTable)
+      .orderBy(desc(recommendationsTable.generatedAt))
+      .limit(1);
+
+    if (cached) {
+      res.json({
+        recommendations: cached.items,
+        generatedAt: cached.generatedAt.toISOString(),
+        basedOn: cached.basedOn,
+        cached: true,
+      });
+      return;
+    }
+
+    const { prompt, profileComplete, inventoryItemCount, recentLogCount } = await buildRecommendationPrompt();
 
     try {
       const raw = await generateText(prompt);
       const parsed = JSON.parse(raw);
+      const items = parsed.recommendations || [];
+      const basedOn = { profileComplete, inventoryItemCount, recentLogCount };
+
+      const [saved] = await db
+        .insert(recommendationsTable)
+        .values({ items, basedOn })
+        .returning();
 
       res.json({
-        recommendations: parsed.recommendations || [],
-        generatedAt: new Date().toISOString(),
-        basedOn: {
-          profileComplete: true,
-          inventoryItemCount: 0,
-          recentLogCount: 0,
-        },
+        recommendations: items,
+        generatedAt: saved.generatedAt.toISOString(),
+        basedOn,
+        cached: false,
       });
     } catch (geminiErr: unknown) {
       const message = geminiErr instanceof Error ? geminiErr.message : "Unknown error";
@@ -93,6 +127,7 @@ router.get("/recommendations", async (req, res) => {
           recommendations: [],
           generatedAt: new Date().toISOString(),
           basedOn: { profileComplete: false, inventoryItemCount: 0, recentLogCount: 0 },
+          cached: false,
           _error: "no_api_key",
         });
         return;
@@ -101,33 +136,30 @@ router.get("/recommendations", async (req, res) => {
     }
   } catch (err) {
     req.log.error({ err }, "Failed to get recommendations");
-    res.status(500).json({ error: "generation_failed", message: "Failed to generate recommendations" });
+    res.status(500).json({ error: "generation_failed", message: "Failed to get recommendations" });
   }
 });
 
 router.post("/recommendations", async (req, res) => {
   try {
-    const prompt = await buildRecommendationPrompt();
+    const { prompt, profileComplete, inventoryItemCount, recentLogCount } = await buildRecommendationPrompt();
 
     try {
       const raw = await generateText(prompt);
       const parsed = JSON.parse(raw);
+      const items = parsed.recommendations || [];
+      const basedOn = { profileComplete, inventoryItemCount, recentLogCount };
 
-      const [profile] = await db.select().from(profilesTable).limit(1);
-      const inventoryCount = await db.select().from(inventoryTable);
-      const recentLogs = await db
-        .select()
-        .from(foodLogsTable)
-        .where(sql`${foodLogsTable.loggedAt} >= NOW() - INTERVAL '3 days'`);
+      const [saved] = await db
+        .insert(recommendationsTable)
+        .values({ items, basedOn })
+        .returning();
 
       res.json({
-        recommendations: parsed.recommendations || [],
-        generatedAt: new Date().toISOString(),
-        basedOn: {
-          profileComplete: !!(profile?.healthGoals?.length),
-          inventoryItemCount: inventoryCount.length,
-          recentLogCount: recentLogs.length,
-        },
+        recommendations: items,
+        generatedAt: saved.generatedAt.toISOString(),
+        basedOn,
+        cached: false,
       });
     } catch (geminiErr: unknown) {
       const message = geminiErr instanceof Error ? geminiErr.message : "Unknown error";
