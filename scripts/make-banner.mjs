@@ -5,59 +5,59 @@ mkdirSync(".canvas/assets", { recursive: true });
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <radialGradient id="bg" cx="30%" cy="40%" r="70%">
+    <radialGradient id="bg" cx="35%" cy="45%" r="75%">
       <stop offset="0%" stop-color="#1e6b42"/>
       <stop offset="100%" stop-color="#0d3320"/>
     </radialGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="18" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
   </defs>
 
   <rect width="1200" height="630" fill="url(#bg)"/>
 
-  <circle cx="200" cy="315" r="320" fill="#ffffff" fill-opacity="0.025"/>
-  <circle cx="1050" cy="120" r="180" fill="#f97316" fill-opacity="0.06"/>
-  <circle cx="950" cy="500" r="140" fill="#ffffff" fill-opacity="0.03"/>
+  <circle cx="150" cy="315" r="380" fill="#ffffff" fill-opacity="0.022"/>
+  <circle cx="1100" cy="100" r="200" fill="#f97316" fill-opacity="0.055"/>
+  <circle cx="1050" cy="560" r="120" fill="#ffffff" fill-opacity="0.025"/>
 
-  <g transform="translate(280, 220)">
-    <rect x="0" y="0" width="72" height="60" rx="12" fill="none" stroke="white" stroke-width="4" stroke-opacity="0.9"/>
-    <circle cx="36" cy="30" r="15" fill="none" stroke="white" stroke-width="3.5" stroke-opacity="0.9"/>
-    <circle cx="36" cy="30" r="6" fill="white" fill-opacity="0.9"/>
-    <rect x="14" y="-10" width="18" height="12" rx="4" fill="white" fill-opacity="0.9"/>
-    <circle cx="58" cy="12" r="4" fill="#f97316"/>
+  <g transform="translate(124, 268)">
+    <rect x="0" y="0" width="58" height="48" rx="10" fill="none" stroke="white" stroke-width="3.5" stroke-opacity="0.85"/>
+    <circle cx="29" cy="24" r="12" fill="none" stroke="white" stroke-width="3" stroke-opacity="0.85"/>
+    <circle cx="29" cy="24" r="5" fill="white" fill-opacity="0.85"/>
+    <rect x="11" y="-8" width="14" height="10" rx="3" fill="white" fill-opacity="0.85"/>
+    <circle cx="47" cy="9" r="4" fill="#f97316"/>
   </g>
 
-  <g transform="translate(390, 218)">
-    <path d="M36,4 C20,4 8,16 8,30 C8,42 16,52 28,56 L28,62 L44,62 L44,56 C56,52 64,42 64,30 C64,16 52,4 36,4 Z" fill="none" stroke="white" stroke-width="3.5" stroke-opacity="0.85" stroke-linejoin="round"/>
-    <path d="M28,30 C28,24 31,20 36,20 C41,20 44,24 44,30" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-opacity="0.85"/>
-    <line x1="36" y1="4" x2="36" y2="14" stroke="#f97316" stroke-width="3" stroke-linecap="round"/>
-    <line x1="14" y1="11" x2="21" y2="18" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
-    <line x1="58" y1="11" x2="51" y2="18" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+  <g transform="translate(198, 265)">
+    <path d="M28,2 C14,2 4,12 4,24 C4,34 10,42 20,46 L20,52 L36,52 L36,46 C46,42 52,34 52,24 C52,12 42,2 28,2 Z"
+      fill="none" stroke="white" stroke-width="3" stroke-opacity="0.8" stroke-linejoin="round"/>
+    <path d="M20,24 C20,18 23,15 28,15 C33,15 36,18 36,24"
+      fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.8"/>
+    <line x1="28" y1="2" x2="28" y2="10" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="9" y1="8"  x2="15" y2="14" stroke="#f97316" stroke-width="2"   stroke-linecap="round"/>
+    <line x1="47" y1="8" x2="41" y2="14" stroke="#f97316" stroke-width="2"   stroke-linecap="round"/>
   </g>
 
   <text
-    x="520" y="348"
+    x="600" y="340"
+    text-anchor="middle"
     font-family="Arial Black, Arial, sans-serif"
-    font-size="130"
+    font-size="112"
     font-weight="900"
     fill="white"
     fill-opacity="0.97"
-    letter-spacing="-4"
+    letter-spacing="-2"
   >Kitchen CFO</text>
 
   <text
-    x="522" y="398"
+    x="600" y="396"
+    text-anchor="middle"
     font-family="Arial, sans-serif"
-    font-size="28"
+    font-size="22"
     font-weight="400"
     fill="white"
-    fill-opacity="0.45"
-    letter-spacing="6"
+    fill-opacity="0.42"
+    letter-spacing="7"
   >AI NUTRITION INTELLIGENCE</text>
 
-  <line x1="520" y1="412" x2="1090" y2="412" stroke="#f97316" stroke-width="2" stroke-opacity="0.5"/>
+  <line x1="340" y1="416" x2="860" y2="416" stroke="#f97316" stroke-width="2" stroke-opacity="0.45"/>
 </svg>`;
 
 const resvg = new Resvg(svg, {
