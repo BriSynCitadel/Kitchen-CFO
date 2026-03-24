@@ -1,0 +1,23 @@
+packages:
+  "framer-motion": "For page transitions and smooth micro-interactions"
+  "recharts": "For the daily nutrition progress rings and charts"
+  "date-fns": "For human-readable date formatting in the diary"
+  "lucide-react": "For crisp, beautiful icons across the app"
+  "clsx": "For conditional class name merging"
+  "tailwind-merge": "For merging tailwind classes without conflicts"
+
+images:
+  - path: "artifacts/kitchen-cfo/public/images/empty-diary.png"
+    description: "Clean minimalist modern line-art illustration of an empty plate with a fork and knife, light sage green accents, transparent background, premium UI style"
+    aspect_ratio: "1:1"
+  - path: "artifacts/kitchen-cfo/public/images/empty-kitchen.png"
+    description: "Clean minimalist modern line-art illustration of an open empty modern refrigerator, light sage green accents, transparent background, premium UI style"
+    aspect_ratio: "1:1"
+  - path: "artifacts/kitchen-cfo/public/images/hero-pattern.png"
+    description: "Subtle abstract geometric pattern with soft sage green and white organic shapes, very light and airy, out of focus"
+    aspect_ratio: "16:9"
+
+notes:
+  - Using generated React Query hooks from @workspace/api-client-react
+  - No auth needed per implementation notes, user is implicitly identified.
+  - Using standard REST pattern with React Query invalidation for state management.

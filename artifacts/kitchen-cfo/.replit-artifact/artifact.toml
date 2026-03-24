@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Kitchen CFO"
+version = "1.0.0"
+id = "artifacts/kitchen-cfo"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24775
+
+[services.development]
+run = "pnpm --filter @workspace/kitchen-cfo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/kitchen-cfo", "run", "build" ]
+publicDir = "artifacts/kitchen-cfo/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24775"
+BASE_PATH = "/"

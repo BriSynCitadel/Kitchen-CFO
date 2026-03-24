@@ -3,13 +3,26 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Kitchen CFO API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: analyze
+    description: Food photo analysis
+  - name: food-logs
+    description: Food diary log entries
+  - name: profile
+    description: Nutrition profile
+  - name: inventory
+    description: Kitchen inventory management
+  - name: recommendations
+    description: Personalized food recommendations
+  - name: settings
+    description: User settings (Gemini API key, etc.)
+
 paths:
   /healthz:
     get:
@@ -24,6 +37,328 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /analyze:
+    post:
+      operationId: analyzeFood
+      tags: [analyze]
+      summary: Analyze food photo
+      description: Analyzes a food image using Gemini Vision and returns full nutritional breakdown
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeFoodRequest"
+      responses:
+        "200":
+          description: Analysis result with nutritional data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoodAnalysisResult"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Analysis failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /food-logs:
+    get:
+      operationId: getFoodLogs
+      tags: [food-logs]
+      summary: Get food logs
+      description: Returns food log entries, optionally filtered by date
+      parameters:
+        - name: date
+          in: query
+          description: Filter by date (YYYY-MM-DD). Defaults to today.
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of food log entries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoodLogsResponse"
+    post:
+      operationId: createFoodLog
+      tags: [food-logs]
+      summary: Create food log entry
+      description: Logs a food item to the diary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFoodLogRequest"
+      responses:
+        "201":
+          description: Created food log entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoodLog"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /food-logs/{id}:
+    delete:
+      operationId: deleteFoodLog
+      tags: [food-logs]
+      summary: Delete food log entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /food-logs/summary:
+    get:
+      operationId: getFoodLogSummary
+      tags: [food-logs]
+      summary: Get daily nutrient summary
+      description: Returns aggregated nutritional totals for a date
+      parameters:
+        - name: date
+          in: query
+          description: Date (YYYY-MM-DD). Defaults to today.
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Daily nutrient summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailySummary"
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get nutrition profile
+      responses:
+        "200":
+          description: User nutrition profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NutritionProfile"
+    put:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update nutrition profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileRequest"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NutritionProfile"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /inventory:
+    get:
+      operationId: getInventory
+      tags: [inventory]
+      summary: Get kitchen inventory
+      responses:
+        "200":
+          description: List of inventory items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryResponse"
+    post:
+      operationId: addInventoryItem
+      tags: [inventory]
+      summary: Add inventory item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInventoryItemRequest"
+      responses:
+        "201":
+          description: Created inventory item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /inventory/{id}:
+    put:
+      operationId: updateInventoryItem
+      tags: [inventory]
+      summary: Update inventory item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInventoryItemRequest"
+      responses:
+        "200":
+          description: Updated inventory item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteInventoryItem
+      tags: [inventory]
+      summary: Delete inventory item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /recommendations:
+    get:
+      operationId: getRecommendations
+      tags: [recommendations]
+      summary: Get personalized food recommendations
+      description: Returns AI-generated food recommendations based on user profile and kitchen inventory
+      responses:
+        "200":
+          description: Recommendations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecommendationsResponse"
+    post:
+      operationId: refreshRecommendations
+      tags: [recommendations]
+      summary: Refresh recommendations
+      description: Regenerates recommendations using latest profile and inventory
+      responses:
+        "200":
+          description: Fresh recommendations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecommendationsResponse"
+        "500":
+          description: Generation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get user settings
+      responses:
+        "200":
+          description: User settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+    put:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Update user settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSettingsRequest"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +369,666 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+
+    DeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+
+    # ── MICRONUTRIENTS ──────────────────────────────────────────────────────────
+    Micronutrients:
+      type: object
+      description: Full micronutrient breakdown (all values in standard units)
+      properties:
+        # Vitamins
+        vitaminA:
+          type: number
+          description: Vitamin A in mcg
+        vitaminB1:
+          type: number
+          description: Thiamin (B1) in mg
+        vitaminB2:
+          type: number
+          description: Riboflavin (B2) in mg
+        vitaminB3:
+          type: number
+          description: Niacin (B3) in mg
+        vitaminB6:
+          type: number
+          description: Vitamin B6 in mg
+        vitaminB9:
+          type: number
+          description: Folate (B9) in mcg
+        vitaminB12:
+          type: number
+          description: Vitamin B12 in mcg
+        vitaminC:
+          type: number
+          description: Vitamin C in mg
+        vitaminD:
+          type: number
+          description: Vitamin D in mcg
+        vitaminE:
+          type: number
+          description: Vitamin E in mg
+        vitaminK:
+          type: number
+          description: Vitamin K in mcg
+        # Minerals
+        calcium:
+          type: number
+          description: Calcium in mg
+        iron:
+          type: number
+          description: Iron in mg
+        magnesium:
+          type: number
+          description: Magnesium in mg
+        phosphorus:
+          type: number
+          description: Phosphorus in mg
+        potassium:
+          type: number
+          description: Potassium in mg
+        sodium:
+          type: number
+          description: Sodium in mg
+        zinc:
+          type: number
+          description: Zinc in mg
+        selenium:
+          type: number
+          description: Selenium in mcg
+        copper:
+          type: number
+          description: Copper in mg
+        manganese:
+          type: number
+          description: Manganese in mg
+        chromium:
+          type: number
+          description: Chromium in mcg
+        iodine:
+          type: number
+          description: Iodine in mcg
+        # Fatty acids
+        omega3:
+          type: number
+          description: Omega-3 in g
+        omega6:
+          type: number
+          description: Omega-6 in g
+
+    NutrientData:
+      type: object
+      description: Complete nutritional data for a food item
+      properties:
+        calories:
+          type: number
+        protein:
+          type: number
+          description: Protein in grams
+        carbohydrates:
+          type: number
+          description: Total carbs in grams
+        sugar:
+          type: number
+          description: Total sugars in grams
+        fiber:
+          type: number
+          description: Dietary fiber in grams
+        fat:
+          type: number
+          description: Total fat in grams
+        saturatedFat:
+          type: number
+          description: Saturated fat in grams
+        transFat:
+          type: number
+          description: Trans fat in grams
+        cholesterol:
+          type: number
+          description: Cholesterol in mg
+        micronutrients:
+          $ref: "#/components/schemas/Micronutrients"
+      required:
+        - calories
+        - protein
+        - carbohydrates
+        - fat
+
+    # ── FOOD ANALYSIS ───────────────────────────────────────────────────────────
+    AnalyzeFoodRequest:
+      type: object
+      properties:
+        imageBase64:
+          type: string
+          description: Base64-encoded image data
+        mimeType:
+          type: string
+          description: MIME type of the image (e.g. image/jpeg)
+          default: image/jpeg
+        analysisType:
+          type: string
+          enum: [meal, receipt, inventory]
+          description: Type of photo being analyzed
+          default: meal
+        geminiApiKey:
+          type: string
+          description: Optional Gemini API key override (if not set as env var)
+      required:
+        - imageBase64
+
+    FoodItem:
+      type: object
+      properties:
+        name:
+          type: string
+        quantity:
+          type: string
+          description: Estimated portion/quantity
+        nutrients:
+          $ref: "#/components/schemas/NutrientData"
+        confidence:
+          type: number
+          description: AI confidence score 0-1
+      required:
+        - name
+        - nutrients
+
+    FoodAnalysisResult:
+      type: object
+      properties:
+        analysisType:
+          type: string
+          enum: [meal, receipt, inventory]
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/FoodItem"
+        totalNutrients:
+          $ref: "#/components/schemas/NutrientData"
+        description:
+          type: string
+          description: Human-readable description of what was found
+        inventoryItems:
+          type: array
+          description: For receipt/inventory analysis - items to add to kitchen
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              quantity:
+                type: string
+              category:
+                type: string
+      required:
+        - analysisType
+        - items
+        - totalNutrients
+        - description
+
+    # ── FOOD LOGS ───────────────────────────────────────────────────────────────
+    FoodLog:
+      type: object
+      properties:
+        id:
+          type: number
+        foodName:
+          type: string
+        quantity:
+          type: string
+        mealType:
+          type: string
+          enum: [breakfast, lunch, dinner, snack, other]
+        nutrients:
+          $ref: "#/components/schemas/NutrientData"
+        imageUrl:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        loggedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - foodName
+        - mealType
+        - nutrients
+        - loggedAt
+        - createdAt
+
+    FoodLogsResponse:
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/FoodLog"
+        total:
+          type: number
+      required:
+        - logs
+        - total
+
+    CreateFoodLogRequest:
+      type: object
+      properties:
+        foodName:
+          type: string
+        quantity:
+          type: string
+        mealType:
+          type: string
+          enum: [breakfast, lunch, dinner, snack, other]
+        nutrients:
+          $ref: "#/components/schemas/NutrientData"
+        imageBase64:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        loggedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - foodName
+        - mealType
+        - nutrients
+
+    DailySummary:
+      type: object
+      properties:
+        date:
+          type: string
+        totalCalories:
+          type: number
+        totalProtein:
+          type: number
+        totalCarbohydrates:
+          type: number
+        totalFat:
+          type: number
+        totalFiber:
+          type: number
+        micronutrientTotals:
+          $ref: "#/components/schemas/Micronutrients"
+        mealCount:
+          type: number
+        logCount:
+          type: number
+      required:
+        - date
+        - totalCalories
+        - totalProtein
+        - totalCarbohydrates
+        - totalFat
+        - mealCount
+        - logCount
+
+    # ── PROFILE ─────────────────────────────────────────────────────────────────
+    LabValues:
+      type: object
+      properties:
+        glucose:
+          type: number
+          description: Fasting blood glucose mg/dL
+          nullable: true
+        hba1c:
+          type: number
+          description: HbA1c percentage
+          nullable: true
+        totalCholesterol:
+          type: number
+          description: Total cholesterol mg/dL
+          nullable: true
+        ldl:
+          type: number
+          description: LDL cholesterol mg/dL
+          nullable: true
+        hdl:
+          type: number
+          description: HDL cholesterol mg/dL
+          nullable: true
+        triglycerides:
+          type: number
+          description: Triglycerides mg/dL
+          nullable: true
+        vitaminD:
+          type: number
+          description: Serum Vitamin D ng/mL
+          nullable: true
+        ferritin:
+          type: number
+          description: Ferritin ng/mL
+          nullable: true
+        tsh:
+          type: number
+          description: TSH mIU/L
+          nullable: true
+
+    NutritionProfile:
+      type: object
+      properties:
+        id:
+          type: number
+        age:
+          type: number
+          nullable: true
+        gender:
+          type: string
+          enum: [male, female, other, prefer_not_to_say]
+          nullable: true
+        heightCm:
+          type: number
+          nullable: true
+        weightKg:
+          type: number
+          nullable: true
+        bloodType:
+          type: string
+          enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
+          nullable: true
+        activityLevel:
+          type: string
+          enum: [sedentary, lightly_active, moderately_active, very_active, extremely_active]
+          nullable: true
+        dietaryPreferences:
+          type: array
+          items:
+            type: string
+          description: e.g. vegan, vegetarian, keto, paleo, gluten_free, dairy_free, etc.
+        healthGoals:
+          type: array
+          items:
+            type: string
+          description: e.g. weight_loss, muscle_gain, heart_health, energy, longevity
+        allergies:
+          type: array
+          items:
+            type: string
+        medicalConditions:
+          type: array
+          items:
+            type: string
+          description: e.g. diabetes_type2, hypertension, celiac
+        labValues:
+          $ref: "#/components/schemas/LabValues"
+          nullable: true
+        dailyCalorieTarget:
+          type: number
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - dietaryPreferences
+        - healthGoals
+        - allergies
+        - medicalConditions
+        - createdAt
+        - updatedAt
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        age:
+          type: number
+          nullable: true
+        gender:
+          type: string
+          enum: [male, female, other, prefer_not_to_say]
+          nullable: true
+        heightCm:
+          type: number
+          nullable: true
+        weightKg:
+          type: number
+          nullable: true
+        bloodType:
+          type: string
+          enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
+          nullable: true
+        activityLevel:
+          type: string
+          enum: [sedentary, lightly_active, moderately_active, very_active, extremely_active]
+          nullable: true
+        dietaryPreferences:
+          type: array
+          items:
+            type: string
+        healthGoals:
+          type: array
+          items:
+            type: string
+        allergies:
+          type: array
+          items:
+            type: string
+        medicalConditions:
+          type: array
+          items:
+            type: string
+        labValues:
+          $ref: "#/components/schemas/LabValues"
+          nullable: true
+        dailyCalorieTarget:
+          type: number
+          nullable: true
+
+    # ── INVENTORY ───────────────────────────────────────────────────────────────
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        category:
+          type: string
+          enum: [produce, protein, dairy, grains, pantry, beverages, condiments, frozen, other]
+        quantity:
+          type: string
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        expiryDate:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        addedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - category
+        - addedAt
+        - updatedAt
+
+    InventoryResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/InventoryItem"
+        total:
+          type: number
+      required:
+        - items
+        - total
+
+    CreateInventoryItemRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          enum: [produce, protein, dairy, grains, pantry, beverages, condiments, frozen, other]
+        quantity:
+          type: string
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        expiryDate:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+      required:
+        - name
+        - category
+
+    UpdateInventoryItemRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          enum: [produce, protein, dairy, grains, pantry, beverages, condiments, frozen, other]
+        quantity:
+          type: string
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        expiryDate:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+
+    # ── RECOMMENDATIONS ─────────────────────────────────────────────────────────
+    Recommendation:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        reason:
+          type: string
+          description: Why this is recommended based on user's profile/inventory
+        category:
+          type: string
+          enum: [meal, snack, ingredient, nutrient_tip]
+        ingredients:
+          type: array
+          items:
+            type: string
+          description: Ingredients needed (from inventory if possible)
+        estimatedNutrients:
+          $ref: "#/components/schemas/NutrientData"
+          nullable: true
+        priority:
+          type: string
+          enum: [high, medium, low]
+      required:
+        - title
+        - description
+        - reason
+        - category
+        - priority
+
+    RecommendationsResponse:
+      type: object
+      properties:
+        recommendations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Recommendation"
+        generatedAt:
+          type: string
+          format: date-time
+        basedOn:
+          type: object
+          properties:
+            profileComplete:
+              type: boolean
+            inventoryItemCount:
+              type: number
+            recentLogCount:
+              type: number
+      required:
+        - recommendations
+        - generatedAt
+
+    # ── SETTINGS ────────────────────────────────────────────────────────────────
+    UserSettings:
+      type: object
+      properties:
+        geminiApiKeySet:
+          type: boolean
+          description: Whether a Gemini API key is configured (never expose the actual key)
+        geminiApiKeySource:
+          type: string
+          enum: [env, database, none]
+          description: Where the Gemini API key comes from
+        defaultMealType:
+          type: string
+          enum: [breakfast, lunch, dinner, snack, other]
+        unitSystem:
+          type: string
+          enum: [metric, imperial]
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - geminiApiKeySet
+        - geminiApiKeySource
+        - defaultMealType
+        - unitSystem
+
+    UpdateSettingsRequest:
+      type: object
+      properties:
+        geminiApiKey:
+          type: string
+          nullable: true
+          description: Set or clear the user's Gemini API key (stored encrypted)
+        defaultMealType:
+          type: string
+          enum: [breakfast, lunch, dinner, snack, other]
+        unitSystem:
+          type: string
+          enum: [metric, imperial]
