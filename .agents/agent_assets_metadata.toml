@@ -36,3 +36,9 @@ id = "AeD79xg2Y4_7-C1joNg_I"
 uri = "file://.canvas/assets/logo-c-icon.png"
 type = "image"
 title = "Logo C — Plate & Pulse (512×512 icon)"
+
+[[outputs]]
+id = "GCsq7MWrUyMBV5iwfW5l7"
+uri = "file://.canvas/assets/kitchen-cfo-banner.png"
+type = "image"
+title = "Kitchen CFO — BuildHub Banner (1200×630)"
