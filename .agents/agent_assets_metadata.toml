@@ -1,0 +1,20 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "cNMXIRvmRQosS3s-_Vmpx"
+uri = "file://.canvas/assets/logo-a.png"
+type = "image"
+title = "Logo A — Lens & Ledger"
+
+[[outputs]]
+id = "Q9R9NXEMFpig_MWAgRkwG"
+uri = "file://.canvas/assets/logo-b.png"
+type = "image"
+title = "Logo B — Fork & Chart"
+
+[[outputs]]
+id = "FRpOzwqQRXwI_7sh-Qh5g"
+uri = "file://.canvas/assets/logo-c.png"
+type = "image"
+title = "Logo C — Plate & Pulse"
