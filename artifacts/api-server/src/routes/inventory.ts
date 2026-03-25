@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { inventoryTable } from "@workspace/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import {
   AddInventoryItemBody,
   UpdateInventoryItemBody,
@@ -35,6 +35,19 @@ router.post("/inventory", async (req, res) => {
   const { name, category, quantity, unit, expiryDate, notes } = parseResult.data;
 
   try {
+    // Check for an existing item with the same name (case-insensitive)
+    const [existing] = await db
+      .select()
+      .from(inventoryTable)
+      .where(sql`lower(${inventoryTable.name}) = lower(${name})`)
+      .limit(1);
+
+    if (existing) {
+      // Return the existing item so the UI can show it's already tracked
+      res.status(200).json({ ...existing, duplicate: true });
+      return;
+    }
+
     const [created] = await db
       .insert(inventoryTable)
       .values({

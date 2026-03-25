@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Camera, Upload, Utensils, Zap, Plus, X, ChevronRight, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAnalyzeFood, useCreateFoodLog } from "@workspace/api-client-react";
-import { fileToBase64, formatNumber } from "@/lib/utils";
+import { compressImage, fileToBase64, formatNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,8 @@ import type { FoodAnalysisResult } from "@workspace/api-client-react";
 export default function Home() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
   
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<FoodAnalysisResult | null>(null);
@@ -37,13 +38,15 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Show preview immediately
+    // Show preview immediately using the original file
     const objectUrl = URL.createObjectURL(file);
     setImagePreview(objectUrl);
     setAnalysis(null);
 
     try {
-      const { base64, mimeType } = await fileToBase64(file);
+      // Compress before encoding to avoid 413 errors on large phone photos
+      const compressed = await compressImage(file);
+      const { base64, mimeType } = await fileToBase64(compressed);
       analyzeMutation.mutate({
         data: {
           imageBase64: base64,
@@ -99,12 +102,21 @@ export default function Home() {
           <p className="text-muted-foreground mt-2 text-lg">Snap a photo to instantly track macros and micronutrients.</p>
         </div>
 
-        <input 
-          type="file" 
-          accept="image/*" 
-          capture="environment" 
-          className="hidden" 
-          ref={fileInputRef}
+        {/* Camera input — opens device camera directly */}
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          ref={cameraInputRef}
+          onChange={handleFileSelect}
+        />
+        {/* Gallery input — opens photo library, no capture attribute */}
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          ref={galleryInputRef}
           onChange={handleFileSelect}
         />
 
@@ -118,7 +130,7 @@ export default function Home() {
               className="flex-1 flex flex-col items-center justify-center gap-6 mt-8"
             >
               <button 
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => cameraInputRef.current?.click()}
                 className="w-48 h-48 rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/30 flex flex-col items-center justify-center gap-3 transition-transform hover:scale-105 active:scale-95 group"
               >
                 <div className="p-4 bg-white/20 rounded-full group-hover:scale-110 transition-transform">
@@ -128,7 +140,7 @@ export default function Home() {
               </button>
 
               <button 
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => galleryInputRef.current?.click()}
                 className="flex items-center gap-2 px-6 py-3 rounded-xl bg-secondary text-secondary-foreground font-medium hover:bg-secondary/80 transition-colors"
               >
                 <Upload className="w-4 h-4" />
@@ -150,7 +162,8 @@ export default function Home() {
                   onClick={() => {
                     setImagePreview(null);
                     setAnalysis(null);
-                    if (fileInputRef.current) fileInputRef.current.value = "";
+                    if (cameraInputRef.current) cameraInputRef.current.value = "";
+                    if (galleryInputRef.current) galleryInputRef.current.value = "";
                   }}
                   className="absolute top-4 right-4 p-2 bg-black/50 backdrop-blur text-white rounded-full hover:bg-black/70"
                 >

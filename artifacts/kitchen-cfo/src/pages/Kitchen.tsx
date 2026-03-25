@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { Plus, Trash2, Refrigerator, Leaf, Beef, Milk, Wheat } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetInventoryQueryKey } from "@workspace/api-client-react";
+import { useToast } from "@/hooks/use-toast";
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   produce: Leaf,
@@ -19,10 +20,21 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 
 export default function Kitchen() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const { data, isLoading } = useGetInventory();
   
   const addMutation = useAddInventoryItem({
-    mutation: { onSuccess: () => queryClient.invalidateQueries({ queryKey: getGetInventoryQueryKey() }) }
+    mutation: {
+      onSuccess: (result) => {
+        queryClient.invalidateQueries({ queryKey: getGetInventoryQueryKey() });
+        if ((result as typeof result & { duplicate?: boolean }).duplicate) {
+          toast({
+            title: "Already in your kitchen",
+            description: `${result.name} is already tracked in your inventory.`,
+          });
+        }
+      }
+    }
   });
   
   const deleteMutation = useDeleteInventoryItem({
