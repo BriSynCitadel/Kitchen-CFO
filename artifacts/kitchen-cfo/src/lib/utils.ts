@@ -23,19 +23,20 @@ export async function compressImage(
       URL.revokeObjectURL(objectUrl);
 
       let { width, height } = img;
-      if (width <= maxDimension && height <= maxDimension) {
-        resolve(file);
-        return;
+
+      // Scale down if either dimension exceeds the max
+      if (width > maxDimension || height > maxDimension) {
+        if (width > height) {
+          height = Math.round((height * maxDimension) / width);
+          width = maxDimension;
+        } else {
+          width = Math.round((width * maxDimension) / height);
+          height = maxDimension;
+        }
       }
 
-      if (width > height) {
-        height = Math.round((height * maxDimension) / width);
-        width = maxDimension;
-      } else {
-        width = Math.round((width * maxDimension) / height);
-        height = maxDimension;
-      }
-
+      // Always draw to canvas and re-encode as JPEG at target quality,
+      // even when no resize is needed, to reduce file size consistently.
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
