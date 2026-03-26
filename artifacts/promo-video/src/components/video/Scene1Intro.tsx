@@ -18,8 +18,8 @@ export function Scene1Intro() {
       style={{ background: 'transparent' }}
       initial={{ clipPath: 'polygon(50% 0%, 50% 0%, 50% 100%, 50% 100%)' }}
       animate={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
-      exit={{ clipPath: 'polygon(50% 0%, 50% 0%, 50% 100%, 50% 100%)', transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1] } }}
-      transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+      exit={{ clipPath: 'polygon(50% 0%, 50% 0%, 50% 100%, 50% 100%)' }}
+      transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] }}
     >
       {/* Dark green background for this scene */}
       <div className="absolute inset-0" style={{ backgroundColor: '#1a5c38' }} />
@@ -73,7 +73,7 @@ export function Scene1Intro() {
           variants={charContainerVariants}
           initial="hidden"
           animate="visible"
-          exit={{ opacity: 0, y: -16, filter: 'blur(8px)', transition: { duration: 0.5 } }}
+          exit={{ opacity: 0, y: -16, filter: 'blur(8px)' }}
         >
           {words.map((word, wi) => (
             <span key={wi} className="inline-block" style={{ marginRight: '0.25em' }}>

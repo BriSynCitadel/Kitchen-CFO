@@ -23,8 +23,8 @@ export function Scene2Scan() {
       style={{ background: 'transparent' }}
       initial={{ clipPath: 'circle(0% at 0% 50%)' }}
       animate={{ clipPath: 'circle(150% at 0% 50%)' }}
-      exit={{ clipPath: 'circle(0% at 100% 50%)', transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] } }}
-      transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+      exit={{ clipPath: 'circle(0% at 100% 50%)' }}
+      transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
     >
       {/* Cream background */}
       <div className="absolute inset-0" style={{ backgroundColor: '#faf7f2' }} />
