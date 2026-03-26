@@ -92,7 +92,7 @@ export function Scene4Outro() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: 'circOut' }}
           >
-            Food Intelligence for your body.
+            Kitchen CFO — Food Intelligence for your body.
           </motion.p>
         )}
 
