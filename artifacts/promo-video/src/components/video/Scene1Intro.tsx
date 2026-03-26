@@ -33,7 +33,7 @@ export function Scene1Intro() {
         transition={{ duration: 8, ease: 'easeOut' }}
       >
         <img
-          src="/grandmother-kitchen.jpg"
+          src={`${import.meta.env.BASE_URL}grandmother-kitchen.jpg`}
           alt="Vintage Kitchen"
           className="w-full h-full object-cover"
         />

@@ -127,7 +127,7 @@ export function Scene2Scan() {
         >
           {/* Meal photo */}
           <motion.img
-            src="/healthy-meal.jpg"
+            src={`${import.meta.env.BASE_URL}healthy-meal.jpg`}
             alt="Healthy Meal"
             className="absolute inset-0 w-full h-full object-cover"
             initial={{ scale: 1.25 }}
