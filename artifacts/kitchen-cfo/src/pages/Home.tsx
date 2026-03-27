@@ -148,6 +148,11 @@ export default function Home() {
   const handleLoadDemo = async () => {
     dismissWelcome();
 
+    const { dismiss: dismissLoadingToast } = toast({
+      title: "Loading demo data…",
+      description: "Setting up your personalized sample profile and meals.",
+    });
+
     const attemptLoad = () => fetch("/api/demo/load", { method: "POST" });
     const MAX_ATTEMPTS = 3;
     const RETRY_DELAY_MS = 3000;
@@ -167,6 +172,8 @@ export default function Home() {
         await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
       }
     }
+
+    dismissLoadingToast();
 
     if (succeeded) {
       try {
