@@ -233,7 +233,7 @@ export default function Home() {
               </div>
 
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                The first app that connects your bloodwork to your kitchen — scan food photos, track full micronutrients, and get personalized recommendations based on your lab results.
+                Welcome to Kitchen CFO — the first food intelligence app that connects your bloodwork to your kitchen. Start by scanning a food photo, or explore with our demo data.
               </p>
 
               <div className="space-y-3">

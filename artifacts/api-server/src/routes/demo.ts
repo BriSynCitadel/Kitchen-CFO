@@ -69,7 +69,7 @@ router.post("/demo/load", async (req, res) => {
       });
     }
 
-    const demoInventory = [
+    const demoInventory: Array<{ name: string; category: string; quantity: string }> = [
       { name: "Baby Spinach", category: "produce", quantity: "5 oz bag" },
       { name: "Wild Salmon Fillet", category: "protein", quantity: "2 fillets (6 oz each)" },
       { name: "Greek Yogurt", category: "dairy", quantity: "32 oz container" },
@@ -85,7 +85,7 @@ router.post("/demo/load", async (req, res) => {
         .insert(inventoryTable)
         .values({
           name: item.name,
-          category: item.category as any,
+          category: item.category,
           quantity: item.quantity,
         })
         .onConflictDoNothing();

@@ -39,14 +39,16 @@ function Router() {
         <Route component={NotFound} />
       </Switch>
       
-      {/* Show bottom nav and feedback widget on main app routes */}
+      {/* Show bottom nav on main app routes (hidden on settings) */}
       <Switch>
         <Route path="/settings" /> {/* Hide on settings */}
         <Route>
           <BottomNav />
-          <FeedbackWidget />
         </Route>
       </Switch>
+
+      {/* Feedback widget is visible on every screen */}
+      <FeedbackWidget />
     </div>
   );
 }
