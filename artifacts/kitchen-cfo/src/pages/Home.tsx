@@ -148,14 +148,25 @@ export default function Home() {
 
   const handleLoadDemo = async () => {
     setDemoLoading(true);
-    const attemptLoad = () => fetch("/api/demo/load", { method: "POST" });
+    const attemptLoad = async () => {
+      const res = await fetch("/api/demo/load", { method: "POST" });
+      if (!res.ok) throw new Error("non-ok");
+      return res;
+    };
+    let succeeded = false;
     try {
-      let res = await attemptLoad();
-      if (!res.ok) {
+      try {
+        await attemptLoad();
+        succeeded = true;
+      } catch {
         await new Promise((r) => setTimeout(r, 1500));
-        res = await attemptLoad();
-        if (!res.ok) throw new Error("Failed");
+        await attemptLoad();
+        succeeded = true;
       }
+    } catch {
+      toast({ title: "Couldn't load demo data", description: "Please try again.", variant: "destructive" });
+    }
+    if (succeeded) {
       dismissWelcome();
       try {
         await queryClient.invalidateQueries();
@@ -166,11 +177,8 @@ export default function Home() {
         title: "Demo data loaded!",
         description: "Explore your diary, kitchen, and personalized recommendations.",
       });
-    } catch {
-      toast({ title: "Couldn't load demo data", description: "Please try again.", variant: "destructive" });
-    } finally {
-      setDemoLoading(false);
     }
+    setDemoLoading(false);
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,7 +235,7 @@ export default function Home() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: "spring", stiffness: 340, damping: 30 }}
-              className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl px-6 pt-6 pb-6 sm:pb-8 shadow-2xl max-h-[85vh] overflow-y-auto"
+              className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl px-6 pt-6 pb-6 shadow-2xl max-h-[85vh] overflow-y-auto"
             >
               <div className="w-10 h-1 bg-border rounded-full mx-auto mb-6 sm:hidden" />
 
