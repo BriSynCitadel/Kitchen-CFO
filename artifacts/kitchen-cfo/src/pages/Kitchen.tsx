@@ -174,24 +174,34 @@ export default function Kitchen() {
     }
 
     setLoadingSuggestions(true);
+    const controller = new AbortController();
+
     const timer = setTimeout(async () => {
       try {
         const res = await fetch("/api/quantity-suggestions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ itemName: trimmed }),
+          signal: controller.signal,
         });
         if (!res.ok) throw new Error("Request failed");
         const data = await res.json();
         setQuantitySuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
-      } catch {
-        setQuantitySuggestions([]);
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          setQuantitySuggestions([]);
+        }
       } finally {
-        setLoadingSuggestions(false);
+        if (!controller.signal.aborted) {
+          setLoadingSuggestions(false);
+        }
       }
     }, 800);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [formName]);
 
   const toggleItem = (idx: number) => {
