@@ -16,7 +16,6 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import type { FoodAnalysisResult } from "@workspace/api-client-react";
 
-const todayStr = format(new Date(), "yyyy-MM-dd");
 
 const MEAL_LABELS: Record<string, string> = {
   breakfast: "Breakfast",
@@ -27,6 +26,7 @@ const MEAL_LABELS: Record<string, string> = {
 };
 
 export default function Home() {
+  const todayStr = format(new Date(), "yyyy-MM-dd");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -310,10 +310,16 @@ export default function Home() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm text-foreground truncate">{log.foodName}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {MEAL_LABELS[log.mealType] ?? "Meal"}
-                          {log.nutrients?.calories ? ` · ${formatNumber(log.nutrients.calories)} kcal` : ""}
-                        </p>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 leading-none">
+                            {MEAL_LABELS[log.mealType] ?? "Meal"}
+                          </Badge>
+                          {log.nutrients?.calories ? (
+                            <span className="text-xs text-muted-foreground">
+                              {formatNumber(log.nutrients.calories)} kcal
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                       <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
                     </motion.button>
