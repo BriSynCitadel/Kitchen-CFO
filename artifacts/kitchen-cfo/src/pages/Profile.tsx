@@ -4,7 +4,6 @@ import {
   useGetProfile,
   useUpdateProfile,
   getGetProfileQueryKey,
-  UpdateProfileRequestBloodType,
   UpdateProfileRequestActivityLevel,
 } from "@workspace/api-client-react";
 import type { LabValues } from "@workspace/api-client-react";
@@ -12,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { User, Activity, Droplet, FlaskConical, Zap, Check } from "lucide-react";
+import { User, Activity, FlaskConical, Zap, Check } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 const DIETS = ["vegan", "vegetarian", "keto", "paleo", "gluten_free", "dairy_free", "low_fodmap", "carnivore"];
@@ -95,7 +94,6 @@ export default function Profile() {
     age: "",
     weightKg: "",
     heightCm: "",
-    bloodType: UpdateProfileRequestBloodType["O+"] as UpdateProfileRequestBloodType,
     activityLevel: UpdateProfileRequestActivityLevel.moderately_active as UpdateProfileRequestActivityLevel,
     dietaryPreferences: [] as string[],
     healthGoals: [] as string[],
@@ -115,7 +113,6 @@ export default function Profile() {
         age: profile.age?.toString() ?? "",
         weightKg: profile.weightKg?.toString() ?? "",
         heightCm: profile.heightCm?.toString() ?? "",
-        bloodType: (profile.bloodType ?? UpdateProfileRequestBloodType["O+"]) as UpdateProfileRequestBloodType,
         activityLevel: (profile.activityLevel ?? UpdateProfileRequestActivityLevel.moderately_active) as UpdateProfileRequestActivityLevel,
         dietaryPreferences: profile.dietaryPreferences ?? [],
         healthGoals: profile.healthGoals ?? [],
@@ -149,7 +146,6 @@ export default function Profile() {
         age: formData.age ? parseInt(formData.age) : null,
         weightKg: formData.weightKg ? parseFloat(formData.weightKg) : null,
         heightCm: formData.heightCm ? parseFloat(formData.heightCm) : null,
-        bloodType: formData.bloodType,
         activityLevel: formData.activityLevel,
         dietaryPreferences: formData.dietaryPreferences,
         healthGoals: formData.healthGoals,
@@ -217,28 +213,6 @@ export default function Profile() {
                     <option key={v} value={v}>{l}</option>
                   ))}
                 </select>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-
-        {/* ── BIOLOGY ── */}
-        <section>
-          <SectionHeader icon={Droplet} label="Biology" color="text-red-400" />
-          <Card>
-            <CardContent className="p-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Blood Type</label>
-                <select
-                  className="flex h-10 w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:border-primary"
-                  value={formData.bloodType}
-                  onChange={(e) => setFormData((f) => ({ ...f, bloodType: e.target.value as UpdateProfileRequestBloodType }))}
-                >
-                  {(Object.values(UpdateProfileRequestBloodType) as UpdateProfileRequestBloodType[]).map((bt) => (
-                    <option key={bt} value={bt}>{bt}</option>
-                  ))}
-                </select>
-                <p className="text-[10px] text-muted-foreground mt-1">Used to tailor specific nutrient recommendations.</p>
               </div>
             </CardContent>
           </Card>
