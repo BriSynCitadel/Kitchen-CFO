@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Camera, Upload, Utensils, X, Sparkles, ChevronRight, Flame, Beef, Wheat, Leaf } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -36,14 +36,23 @@ interface LeafProps {
   opacity: number;
 }
 
-const LEAF_CONFIG: LeafProps[] = [
-  { id: 0, startX: 10,  driftX:  18, duration: 10, delay: 0,   size: 8,  rotate: 25,  opacity: 0.25 },
-  { id: 1, startX: 30,  driftX: -14, duration: 13, delay: 2,   size: 6,  rotate: -40, opacity: 0.18 },
-  { id: 2, startX: 55,  driftX:  20, duration: 11, delay: 4.5, size: 10, rotate: 15,  opacity: 0.22 },
-  { id: 3, startX: 72,  driftX: -18, duration: 14, delay: 1.5, size: 7,  rotate: -30, opacity: 0.20 },
-  { id: 4, startX: 85,  driftX:  12, duration: 9,  delay: 3,   size: 9,  rotate: 50,  opacity: 0.16 },
-  { id: 5, startX: 45,  driftX: -10, duration: 12, delay: 6,   size: 6,  rotate: -20, opacity: 0.19 },
-];
+function rand(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
+function generateLeafConfig(count: number): LeafProps[] {
+  const step = 100 / count;
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    startX:   rand(i * step, i * step + step * 0.8),
+    driftX:   rand(-22, 22) * (i % 2 === 0 ? 1 : -1),
+    duration: rand(9, 15),
+    delay:    rand(0, 8),
+    size:     rand(5, 11),
+    rotate:   rand(-55, 55),
+    opacity:  rand(0.14, 0.28),
+  }));
+}
 
 function FloatingLeaf({ startX, driftX, duration, delay, size, rotate, opacity }: Omit<LeafProps, "id">) {
   return (
@@ -84,6 +93,7 @@ function FloatingLeaf({ startX, driftX, duration, delay, size, rotate, opacity }
 
 export default function Home() {
   const todayStr = format(new Date(), "yyyy-MM-dd");
+  const leafConfig = useMemo(() => generateLeafConfig(6), []);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -224,7 +234,7 @@ export default function Home() {
               />
 
               {/* Floating leaf particles */}
-              {LEAF_CONFIG.map((leaf) => (
+              {leafConfig.map((leaf) => (
                 <FloatingLeaf key={leaf.id} {...leaf} />
               ))}
 
