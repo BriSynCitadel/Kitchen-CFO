@@ -1,39 +1,55 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
-import { useGetProfile, useUpdateProfile } from "@workspace/api-client-react";
+import {
+  useGetProfile,
+  useUpdateProfile,
+  getGetProfileQueryKey,
+  UpdateProfileRequestBloodType,
+  UpdateProfileRequestActivityLevel,
+} from "@workspace/api-client-react";
+import type { LabValues } from "@workspace/api-client-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { User, Activity, Droplet, FlaskConical, Zap, Check } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { getGetProfileQueryKey } from "@workspace/api-client-react";
 
 const DIETS = ["vegan", "vegetarian", "keto", "paleo", "gluten_free", "dairy_free", "low_fodmap", "carnivore"];
 const GOALS = ["weight_loss", "muscle_gain", "energy", "longevity", "gut_health", "hormone_balance", "anti_inflammatory"];
-const SYMPTOMS = [
+
+const SYMPTOMS: { id: string; label: string }[] = [
   { id: "fatigue", label: "Fatigue" },
   { id: "brain_fog", label: "Brain Fog" },
   { id: "inflammation", label: "Inflammation" },
   { id: "digestive_issues", label: "Digestive Issues" },
   { id: "poor_sleep", label: "Poor Sleep" },
   { id: "hormonal_imbalance", label: "Hormonal Imbalance" },
-  { id: "anxiety", label: "Anxiety" },
-  { id: "joint_pain", label: "Joint Pain" },
 ];
 
-const LAB_MARKERS = [
+interface LabMarker {
+  key: keyof LabValues;
+  label: string;
+  unit: string;
+  placeholder: string;
+  ref: string;
+}
+
+const LAB_MARKERS: LabMarker[] = [
   { key: "vitaminD", label: "Vitamin D", unit: "ng/mL", placeholder: "e.g. 35", ref: "30–80 optimal" },
   { key: "vitaminB12", label: "Vitamin B12", unit: "pg/mL", placeholder: "e.g. 450", ref: "300–900 optimal" },
   { key: "iron", label: "Serum Iron", unit: "mcg/dL", placeholder: "e.g. 90", ref: "60–170 normal" },
   { key: "ferritin", label: "Ferritin", unit: "ng/mL", placeholder: "e.g. 50", ref: "20–200 normal" },
-  { key: "crp", label: "CRP (Inflammation)", unit: "mg/L", placeholder: "e.g. 1.2", ref: "<3.0 normal" },
+  { key: "crp", label: "CRP", unit: "mg/L", placeholder: "e.g. 1.2", ref: "<3.0 normal" },
   { key: "glucose", label: "Fasting Glucose", unit: "mg/dL", placeholder: "e.g. 90", ref: "<100 normal" },
+  { key: "totalCholesterol", label: "Total Cholesterol", unit: "mg/dL", placeholder: "e.g. 180", ref: "<200 optimal" },
+  { key: "ldl", label: "LDL Cholesterol", unit: "mg/dL", placeholder: "e.g. 100", ref: "<130 normal" },
+  { key: "hdl", label: "HDL Cholesterol", unit: "mg/dL", placeholder: "e.g. 55", ref: ">40 (M) / >50 (F)" },
   { key: "magnesium", label: "Magnesium", unit: "mg/dL", placeholder: "e.g. 2.0", ref: "1.7–2.2 normal" },
   { key: "zinc", label: "Zinc", unit: "mcg/dL", placeholder: "e.g. 90", ref: "60–130 normal" },
 ];
 
-function SectionHeader({ icon: Icon, label, color = "text-primary" }: { icon: any; label: string; color?: string }) {
+function SectionHeader({ icon: Icon, label, color = "text-primary" }: { icon: React.ElementType; label: string; color?: string }) {
   return (
     <div className="flex items-center gap-2 mb-3">
       <Icon className={`w-5 h-5 ${color}`} />
@@ -79,31 +95,31 @@ export default function Profile() {
     age: "",
     weightKg: "",
     heightCm: "",
-    bloodType: "O+" as string,
-    activityLevel: "moderately_active" as string,
+    bloodType: UpdateProfileRequestBloodType["O+"] as UpdateProfileRequestBloodType,
+    activityLevel: UpdateProfileRequestActivityLevel.moderately_active as UpdateProfileRequestActivityLevel,
     dietaryPreferences: [] as string[],
     healthGoals: [] as string[],
     symptoms: [] as string[],
-    labValues: {} as Record<string, string>,
+    labValues: {} as Record<keyof LabValues, string>,
   });
 
   useEffect(() => {
     if (profile) {
-      const labStr: Record<string, string> = {};
+      const labStr = {} as Record<keyof LabValues, string>;
       if (profile.labValues) {
-        for (const [k, v] of Object.entries(profile.labValues)) {
+        for (const [k, v] of Object.entries(profile.labValues) as [keyof LabValues, number | null | undefined][]) {
           if (v != null) labStr[k] = String(v);
         }
       }
       setFormData({
-        age: profile.age?.toString() || "",
-        weightKg: profile.weightKg?.toString() || "",
-        heightCm: profile.heightCm?.toString() || "",
-        bloodType: profile.bloodType || "O+",
-        activityLevel: profile.activityLevel || "moderately_active",
-        dietaryPreferences: profile.dietaryPreferences || [],
-        healthGoals: profile.healthGoals || [],
-        symptoms: profile.symptoms || [],
+        age: profile.age?.toString() ?? "",
+        weightKg: profile.weightKg?.toString() ?? "",
+        heightCm: profile.heightCm?.toString() ?? "",
+        bloodType: (profile.bloodType ?? UpdateProfileRequestBloodType["O+"]) as UpdateProfileRequestBloodType,
+        activityLevel: (profile.activityLevel ?? UpdateProfileRequestActivityLevel.moderately_active) as UpdateProfileRequestActivityLevel,
+        dietaryPreferences: profile.dietaryPreferences ?? [],
+        healthGoals: profile.healthGoals ?? [],
+        symptoms: profile.symptoms ?? [],
         labValues: labStr,
       });
     }
@@ -118,14 +134,14 @@ export default function Profile() {
     }));
   };
 
-  const setLabValue = (key: string, val: string) => {
+  const setLabValue = (key: keyof LabValues, val: string) => {
     setFormData((prev) => ({ ...prev, labValues: { ...prev.labValues, [key]: val } }));
   };
 
   const handleSave = () => {
-    const labValuesNumeric: Record<string, number | null> = {};
-    for (const [k, v] of Object.entries(formData.labValues)) {
-      labValuesNumeric[k] = v !== "" ? parseFloat(v) : null;
+    const labValuesTyped: LabValues = {};
+    for (const [k, v] of Object.entries(formData.labValues) as [keyof LabValues, string][]) {
+      labValuesTyped[k] = v !== "" ? parseFloat(v) : null;
     }
 
     updateMutation.mutate({
@@ -133,12 +149,12 @@ export default function Profile() {
         age: formData.age ? parseInt(formData.age) : null,
         weightKg: formData.weightKg ? parseFloat(formData.weightKg) : null,
         heightCm: formData.heightCm ? parseFloat(formData.heightCm) : null,
-        bloodType: formData.bloodType as any,
-        activityLevel: formData.activityLevel as any,
+        bloodType: formData.bloodType,
+        activityLevel: formData.activityLevel,
         dietaryPreferences: formData.dietaryPreferences,
         healthGoals: formData.healthGoals,
         symptoms: formData.symptoms,
-        labValues: labValuesNumeric as any,
+        labValues: labValuesTyped,
       },
     });
   };
@@ -172,42 +188,32 @@ export default function Profile() {
                     onChange={(e) => setFormData((f) => ({ ...f, weightKg: e.target.value }))}
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Height (cm)</label>
-                  <Input
-                    type="number"
-                    placeholder="e.g. 175"
-                    value={formData.heightCm}
-                    onChange={(e) => setFormData((f) => ({ ...f, heightCm: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Blood Type</label>
-                  <select
-                    className="flex h-10 w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:border-primary"
-                    value={formData.bloodType}
-                    onChange={(e) => setFormData((f) => ({ ...f, bloodType: e.target.value }))}
-                  >
-                    {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bt) => (
-                      <option key={bt} value={bt}>{bt}</option>
-                    ))}
-                  </select>
-                </div>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Height (cm)</label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 175"
+                  value={formData.heightCm}
+                  onChange={(e) => setFormData((f) => ({ ...f, heightCm: e.target.value }))}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Activity Level</label>
                 <select
                   className="flex h-10 w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:border-primary"
                   value={formData.activityLevel}
-                  onChange={(e) => setFormData((f) => ({ ...f, activityLevel: e.target.value }))}
+                  onChange={(e) => setFormData((f) => ({ ...f, activityLevel: e.target.value as UpdateProfileRequestActivityLevel }))}
                 >
-                  {[
-                    { v: "sedentary", l: "Sedentary (desk job, no exercise)" },
-                    { v: "lightly_active", l: "Lightly Active (1-2×/week)" },
-                    { v: "moderately_active", l: "Moderately Active (3-5×/week)" },
-                    { v: "very_active", l: "Very Active (6-7×/week)" },
-                    { v: "extremely_active", l: "Extremely Active (athlete)" },
-                  ].map(({ v, l }) => (
+                  {(
+                    [
+                      { v: UpdateProfileRequestActivityLevel.sedentary, l: "Sedentary (desk job, no exercise)" },
+                      { v: UpdateProfileRequestActivityLevel.lightly_active, l: "Lightly Active (1-2×/week)" },
+                      { v: UpdateProfileRequestActivityLevel.moderately_active, l: "Moderately Active (3-5×/week)" },
+                      { v: UpdateProfileRequestActivityLevel.very_active, l: "Very Active (6-7×/week)" },
+                      { v: UpdateProfileRequestActivityLevel.extremely_active, l: "Extremely Active (athlete)" },
+                    ] as const
+                  ).map(({ v, l }) => (
                     <option key={v} value={v}>{l}</option>
                   ))}
                 </select>
@@ -216,25 +222,63 @@ export default function Profile() {
           </Card>
         </section>
 
-        {/* ── HEALTH GOALS ── */}
+        {/* ── BIOLOGY ── */}
         <section>
-          <SectionHeader icon={Activity} label="Health Goals" color="text-accent" />
-          <div className="flex flex-wrap gap-2">
-            {GOALS.map((goal) => (
-              <ToggleChip
-                key={goal}
-                active={formData.healthGoals.includes(goal)}
-                onClick={() => toggleChip("healthGoals", goal)}
-              >
-                {goal.replace(/_/g, " ")}
-              </ToggleChip>
-            ))}
-          </div>
+          <SectionHeader icon={Droplet} label="Biology" color="text-red-400" />
+          <Card>
+            <CardContent className="p-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Blood Type</label>
+                <select
+                  className="flex h-10 w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:border-primary"
+                  value={formData.bloodType}
+                  onChange={(e) => setFormData((f) => ({ ...f, bloodType: e.target.value as UpdateProfileRequestBloodType }))}
+                >
+                  {(Object.values(UpdateProfileRequestBloodType) as UpdateProfileRequestBloodType[]).map((bt) => (
+                    <option key={bt} value={bt}>{bt}</option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-muted-foreground mt-1">Used to tailor specific nutrient recommendations.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* ── LAB RESULTS ── */}
+        <section>
+          <SectionHeader icon={FlaskConical} label="Lab Results" color="text-violet-500" />
+          <p className="text-xs text-muted-foreground mb-3 -mt-1">
+            Enter your most recent bloodwork. AI will flag out-of-range values and suggest targeted foods.
+          </p>
+          <Card>
+            <CardContent className="p-4">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+                {LAB_MARKERS.map(({ key, label, unit, placeholder, ref }) => (
+                  <div key={key} className="space-y-1">
+                    <label className="text-xs font-semibold text-foreground">{label}</label>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        placeholder={placeholder}
+                        value={formData.labValues[key] ?? ""}
+                        onChange={(e) => setLabValue(key, e.target.value)}
+                        className="pr-14 text-sm h-10"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground font-medium pointer-events-none">
+                        {unit}
+                      </span>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground/70 leading-tight">{ref}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </section>
 
         {/* ── DIETARY PREFERENCES ── */}
         <section>
-          <SectionHeader icon={Droplet} label="Dietary Preferences" color="text-blue-400" />
+          <SectionHeader icon={Activity} label="Dietary Preferences" color="text-accent" />
           <div className="flex flex-wrap gap-2">
             {DIETS.map((diet) => (
               <ToggleChip
@@ -243,6 +287,22 @@ export default function Profile() {
                 onClick={() => toggleChip("dietaryPreferences", diet)}
               >
                 {diet.replace(/_/g, " ")}
+              </ToggleChip>
+            ))}
+          </div>
+        </section>
+
+        {/* ── HEALTH GOALS ── */}
+        <section>
+          <SectionHeader icon={Activity} label="Health Goals" color="text-primary" />
+          <div className="flex flex-wrap gap-2">
+            {GOALS.map((goal) => (
+              <ToggleChip
+                key={goal}
+                active={formData.healthGoals.includes(goal)}
+                onClick={() => toggleChip("healthGoals", goal)}
+              >
+                {goal.replace(/_/g, " ")}
               </ToggleChip>
             ))}
           </div>
@@ -265,38 +325,6 @@ export default function Profile() {
               </ToggleChip>
             ))}
           </div>
-        </section>
-
-        {/* ── LAB VALUES ── */}
-        <section>
-          <SectionHeader icon={FlaskConical} label="Lab Results" color="text-violet-500" />
-          <p className="text-xs text-muted-foreground mb-3 -mt-1">
-            Enter your most recent bloodwork. AI will flag out-of-range values and suggest targeted foods.
-          </p>
-          <Card>
-            <CardContent className="p-4">
-              <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-                {LAB_MARKERS.map(({ key, label, unit, placeholder, ref }) => (
-                  <div key={key} className="space-y-1">
-                    <label className="text-xs font-semibold text-foreground">{label}</label>
-                    <div className="relative">
-                      <Input
-                        type="number"
-                        placeholder={placeholder}
-                        value={formData.labValues[key] || ""}
-                        onChange={(e) => setLabValue(key, e.target.value)}
-                        className="pr-14 text-sm h-10"
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground font-medium pointer-events-none">
-                        {unit}
-                      </span>
-                    </div>
-                    <p className="text-[9px] text-muted-foreground/70 leading-tight">{ref}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </section>
 
         {/* ── SAVE ── */}
