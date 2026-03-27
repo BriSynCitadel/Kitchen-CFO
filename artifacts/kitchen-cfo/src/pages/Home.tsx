@@ -165,6 +165,8 @@ export default function Home() {
       }
     } catch {
       toast({ title: "Couldn't load demo data", description: "Please try again.", variant: "destructive" });
+    } finally {
+      setDemoLoading(false);
     }
     if (succeeded) {
       dismissWelcome();
@@ -178,7 +180,6 @@ export default function Home() {
         description: "Explore your diary, kitchen, and personalized recommendations.",
       });
     }
-    setDemoLoading(false);
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,7 +236,7 @@ export default function Home() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: "spring", stiffness: 340, damping: 30 }}
-              className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl px-6 pt-6 pb-6 shadow-2xl max-h-[85vh] overflow-y-auto"
+              className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl px-6 pt-6 pb-10 sm:pb-6 shadow-2xl max-h-[85vh] overflow-y-auto"
             >
               <div className="w-10 h-1 bg-border rounded-full mx-auto mb-6 sm:hidden" />
 
