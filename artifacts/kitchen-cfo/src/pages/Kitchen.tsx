@@ -101,8 +101,10 @@ export default function Kitchen() {
     if (!file) return;
     e.target.value = "";
 
-    const objectUrl = URL.createObjectURL(file);
-    setImagePreview(objectUrl);
+    setImagePreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
     setScanState("analyzing");
     setScannedItems([]);
 
@@ -219,6 +221,7 @@ export default function Kitchen() {
   };
 
   const cancelScan = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
     setScanState("idle");
     setImagePreview(null);
     setScannedItems([]);
