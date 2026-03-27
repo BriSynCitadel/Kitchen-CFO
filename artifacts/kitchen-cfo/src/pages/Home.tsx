@@ -53,9 +53,12 @@ export default function Home() {
   const { data: summary, isLoading: loadingSummary } = useGetFoodLogSummary({ date: todayStr });
   const { data: logsData, isLoading: loadingLogs } = useGetFoodLogs({ date: todayStr });
 
-  const recentLogs = (logsData?.logs ?? []).slice(-3).reverse();
+  const recentLogs = (logsData?.logs ?? []).slice(0, 3);
   const microCount = Object.values(summary?.micronutrientTotals ?? {}).filter((v) => v && v > 0).length;
-  const hasAnyData = (summary?.totalCalories ?? 0) > 0;
+  const hasAnyData =
+    (summary?.totalCalories ?? 0) > 0 ||
+    (summary?.totalProtein ?? 0) > 0 ||
+    microCount > 0;
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
