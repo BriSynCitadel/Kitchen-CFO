@@ -148,11 +148,20 @@ export default function Home() {
 
   const handleLoadDemo = async () => {
     setDemoLoading(true);
+    const attemptLoad = () => fetch("/api/demo/load", { method: "POST" });
     try {
-      const res = await fetch("/api/demo/load", { method: "POST" });
-      if (!res.ok) throw new Error("Failed");
+      let res = await attemptLoad();
+      if (!res.ok) {
+        await new Promise((r) => setTimeout(r, 1500));
+        res = await attemptLoad();
+        if (!res.ok) throw new Error("Failed");
+      }
       dismissWelcome();
-      await queryClient.invalidateQueries();
+      try {
+        await queryClient.invalidateQueries();
+      } catch {
+        // query refresh failure should not block the success toast
+      }
       toast({
         title: "Demo data loaded!",
         description: "Explore your diary, kitchen, and personalized recommendations.",
@@ -211,16 +220,16 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
           >
             <motion.div
               initial={{ y: 80, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: "spring", stiffness: 340, damping: 30 }}
-              className="w-full max-w-md bg-card rounded-t-3xl px-6 pt-6 pb-10 shadow-2xl"
+              className="w-full max-w-md bg-card rounded-t-3xl sm:rounded-3xl px-6 pt-6 pb-6 sm:pb-8 shadow-2xl max-h-[85vh] overflow-y-auto"
             >
-              <div className="w-10 h-1 bg-border rounded-full mx-auto mb-6" />
+              <div className="w-10 h-1 bg-border rounded-full mx-auto mb-6 sm:hidden" />
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0">
