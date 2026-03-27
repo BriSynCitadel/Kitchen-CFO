@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Layout & Components
 import { BottomNav } from "@/components/layout/BottomNav";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
 import NotFound from "@/pages/not-found";
 
 // Pages
@@ -38,11 +39,12 @@ function Router() {
         <Route component={NotFound} />
       </Switch>
       
-      {/* Show bottom nav on main app routes */}
+      {/* Show bottom nav and feedback widget on main app routes */}
       <Switch>
         <Route path="/settings" /> {/* Hide on settings */}
         <Route>
           <BottomNav />
+          <FeedbackWidget />
         </Route>
       </Switch>
     </div>

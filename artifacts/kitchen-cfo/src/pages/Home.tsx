@@ -1,12 +1,14 @@
 import { useState, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
-import { Camera, Upload, Utensils, X, Sparkles, ChevronRight, Flame, Beef, Wheat, Leaf } from "lucide-react";
+import { Camera, Upload, Utensils, X, Sparkles, ChevronRight, Flame, Beef, Wheat, Leaf, FlaskConical } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useAnalyzeFood,
   useCreateFoodLog,
   useGetFoodLogs,
   useGetFoodLogSummary,
+  useGetInventory,
 } from "@workspace/api-client-react";
 import { compressImage, fileToBase64, formatNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -96,11 +98,14 @@ export default function Home() {
   const leafConfig = useMemo(() => generateLeafConfig(6), []);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<FoodAnalysisResult | null>(null);
+  const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem("cfo_welcomed"));
+  const [demoLoading, setDemoLoading] = useState(false);
 
   const analyzeMutation = useAnalyzeFood();
   const createLogMutation = useCreateFoodLog({
@@ -119,6 +124,7 @@ export default function Home() {
 
   const { data: summary, isLoading: loadingSummary } = useGetFoodLogSummary({ date: todayStr });
   const { data: logsData, isLoading: loadingLogs } = useGetFoodLogs({ date: todayStr });
+  const { data: inventoryData, isLoading: loadingInventory } = useGetInventory();
 
   const recentLogs = (logsData?.logs ?? []).slice(0, 3);
   const microCount = Object.values(summary?.micronutrientTotals ?? {}).filter((v) => v && v > 0).length;
@@ -126,6 +132,37 @@ export default function Home() {
     (summary?.totalCalories ?? 0) > 0 ||
     (summary?.totalProtein ?? 0) > 0 ||
     microCount > 0;
+
+  const isEmptyState =
+    !loadingSummary &&
+    !loadingInventory &&
+    (summary?.totalCalories ?? 0) === 0 &&
+    (inventoryData?.items?.length ?? 0) === 0;
+
+  const shouldShowWelcome = showWelcome && isEmptyState;
+
+  const dismissWelcome = () => {
+    localStorage.setItem("cfo_welcomed", "1");
+    setShowWelcome(false);
+  };
+
+  const handleLoadDemo = async () => {
+    setDemoLoading(true);
+    try {
+      const res = await fetch("/api/demo/load", { method: "POST" });
+      if (!res.ok) throw new Error("Failed");
+      dismissWelcome();
+      await queryClient.invalidateQueries();
+      toast({
+        title: "Demo data loaded!",
+        description: "Explore your diary, kitchen, and personalized recommendations.",
+      });
+    } catch {
+      toast({ title: "Couldn't load demo data", description: "Please try again.", variant: "destructive" });
+    } finally {
+      setDemoLoading(false);
+    }
+  };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -165,6 +202,69 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)] relative max-w-md mx-auto overflow-x-hidden">
+
+      {/* Welcome / Demo overlay */}
+      <AnimatePresence>
+        {shouldShowWelcome && (
+          <motion.div
+            key="welcome"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center"
+          >
+            <motion.div
+              initial={{ y: 80, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 80, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 340, damping: 30 }}
+              className="w-full max-w-md bg-card rounded-t-3xl px-6 pt-6 pb-10 shadow-2xl"
+            >
+              <div className="w-10 h-1 bg-border rounded-full mx-auto mb-6" />
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0">
+                  <FlaskConical className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="font-display font-bold text-lg leading-tight">Welcome to Kitchen CFO</h2>
+                  <p className="text-xs text-muted-foreground font-medium">Your personal food intelligence app</p>
+                </div>
+              </div>
+
+              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                The first app that connects your bloodwork to your kitchen — scan food photos, track full micronutrients, and get personalized recommendations based on your lab results.
+              </p>
+
+              <div className="space-y-3">
+                <Button
+                  className="w-full h-12 text-base font-semibold"
+                  onClick={handleLoadDemo}
+                  disabled={demoLoading}
+                >
+                  {demoLoading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                      Loading demo…
+                    </span>
+                  ) : (
+                    "Load Demo Data"
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full h-11"
+                  onClick={dismissWelcome}
+                  disabled={demoLoading}
+                >
+                  Explore the App
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Hidden file inputs */}
       <input
         type="file"

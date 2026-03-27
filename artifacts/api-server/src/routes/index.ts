@@ -6,6 +6,8 @@ import profileRouter from "./profile";
 import inventoryRouter from "./inventory";
 import recommendationsRouter from "./recommendations";
 import settingsRouter from "./settings";
+import demoRouter from "./demo";
+import feedbackRouter from "./feedback";
 
 const router: IRouter = Router();
 
@@ -16,5 +18,7 @@ router.use(profileRouter);
 router.use(inventoryRouter);
 router.use(recommendationsRouter);
 router.use(settingsRouter);
+router.use(demoRouter);
+router.use(feedbackRouter);
 
 export default router;
