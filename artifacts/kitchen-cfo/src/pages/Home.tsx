@@ -105,7 +105,6 @@ export default function Home() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<FoodAnalysisResult | null>(null);
   const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem("cfo_welcomed"));
-  const [demoLoading, setDemoLoading] = useState(false);
 
   const analyzeMutation = useAnalyzeFood();
   const createLogMutation = useCreateFoodLog({
@@ -147,37 +146,43 @@ export default function Home() {
   };
 
   const handleLoadDemo = async () => {
-    setDemoLoading(true);
-    const attemptLoad = async () => {
-      const res = await fetch("/api/demo/load", { method: "POST" });
-      if (!res.ok) throw new Error("non-ok");
-      return res;
-    };
+    dismissWelcome();
+
+    const attemptLoad = () => fetch("/api/demo/load", { method: "POST" });
+    const MAX_ATTEMPTS = 3;
+    const RETRY_DELAY_MS = 3000;
+
     let succeeded = false;
-    try {
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
-        await attemptLoad();
-        succeeded = true;
+        const res = await attemptLoad();
+        if (res.ok) {
+          succeeded = true;
+          break;
+        }
       } catch {
-        await new Promise((r) => setTimeout(r, 1500));
-        await attemptLoad();
-        succeeded = true;
+        // network error — will retry
       }
-    } catch {
-      toast({ title: "Couldn't load demo data", description: "Please try again.", variant: "destructive" });
-    } finally {
-      setDemoLoading(false);
+      if (attempt < MAX_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+      }
     }
+
     if (succeeded) {
-      dismissWelcome();
       try {
         await queryClient.invalidateQueries();
       } catch {
-        // query refresh failure should not block the success toast
+        // cache refresh failure should not block the success toast
       }
       toast({
         title: "Demo data loaded!",
         description: "Explore your diary, kitchen, and personalized recommendations.",
+      });
+    } else {
+      toast({
+        title: "Demo data couldn't load",
+        description: "The app is yours to explore — try reloading if data is missing.",
+        variant: "destructive",
       });
     }
   };
@@ -258,22 +263,13 @@ export default function Home() {
                 <Button
                   className="w-full h-12 text-base font-semibold"
                   onClick={handleLoadDemo}
-                  disabled={demoLoading}
                 >
-                  {demoLoading ? (
-                    <span className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                      Loading demo…
-                    </span>
-                  ) : (
-                    "Load Demo Data"
-                  )}
+                  Load Demo Data
                 </Button>
                 <Button
                   variant="outline"
                   className="w-full h-11"
                   onClick={dismissWelcome}
-                  disabled={demoLoading}
                 >
                   Explore the App
                 </Button>
