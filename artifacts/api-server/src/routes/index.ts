@@ -8,6 +8,7 @@ import recommendationsRouter from "./recommendations";
 import settingsRouter from "./settings";
 import demoRouter from "./demo";
 import feedbackRouter from "./feedback";
+import quantitySuggestionsRouter from "./quantity-suggestions";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(recommendationsRouter);
 router.use(settingsRouter);
 router.use(demoRouter);
 router.use(feedbackRouter);
+router.use(quantitySuggestionsRouter);
 
 export default router;

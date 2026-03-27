@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import {
   useGetInventory,
@@ -56,6 +56,7 @@ interface ScannedItem {
   name: string;
   quantity: string;
   category: string;
+  notes: string;
   selected: boolean;
 }
 
@@ -78,6 +79,8 @@ export default function Kitchen() {
   const [formName, setFormName] = useState("");
   const [formCategory, setFormCategory] = useState("produce");
   const [formQuantity, setFormQuantity] = useState("");
+  const [quantitySuggestions, setQuantitySuggestions] = useState<string[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   const analyzeMutation = useAnalyzeFood();
 
@@ -122,6 +125,7 @@ export default function Kitchen() {
                 name: item.name!,
                 quantity: item.quantity ?? "",
                 category: item.category ?? "other",
+                notes: "",
                 selected: true,
               }));
 
@@ -161,9 +165,44 @@ export default function Kitchen() {
     }
   };
 
+  useEffect(() => {
+    const trimmed = formName.trim();
+    if (trimmed.length < 3) {
+      setQuantitySuggestions([]);
+      setLoadingSuggestions(false);
+      return;
+    }
+
+    setLoadingSuggestions(true);
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/quantity-suggestions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ itemName: trimmed }),
+        });
+        if (!res.ok) throw new Error("Request failed");
+        const data = await res.json();
+        setQuantitySuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
+      } catch {
+        setQuantitySuggestions([]);
+      } finally {
+        setLoadingSuggestions(false);
+      }
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [formName]);
+
   const toggleItem = (idx: number) => {
     setScannedItems((prev) =>
       prev.map((item, i) => (i === idx ? { ...item, selected: !item.selected } : item))
+    );
+  };
+
+  const updateItemField = (idx: number, field: "quantity" | "notes", value: string) => {
+    setScannedItems((prev) =>
+      prev.map((item, i) => (i === idx ? { ...item, [field]: value } : item))
     );
   };
 
@@ -186,6 +225,7 @@ export default function Kitchen() {
               category: (item.category || "other") as CreateInventoryItemRequestCategory,
               quantity: item.quantity || null,
               unit: null,
+              notes: item.notes.trim() || null,
             },
           },
           {
@@ -254,6 +294,7 @@ export default function Kitchen() {
             setFormName("");
             setFormQuantity("");
             setFormCategory("produce");
+            setQuantitySuggestions([]);
             setShowAddForm(false);
           }
         },
@@ -315,28 +356,51 @@ export default function Kitchen() {
 
           <div className="space-y-2">
             {scannedItems.map((item, idx) => (
-              <button
+              <div
                 key={idx}
-                type="button"
-                onClick={() => toggleItem(idx)}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left
-                  ${item.selected
+                className={`rounded-xl border-2 transition-all ${
+                  item.selected
                     ? "border-primary bg-primary/5"
-                    : "border-border bg-card opacity-50"}`}
+                    : "border-border bg-card opacity-50"
+                }`}
               >
-                <div
-                  className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors
-                    ${item.selected ? "border-primary bg-primary" : "border-border"}`}
+                {/* Toggle row: checkbox + name + category */}
+                <button
+                  type="button"
+                  onClick={() => toggleItem(idx)}
+                  className="w-full flex items-center gap-3 p-3 text-left"
                 >
-                  {item.selected && <Check className="w-3 h-3 text-white" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">{item.name}</p>
-                  <p className="text-xs text-muted-foreground capitalize">
-                    {item.category}{item.quantity ? ` · ${item.quantity}` : ""}
-                  </p>
-                </div>
-              </button>
+                  <div
+                    className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                      item.selected ? "border-primary bg-primary" : "border-border"
+                    }`}
+                  >
+                    {item.selected && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{item.name}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{item.category}</p>
+                  </div>
+                </button>
+
+                {/* Editable quantity + notes – only shown when selected */}
+                {item.selected && (
+                  <div className="px-3 pb-3 space-y-1.5">
+                    <Input
+                      className="h-8 text-sm"
+                      placeholder="Quantity"
+                      value={item.quantity}
+                      onChange={(e) => updateItemField(idx, "quantity", e.target.value)}
+                    />
+                    <Input
+                      className="h-8 text-sm placeholder:text-muted-foreground/60"
+                      placeholder="e.g. more in garage, partial box"
+                      value={item.notes}
+                      onChange={(e) => updateItemField(idx, "notes", e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 
@@ -443,12 +507,31 @@ export default function Kitchen() {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Quantity (optional)</label>
+                  <label className="text-xs font-medium text-muted-foreground">
+                    Quantity (optional)
+                    {loadingSuggestions && (
+                      <span className="ml-1 text-primary/60 animate-pulse">·</span>
+                    )}
+                  </label>
                   <Input
                     placeholder="e.g. 1 litre"
                     value={formQuantity}
                     onChange={(e) => setFormQuantity(e.target.value)}
                   />
+                  {quantitySuggestions.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-0.5">
+                      {quantitySuggestions.map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setFormQuantity(s)}
+                          className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-all border border-primary/20"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex gap-2 pt-1">
@@ -460,6 +543,7 @@ export default function Kitchen() {
                     setShowAddForm(false);
                     setFormName("");
                     setFormQuantity("");
+                    setQuantitySuggestions([]);
                   }}
                 >
                   Cancel
