@@ -718,9 +718,29 @@ components:
           type: number
           description: Serum Vitamin D ng/mL
           nullable: true
+        vitaminB12:
+          type: number
+          description: Vitamin B12 pg/mL
+          nullable: true
+        iron:
+          type: number
+          description: Serum iron mcg/dL
+          nullable: true
         ferritin:
           type: number
           description: Ferritin ng/mL
+          nullable: true
+        crp:
+          type: number
+          description: C-Reactive Protein mg/L
+          nullable: true
+        magnesium:
+          type: number
+          description: Serum magnesium mg/dL
+          nullable: true
+        zinc:
+          type: number
+          description: Serum zinc mcg/dL
           nullable: true
         tsh:
           type: number
@@ -775,6 +795,11 @@ components:
         labValues:
           $ref: "#/components/schemas/LabValues"
           nullable: true
+        symptoms:
+          type: array
+          items:
+            type: string
+          description: e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance
         dailyCalorieTarget:
           type: number
           nullable: true
@@ -790,6 +815,7 @@ components:
         - healthGoals
         - allergies
         - medicalConditions
+        - symptoms
         - createdAt
         - updatedAt
 
@@ -836,6 +862,11 @@ components:
         labValues:
           $ref: "#/components/schemas/LabValues"
           nullable: true
+        symptoms:
+          type: array
+          items:
+            type: string
+          description: e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance
         dailyCalorieTarget:
           type: number
           nullable: true

@@ -15,6 +15,7 @@ export const profilesTable = pgTable("profiles", {
   allergies: jsonb("allergies").$type<string[]>().default([]).notNull(),
   medicalConditions: jsonb("medical_conditions").$type<string[]>().default([]).notNull(),
   labValues: jsonb("lab_values").$type<Record<string, number | null>>(),
+  symptoms: jsonb("symptoms").$type<string[]>().default([]).notNull(),
   dailyCalorieTarget: real("daily_calorie_target"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

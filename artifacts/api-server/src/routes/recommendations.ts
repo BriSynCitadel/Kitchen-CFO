@@ -31,6 +31,7 @@ async function buildRecommendationPrompt(): Promise<{
         healthGoals: profile.healthGoals,
         allergies: profile.allergies,
         medicalConditions: profile.medicalConditions,
+        symptoms: profile.symptoms,
         dailyCalorieTarget: profile.dailyCalorieTarget,
         labValues: profile.labValues,
       }
@@ -41,7 +42,7 @@ async function buildRecommendationPrompt(): Promise<{
     .join(", ");
   const recentFoods = recentLogs.map((l) => l.foodName).join(", ");
 
-  const prompt = `You are a personalized nutrition advisor. Based on the following user data, generate 6 food recommendations.
+  const prompt = `You are a functional medicine nutrition advisor specializing in bioindividual nutrition. Based on the following user data, generate 6 highly personalized food and nutrient recommendations.
 
 USER PROFILE:
 ${JSON.stringify(profileSummary, null, 2)}
@@ -52,20 +53,20 @@ ${inventorySummary || "No items logged yet"}
 RECENTLY EATEN (last 3 days):
 ${recentFoods || "No recent logs"}
 
-Generate exactly 6 recommendations that:
-1. Align with their dietary preferences and health goals
-2. Account for their blood type and any medical conditions
-3. Prioritize ingredients they already have in their kitchen
-4. Address any nutritional gaps based on recent eating patterns
-5. Are varied (mix of meals and snacks)
+IMPORTANT ANALYSIS RULES:
+1. LAB VALUES: If labValues are present, identify which markers may be suboptimal based on standard reference ranges (e.g. Vitamin D < 30 ng/mL is insufficient; B12 < 300 pg/mL is low; ferritin < 20 ng/mL is low; CRP > 3 mg/L indicates inflammation; fasting glucose > 100 mg/dL is prediabetic). For each out-of-range marker, prioritize foods that are clinically proven to improve that marker. Name the specific marker in the "reason" field.
+2. SYMPTOMS: If symptoms are listed (fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance), prioritize foods and nutrients with evidence-based support for those symptoms. For example: fatigue → iron, B12, CoQ10-rich foods; brain_fog → omega-3, B vitamins, antioxidants; inflammation → turmeric, omega-3, leafy greens; digestive_issues → fermented foods, fiber, prebiotics; poor_sleep → magnesium, tryptophan, complex carbs; hormonal_imbalance → cruciferous vegetables, flaxseed, zinc-rich foods.
+3. DIETARY PREFERENCES & ALLERGIES: Strictly respect dietary restrictions and allergies.
+4. KITCHEN FIRST: Prioritize recipes using ingredients already in their inventory.
+5. VARIETY: Include a mix of meals, snacks, specific ingredients, and nutrient tips.
 
-Return ONLY valid JSON in this exact format:
+Generate exactly 6 recommendations. Return ONLY valid JSON in this exact format:
 {
   "recommendations": [
     {
       "title": "Recommendation title",
       "description": "1-2 sentence description of the food/meal",
-      "reason": "Specific reason why this is good for them based on their profile",
+      "reason": "Specific reason referencing their lab value, symptom, or health goal — be precise and personal",
       "category": "meal|snack|ingredient|nutrient_tip",
       "ingredients": ["ingredient1", "ingredient2"],
       "priority": "high|medium|low"
@@ -73,7 +74,7 @@ Return ONLY valid JSON in this exact format:
   ]
 }
 
-Prioritize high-value recommendations specific to their health goals and what's in their kitchen.`;
+Assign "high" priority to recommendations that directly address lab values outside normal ranges or active symptoms. Be specific — mention the lab marker or symptom by name in the reason field.`;
 
   return {
     prompt,

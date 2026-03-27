@@ -231,8 +231,18 @@ export interface LabValues {
   triglycerides?: number | null;
   /** Serum Vitamin D ng/mL */
   vitaminD?: number | null;
+  /** Vitamin B12 pg/mL */
+  vitaminB12?: number | null;
+  /** Serum iron mcg/dL */
+  iron?: number | null;
   /** Ferritin ng/mL */
   ferritin?: number | null;
+  /** C-Reactive Protein mg/L */
+  crp?: number | null;
+  /** Serum magnesium mg/dL */
+  magnesium?: number | null;
+  /** Serum zinc mcg/dL */
+  zinc?: number | null;
   /** TSH mIU/L */
   tsh?: number | null;
 }
@@ -291,6 +301,8 @@ export interface NutritionProfile {
   /** e.g. diabetes_type2, hypertension, celiac */
   medicalConditions: string[];
   labValues?: LabValues | null;
+  /** e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance */
+  symptoms: string[];
   dailyCalorieTarget?: number | null;
   createdAt: string;
   updatedAt: string;
@@ -346,6 +358,8 @@ export interface UpdateProfileRequest {
   allergies?: string[];
   medicalConditions?: string[];
   labValues?: LabValues | null;
+  /** e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance */
+  symptoms?: string[];
   dailyCalorieTarget?: number | null;
 }
 

@@ -410,10 +410,20 @@ export const GetProfileResponse = zod.object({
       hdl: zod.number().nullish().describe("HDL cholesterol mg\/dL"),
       triglycerides: zod.number().nullish().describe("Triglycerides mg\/dL"),
       vitaminD: zod.number().nullish().describe("Serum Vitamin D ng\/mL"),
+      vitaminB12: zod.number().nullish().describe("Vitamin B12 pg\/mL"),
+      iron: zod.number().nullish().describe("Serum iron mcg\/dL"),
       ferritin: zod.number().nullish().describe("Ferritin ng\/mL"),
+      crp: zod.number().nullish().describe("C-Reactive Protein mg\/L"),
+      magnesium: zod.number().nullish().describe("Serum magnesium mg\/dL"),
+      zinc: zod.number().nullish().describe("Serum zinc mcg\/dL"),
       tsh: zod.number().nullish().describe("TSH mIU\/L"),
     })
     .nullish(),
+  symptoms: zod
+    .array(zod.string())
+    .describe(
+      "e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance",
+    ),
   dailyCalorieTarget: zod.number().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
@@ -455,10 +465,21 @@ export const UpdateProfileBody = zod.object({
       hdl: zod.number().nullish().describe("HDL cholesterol mg\/dL"),
       triglycerides: zod.number().nullish().describe("Triglycerides mg\/dL"),
       vitaminD: zod.number().nullish().describe("Serum Vitamin D ng\/mL"),
+      vitaminB12: zod.number().nullish().describe("Vitamin B12 pg\/mL"),
+      iron: zod.number().nullish().describe("Serum iron mcg\/dL"),
       ferritin: zod.number().nullish().describe("Ferritin ng\/mL"),
+      crp: zod.number().nullish().describe("C-Reactive Protein mg\/L"),
+      magnesium: zod.number().nullish().describe("Serum magnesium mg\/dL"),
+      zinc: zod.number().nullish().describe("Serum zinc mcg\/dL"),
       tsh: zod.number().nullish().describe("TSH mIU\/L"),
     })
     .nullish(),
+  symptoms: zod
+    .array(zod.string())
+    .optional()
+    .describe(
+      "e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance",
+    ),
   dailyCalorieTarget: zod.number().nullish(),
 });
 
@@ -504,10 +525,20 @@ export const UpdateProfileResponse = zod.object({
       hdl: zod.number().nullish().describe("HDL cholesterol mg\/dL"),
       triglycerides: zod.number().nullish().describe("Triglycerides mg\/dL"),
       vitaminD: zod.number().nullish().describe("Serum Vitamin D ng\/mL"),
+      vitaminB12: zod.number().nullish().describe("Vitamin B12 pg\/mL"),
+      iron: zod.number().nullish().describe("Serum iron mcg\/dL"),
       ferritin: zod.number().nullish().describe("Ferritin ng\/mL"),
+      crp: zod.number().nullish().describe("C-Reactive Protein mg\/L"),
+      magnesium: zod.number().nullish().describe("Serum magnesium mg\/dL"),
+      zinc: zod.number().nullish().describe("Serum zinc mcg\/dL"),
       tsh: zod.number().nullish().describe("TSH mIU\/L"),
     })
     .nullish(),
+  symptoms: zod
+    .array(zod.string())
+    .describe(
+      "e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance",
+    ),
   dailyCalorieTarget: zod.number().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),

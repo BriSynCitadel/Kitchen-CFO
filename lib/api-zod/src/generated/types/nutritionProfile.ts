@@ -26,6 +26,8 @@ export interface NutritionProfile {
   /** e.g. diabetes_type2, hypertension, celiac */
   medicalConditions: string[];
   labValues?: LabValues | null;
+  /** e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance */
+  symptoms: string[];
   dailyCalorieTarget?: number | null;
   createdAt: Date;
   updatedAt: Date;

@@ -22,5 +22,7 @@ export interface UpdateProfileRequest {
   allergies?: string[];
   medicalConditions?: string[];
   labValues?: LabValues | null;
+  /** e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance */
+  symptoms?: string[];
   dailyCalorieTarget?: number | null;
 }

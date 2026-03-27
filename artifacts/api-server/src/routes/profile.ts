@@ -17,6 +17,7 @@ async function getOrCreateProfile() {
       healthGoals: [],
       allergies: [],
       medicalConditions: [],
+      symptoms: [],
     })
     .returning();
 
@@ -58,6 +59,7 @@ router.put("/profile", async (req, res) => {
         allergies: data.allergies ?? existing.allergies,
         medicalConditions: data.medicalConditions ?? existing.medicalConditions,
         labValues: (data.labValues as Record<string, number | null>) ?? existing.labValues,
+        symptoms: data.symptoms ?? existing.symptoms,
         dailyCalorieTarget: data.dailyCalorieTarget ?? existing.dailyCalorieTarget,
         updatedAt: new Date(),
       })
