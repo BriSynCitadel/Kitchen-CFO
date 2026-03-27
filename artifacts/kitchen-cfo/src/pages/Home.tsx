@@ -189,7 +189,6 @@ export default function Home() {
       toast({
         title: "Demo data couldn't load",
         description: "The app is yours to explore — try reloading if data is missing.",
-        variant: "destructive",
       });
     }
   };
