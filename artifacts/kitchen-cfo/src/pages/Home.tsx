@@ -25,6 +25,63 @@ const MEAL_LABELS: Record<string, string> = {
   other: "Meal",
 };
 
+interface LeafProps {
+  id: number;
+  startX: number;
+  driftX: number;
+  duration: number;
+  delay: number;
+  size: number;
+  rotate: number;
+  opacity: number;
+}
+
+const LEAF_CONFIG: LeafProps[] = [
+  { id: 0, startX: 10,  driftX:  18, duration: 10, delay: 0,   size: 8,  rotate: 25,  opacity: 0.25 },
+  { id: 1, startX: 30,  driftX: -14, duration: 13, delay: 2,   size: 6,  rotate: -40, opacity: 0.18 },
+  { id: 2, startX: 55,  driftX:  20, duration: 11, delay: 4.5, size: 10, rotate: 15,  opacity: 0.22 },
+  { id: 3, startX: 72,  driftX: -18, duration: 14, delay: 1.5, size: 7,  rotate: -30, opacity: 0.20 },
+  { id: 4, startX: 85,  driftX:  12, duration: 9,  delay: 3,   size: 9,  rotate: 50,  opacity: 0.16 },
+  { id: 5, startX: 45,  driftX: -10, duration: 12, delay: 6,   size: 6,  rotate: -20, opacity: 0.19 },
+];
+
+function FloatingLeaf({ startX, driftX, duration, delay, size, rotate, opacity }: Omit<LeafProps, "id">) {
+  return (
+    <motion.div
+      className="absolute bottom-0 pointer-events-none"
+      style={{ left: `${startX}%` }}
+      initial={{ y: 0, x: 0, opacity: 0, rotate: rotate }}
+      animate={{
+        y: [-10, -100, -160, -200],
+        x: [0, driftX * 0.3, driftX * 0.7, driftX],
+        opacity: [0, opacity, opacity * 0.6, 0],
+        rotate: [rotate, rotate + 12, rotate - 6, rotate + 4],
+      }}
+      transition={{
+        duration,
+        delay,
+        repeat: Infinity,
+        ease: "easeOut",
+        times: [0, 0.35, 0.7, 1],
+      }}
+    >
+      <svg
+        width={size}
+        height={size * 1.6}
+        viewBox="0 0 10 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M5 15 C5 15, 0 10, 0 6 C0 2.5, 2.5 0, 5 0 C7.5 0, 10 2.5, 10 6 C10 10, 5 15, 5 15Z"
+          fill="white"
+        />
+        <line x1="5" y1="15" x2="5" y2="2" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
+      </svg>
+    </motion.div>
+  );
+}
+
 export default function Home() {
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const [, setLocation] = useLocation();
@@ -127,19 +184,51 @@ export default function Home() {
           >
             {/* ── Hero Section ── */}
             <div className="relative overflow-hidden bg-primary px-6 pt-10 pb-8">
-              {/* Animated radial glow orbs */}
+
+              {/* Depth orbs — 4 orbs, different greens/sizes/timings so they never sync */}
               <motion.div
-                className="absolute -top-12 -right-12 w-52 h-52 rounded-full bg-white/10 pointer-events-none"
-                animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-16 -right-16 w-64 h-64 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(134,239,172,0.18) 0%, transparent 70%)" }}
+                animate={{ scale: [1, 1.18, 1], opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               />
               <motion.div
-                className="absolute bottom-0 -left-8 w-36 h-36 rounded-full bg-white/5 pointer-events-none"
-                animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.8, 0.4] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(20,83,45,0.6) 0%, transparent 70%)" }}
+                animate={{ scale: [1, 1.25, 1], opacity: [0.5, 0.9, 0.5] }}
+                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+              />
+              <motion.div
+                className="absolute top-1/2 -right-4 w-28 h-28 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(187,247,208,0.12) 0%, transparent 70%)" }}
+                animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+              />
+              <motion.div
+                className="absolute -top-4 left-1/3 w-20 h-20 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(240,253,244,0.1) 0%, transparent 70%)" }}
+                animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
               />
 
-              {/* Leaf accent dots */}
+              {/* Drifting light-dapple gradient — simulates sunlight moving through a canopy */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    "radial-gradient(ellipse 55% 45% at 60% 30%, hsla(142,60%,55%,0.22) 0%, transparent 65%), " +
+                    "radial-gradient(ellipse 35% 30% at 25% 70%, hsla(148,55%,48%,0.14) 0%, transparent 60%)",
+                }}
+                animate={{ x: [-8, 12, -4, 8, -8], y: [-4, 8, -10, 4, -4] }}
+                transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+              />
+
+              {/* Floating leaf particles */}
+              {LEAF_CONFIG.map((leaf) => (
+                <FloatingLeaf key={leaf.id} {...leaf} />
+              ))}
+
+              {/* Accent dots — kept, now above animation layers */}
               <div className="absolute top-6 left-4 flex gap-1 opacity-30">
                 {[0, 1, 2].map((i) => (
                   <motion.div
