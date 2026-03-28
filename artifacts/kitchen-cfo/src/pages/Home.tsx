@@ -680,34 +680,38 @@ export default function Home() {
                 </motion.div>
               ) : (
                 <div className="space-y-2">
-                  {recentLogs.map((log, i) => (
-                    <motion.button
-                      key={log.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.06 }}
-                      onClick={() => setLocation("/diary")}
-                      className="w-full bg-card border border-border/50 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-primary/30 hover:shadow-sm hover:shadow-primary/5 transition-all text-left group"
-                    >
-                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Utensils className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-foreground truncate">{log.foodName}</p>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 leading-none">
-                            {MEAL_LABELS[log.mealType] ?? "Meal"}
-                          </Badge>
-                          {log.nutrients?.calories ? (
-                            <span className="text-xs text-muted-foreground">
-                              {formatNumber(log.nutrients.calories)} kcal
-                            </span>
-                          ) : null}
+                  {recentLogs.map((log, i) => {
+                    const score = calcNutritionScore(log.nutrients as Record<string, unknown> | null);
+                    return (
+                      <motion.button
+                        key={log.id}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.06 }}
+                        onClick={() => setLocation("/diary")}
+                        className="w-full bg-card border border-border/50 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-primary/30 hover:shadow-sm hover:shadow-primary/5 transition-all text-left group"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Utensils className="w-4 h-4 text-primary" />
                         </div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
-                    </motion.button>
-                  ))}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm text-foreground truncate">{log.foodName}</p>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 leading-none">
+                              {MEAL_LABELS[log.mealType] ?? "Meal"}
+                            </Badge>
+                            {log.nutrients?.calories ? (
+                              <span className="text-xs text-muted-foreground">
+                                {formatNumber(log.nutrients.calories)} kcal
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                        {score !== null && <NutritionScoreBadge score={score} />}
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
+                      </motion.button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -843,6 +847,44 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function calcNutritionScore(nutrients: Record<string, unknown> | null | undefined): number | null {
+  if (!nutrients) return null;
+  const micros = nutrients.micronutrients as Record<string, unknown> | null | undefined;
+  if (!micros || typeof micros !== "object") return null;
+
+  const values = Object.values(micros);
+  if (values.length === 0) return null;
+
+  const nonZeroCount = values.filter((v) => typeof v === "number" && v > 0).length;
+  const total = values.length;
+
+  if (total === 0) return null;
+
+  const base = Math.max(1, Math.round((nonZeroCount / total) * 9) + 1);
+
+  const fiber = typeof nutrients.fiber === "number" ? nutrients.fiber : 0;
+  const protein = typeof nutrients.protein === "number" ? nutrients.protein : 0;
+  const bonus = fiber > 2 && protein > 10 ? 1 : 0;
+
+  return Math.min(10, base + bonus);
+}
+
+function NutritionScoreBadge({ score }: { score: number }) {
+  const tier =
+    score >= 7
+      ? { bg: "bg-green-100", text: "text-green-700" }
+      : score >= 4
+      ? { bg: "bg-yellow-100", text: "text-yellow-700" }
+      : { bg: "bg-red-100", text: "text-red-700" };
+
+  return (
+    <div className={`${tier.bg} ${tier.text} rounded-lg px-2 py-1 flex flex-col items-center flex-shrink-0 min-w-[42px]`}>
+      <span className="font-bold text-sm leading-none">{score}</span>
+      <span className="text-[9px] font-medium leading-none mt-0.5 whitespace-nowrap">Nutrition</span>
     </div>
   );
 }
