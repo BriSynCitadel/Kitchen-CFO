@@ -542,13 +542,17 @@ export default function Home() {
                         <p className="text-sm text-muted-foreground mt-1 leading-snug">{suggestion.description}</p>
                       </div>
                     </div>
-                    {suggestion.labMarker && suggestion.userValue != null && suggestion.optimalRange && (
+                    {suggestion.labMarker && (
                       <div className="mt-3 rounded-xl bg-primary/5 border border-primary/15 px-3 py-2 flex items-center gap-2">
                         <FlaskConical className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                         <span className="text-xs text-foreground font-medium">
                           Targets <span className="text-primary font-semibold">{suggestion.labMarker}</span>
-                          {" "}· you're at <span className="font-semibold">{suggestion.userValue}</span>
-                          {" "}· target {suggestion.optimalRange}
+                          {suggestion.userValue != null && (
+                            <>{" "}· you're at <span className="font-semibold">{suggestion.userValue}</span></>
+                          )}
+                          {suggestion.optimalRange && (
+                            <>{" "}· target {suggestion.optimalRange}</>
+                          )}
                         </span>
                       </div>
                     )}

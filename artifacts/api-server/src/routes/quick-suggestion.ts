@@ -10,13 +10,12 @@ router.post("/quick-suggestion", async (req, res) => {
   try {
     const [profile, inventory, todayLogs] = await Promise.all([
       db.select().from(profilesTable).limit(1),
-      db.select().from(inventoryTable).orderBy(desc(inventoryTable.addedAt)).limit(50),
+      db.select().from(inventoryTable).orderBy(desc(inventoryTable.addedAt)),
       db
         .select()
         .from(foodLogsTable)
         .where(sql`${foodLogsTable.loggedAt} >= CURRENT_DATE`)
-        .orderBy(desc(foodLogsTable.loggedAt))
-        .limit(20),
+        .orderBy(desc(foodLogsTable.loggedAt)),
     ]);
 
     const p = profile[0] ?? null;
