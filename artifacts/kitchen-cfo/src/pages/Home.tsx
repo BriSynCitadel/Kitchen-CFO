@@ -746,7 +746,7 @@ export default function Home() {
                     <div className="absolute inset-0 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
                     <Sparkles className="absolute inset-0 m-auto text-primary w-6 h-6 animate-pulse" />
                   </div>
-                  <p className="mt-4 font-medium text-foreground animate-pulse">Kitchen CFO is analyzing...</p>
+                  <p className="mt-4 font-medium text-foreground animate-pulse">Analyzing your food with AI...</p>
                 </div>
               )}
             </div>

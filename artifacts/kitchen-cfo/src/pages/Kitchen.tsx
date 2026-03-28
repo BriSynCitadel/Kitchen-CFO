@@ -339,8 +339,8 @@ export default function Kitchen() {
             <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
               <Sparkles className="w-7 h-7 text-primary animate-pulse" />
             </div>
-            <p className="font-display font-semibold text-lg">Scanning your kitchen…</p>
-            <p className="text-sm text-muted-foreground">Gemini is identifying food items in the photo.</p>
+            <p className="font-display font-semibold text-lg">Identifying items in your kitchen...</p>
+            <p className="text-sm text-muted-foreground">AI is scanning for ingredients and pantry items.</p>
           </div>
         </div>
       </div>
