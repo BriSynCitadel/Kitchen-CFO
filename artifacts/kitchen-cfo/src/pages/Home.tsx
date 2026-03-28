@@ -851,20 +851,27 @@ export default function Home() {
   );
 }
 
+const TRACKED_MICRONUTRIENTS = [
+  "vitaminA", "vitaminB1", "vitaminB2", "vitaminB3", "vitaminB6", "vitaminB9", "vitaminB12",
+  "vitaminC", "vitaminD", "vitaminE", "vitaminK",
+  "calcium", "iron", "magnesium", "phosphorus", "potassium", "sodium", "zinc",
+  "selenium", "copper", "manganese", "chromium", "iodine", "omega3", "omega6",
+] as const;
+
+const TRACKED_TOTAL = TRACKED_MICRONUTRIENTS.length;
+
 function calcNutritionScore(nutrients: Record<string, unknown> | null | undefined): number | null {
   if (!nutrients) return null;
   const micros = nutrients.micronutrients as Record<string, unknown> | null | undefined;
   if (!micros || typeof micros !== "object") return null;
 
-  const values = Object.values(micros);
-  if (values.length === 0) return null;
+  const nonZeroCount = TRACKED_MICRONUTRIENTS.filter(
+    (key) => typeof micros[key] === "number" && (micros[key] as number) > 0,
+  ).length;
 
-  const nonZeroCount = values.filter((v) => typeof v === "number" && v > 0).length;
-  const total = values.length;
+  if (nonZeroCount === 0) return null;
 
-  if (total === 0) return null;
-
-  const base = Math.max(1, Math.round((nonZeroCount / total) * 9) + 1);
+  const base = Math.max(1, Math.round((nonZeroCount / TRACKED_TOTAL) * 9) + 1);
 
   const fiber = typeof nutrients.fiber === "number" ? nutrients.fiber : 0;
   const protein = typeof nutrients.protein === "number" ? nutrients.protein : 0;
@@ -882,9 +889,9 @@ function NutritionScoreBadge({ score }: { score: number }) {
       : { bg: "bg-red-100", text: "text-red-700" };
 
   return (
-    <div className={`${tier.bg} ${tier.text} rounded-lg px-2 py-1 flex flex-col items-center flex-shrink-0 min-w-[42px]`}>
+    <div className={`${tier.bg} ${tier.text} rounded-lg px-2 py-1 flex flex-col items-center flex-shrink-0 min-w-[48px]`}>
       <span className="font-bold text-sm leading-none">{score}</span>
-      <span className="text-[9px] font-medium leading-none mt-0.5 whitespace-nowrap">Nutrition</span>
+      <span className="text-[8px] font-medium leading-none mt-0.5 whitespace-nowrap">Nutrition Score</span>
     </div>
   );
 }
