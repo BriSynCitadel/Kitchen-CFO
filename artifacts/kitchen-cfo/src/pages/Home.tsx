@@ -869,8 +869,6 @@ function calcNutritionScore(nutrients: Record<string, unknown> | null | undefine
     (key) => typeof micros[key] === "number" && (micros[key] as number) > 0,
   ).length;
 
-  if (nonZeroCount === 0) return null;
-
   const base = Math.max(1, Math.round((nonZeroCount / TRACKED_TOTAL) * 9) + 1);
 
   const fiber = typeof nutrients.fiber === "number" ? nutrients.fiber : 0;
