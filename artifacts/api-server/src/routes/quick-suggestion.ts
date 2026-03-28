@@ -77,13 +77,22 @@ RULES:
 5. The description must be one sentence, max 20 words, explaining why this meal is right for them right now.
 6. If a lab marker is being targeted, include labMarker (human-readable, e.g. "Vitamin D"), userValue (number), and optimalRange (string).
 
-Return ONLY valid JSON with no markdown:
+Return ONLY valid JSON with no markdown. Example with a lab target:
 {
   "title": "Specific Meal Name",
   "description": "One sentence, max 20 words, why this is perfect for them right now.",
-  "labMarker": "Vitamin D" | null,
-  "userValue": 18 | null,
-  "optimalRange": "≥50 ng/mL" | null
+  "labMarker": "Vitamin D",
+  "userValue": 18,
+  "optimalRange": "≥50 ng/mL"
+}
+
+Example without a lab target:
+{
+  "title": "Specific Meal Name",
+  "description": "One sentence, max 20 words, why this is perfect for them right now.",
+  "labMarker": null,
+  "userValue": null,
+  "optimalRange": null
 }`;
 
     try {
