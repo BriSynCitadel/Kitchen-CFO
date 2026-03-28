@@ -107,6 +107,35 @@ export default function Home() {
   const [analysis, setAnalysis] = useState<FoodAnalysisResult | null>(null);
   const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem("cfo_welcomed"));
 
+  type QuickSuggestion = {
+    title: string;
+    description: string;
+    labMarker: string | null;
+    userValue: number | null;
+    optimalRange: string | null;
+  };
+  const [suggestion, setSuggestion] = useState<QuickSuggestion | null>(null);
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
+  const [suggestionError, setSuggestionError] = useState<string | null>(null);
+
+  const fetchSuggestion = async () => {
+    setSuggestionLoading(true);
+    setSuggestionError(null);
+    try {
+      const res = await fetch("/api/quick-suggestion", { method: "POST" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { message?: string };
+        throw new Error(err.message ?? `Request failed (${res.status})`);
+      }
+      const data = await res.json() as QuickSuggestion;
+      setSuggestion(data);
+    } catch (err) {
+      setSuggestionError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setSuggestionLoading(false);
+    }
+  };
+
   const analyzeMutation = useAnalyzeFood();
   const createLogMutation = useCreateFoodLog({
     mutation: {
@@ -474,6 +503,99 @@ export default function Home() {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* ── What Should I Eat Next? ── */}
+            <div className="px-4 mt-3">
+              <AnimatePresence mode="wait">
+                {suggestionLoading ? (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    className="bg-card border border-border/50 rounded-2xl p-4 flex items-center gap-3"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="w-4 h-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Asking your AI nutritionist…</p>
+                      <p className="text-xs text-muted-foreground">Checking your labs, kitchen & today's meals</p>
+                    </div>
+                  </motion.div>
+                ) : suggestion ? (
+                  <motion.div
+                    key="result"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    className="bg-card border border-primary/20 rounded-2xl p-4 shadow-sm shadow-primary/5"
+                  >
+                    <div className="flex items-start gap-2 mb-2">
+                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Sparkles className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-semibold text-primary uppercase tracking-widest mb-0.5">Eat This Next</p>
+                        <p className="font-display font-bold text-foreground text-base leading-snug">{suggestion.title}</p>
+                        <p className="text-sm text-muted-foreground mt-1 leading-snug">{suggestion.description}</p>
+                      </div>
+                    </div>
+                    {suggestion.labMarker && suggestion.userValue != null && suggestion.optimalRange && (
+                      <div className="mt-3 rounded-xl bg-primary/5 border border-primary/15 px-3 py-2 flex items-center gap-2">
+                        <FlaskConical className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                        <span className="text-xs text-foreground font-medium">
+                          Targets <span className="text-primary font-semibold">{suggestion.labMarker}</span>
+                          {" "}· you're at <span className="font-semibold">{suggestion.userValue}</span>
+                          {" "}· target {suggestion.optimalRange}
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      onClick={fetchSuggestion}
+                      className="mt-3 text-xs text-primary/70 hover:text-primary font-medium transition-colors"
+                    >
+                      Refresh suggestion →
+                    </button>
+                  </motion.div>
+                ) : suggestionError ? (
+                  <motion.div
+                    key="error"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    className="bg-card border border-border/50 rounded-2xl p-4"
+                  >
+                    <p className="text-sm text-muted-foreground mb-2">{suggestionError}</p>
+                    <button
+                      onClick={fetchSuggestion}
+                      className="text-xs text-primary font-medium hover:underline"
+                    >
+                      Try again
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.button
+                    key="idle"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    onClick={fetchSuggestion}
+                    whileTap={{ scale: 0.97 }}
+                    className="w-full bg-card border border-border/50 rounded-2xl p-4 flex items-center gap-3 hover:border-primary/30 hover:shadow-sm hover:shadow-primary/5 transition-all text-left group"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm text-foreground">What Should I Eat Next?</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">AI picks a meal based on your labs, kitchen & today's food</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* ── Camera Button ── */}
