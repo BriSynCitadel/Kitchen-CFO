@@ -3,11 +3,9 @@ import { Camera, FlaskConical, Sparkles, Check, X, ArrowRight, Leaf, Stethoscope
 import { Button } from "@/components/ui/button";
 
 export default function Landing() {
-
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden scroll-smooth" style={{ scrollBehavior: "smooth" }}>
+    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden" style={{ scrollBehavior: "smooth" }}>
 
-      {/* ── NAV ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -24,9 +22,7 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* ── HERO ── */}
       <section className="relative overflow-hidden bg-primary pt-32 pb-20 px-5">
-        {/* Animated orbs */}
         <div
           className="absolute -top-24 -right-24 w-96 h-96 rounded-full pointer-events-none animate-pulse"
           style={{ background: "radial-gradient(circle, rgba(134,239,172,0.18) 0%, transparent 70%)" }}
@@ -70,7 +66,6 @@ export default function Landing() {
             <a
               href="#how-it-works"
               className="w-full sm:w-auto flex items-center justify-center gap-2 h-12 px-8 rounded-xl border border-white/30 text-white/90 text-base font-medium hover:bg-white/10 transition-colors"
-              style={{ scrollBehavior: "smooth" }}
             >
               See how it works <ChevronDown className="w-4 h-4" />
             </a>
@@ -78,7 +73,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── PROBLEM ── */}
       <section className="py-20 px-5 bg-secondary/30">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground mb-5 leading-tight">
@@ -104,7 +98,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
       <section id="how-it-works" className="py-20 px-5 bg-background">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-14">
@@ -113,7 +106,6 @@ export default function Landing() {
           </div>
 
           <div className="relative">
-            {/* Vertical connector line */}
             <div className="absolute left-6 top-8 bottom-8 w-px bg-primary/20 hidden sm:block" />
 
             <div className="space-y-8">
@@ -160,7 +152,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── DIFFERENTIATOR ── */}
       <section className="py-20 px-5 bg-primary text-white">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -221,7 +212,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── THE STORY ── */}
       <section className="py-20 px-5 bg-background">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
@@ -252,7 +242,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── FOR PRACTITIONERS ── */}
       <section className="py-20 px-5 bg-secondary/30">
         <div className="max-w-3xl mx-auto">
           <div className="flex flex-col md:flex-row items-start gap-8">
@@ -277,7 +266,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ── */}
       <section className="py-24 px-5 bg-primary text-white text-center relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
@@ -304,7 +292,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
       <footer className="bg-background border-t border-border/40 py-10 px-5">
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-4">
