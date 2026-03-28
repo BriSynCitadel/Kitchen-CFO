@@ -3,7 +3,7 @@ import { useGetRecommendations, useRefreshRecommendations } from "@workspace/api
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, RefreshCw, CheckCircle2, ChevronRight } from "lucide-react";
+import { Sparkles, RefreshCw, FlaskConical } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetRecommendationsQueryKey } from "@workspace/api-client-react";
 import { formatNumber } from "@/lib/utils";
@@ -82,12 +82,26 @@ export default function Recommendations() {
                       {rec.description}
                     </p>
                     
-                    <div className="bg-secondary/50 rounded-xl p-3 mb-4">
+                    <div className="bg-secondary/50 rounded-xl p-3 mb-3">
                       <p className="text-xs font-medium text-foreground flex items-center gap-1.5 mb-1">
                         <Sparkles className="w-3 h-3 text-primary" /> Why this fits you:
                       </p>
                       <p className="text-xs text-muted-foreground">{rec.reason}</p>
                     </div>
+
+                    {(rec as { targetMarker?: string; userValue?: number; optimalRange?: string }).targetMarker && (
+                      <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-primary/10 border border-primary/15">
+                        <FlaskConical className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <span className="text-xs font-medium text-primary">
+                          {(rec as { targetMarker?: string }).targetMarker}:
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {(rec as { userValue?: number }).userValue != null
+                            ? `${formatNumber((rec as { userValue?: number }).userValue!)} → target ${(rec as { optimalRange?: string }).optimalRange}`
+                            : (rec as { optimalRange?: string }).optimalRange}
+                        </span>
+                      </div>
+                    )}
 
                     <div className="flex items-center justify-between mt-2 pt-4 border-t border-border/50">
                       <div className="flex -space-x-2">

@@ -69,10 +69,18 @@ Generate exactly 6 recommendations. Return ONLY valid JSON in this exact format:
       "reason": "Specific reason referencing their lab value, symptom, or health goal — be precise and personal",
       "category": "meal|snack|ingredient|nutrient_tip",
       "ingredients": ["ingredient1", "ingredient2"],
-      "priority": "high|medium|low"
+      "priority": "high|medium|low",
+      "targetMarker": "Vitamin D",
+      "userValue": 18,
+      "optimalRange": "≥50 ng/mL"
     }
   ]
 }
+
+Field rules:
+- "targetMarker": Include ONLY when this recommendation primarily addresses a specific lab marker that is outside the normal range. Use the human-readable name (e.g., "Vitamin D", "Vitamin B12", "CRP", "Ferritin", "Magnesium", "Zinc"). Set to null if no specific lab marker is targeted.
+- "userValue": The user's actual current lab value as a number (e.g., 18). Set to null if targetMarker is null.
+- "optimalRange": The reference range string (e.g., "≥50 ng/mL", "≥400 pg/mL", "≤1.0 mg/L"). Set to null if targetMarker is null.
 
 Assign "high" priority to recommendations that directly address lab values outside normal ranges or active symptoms. Be specific — mention the lab marker or symptom by name in the reason field.`;
 

@@ -9,6 +9,7 @@ import {
   useGetFoodLogs,
   useGetFoodLogSummary,
   useGetInventory,
+  useGetProfile,
 } from "@workspace/api-client-react";
 import { compressImage, fileToBase64, formatNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -124,8 +125,43 @@ export default function Home() {
   const { data: summary, isLoading: loadingSummary } = useGetFoodLogSummary({ date: todayStr });
   const { data: logsData, isLoading: loadingLogs } = useGetFoodLogs({ date: todayStr });
   const { data: inventoryData, isLoading: loadingInventory } = useGetInventory();
+  const { data: profileData } = useGetProfile();
 
   const recentLogs = (logsData?.logs ?? []).slice(0, 3);
+
+  type LabInsight = { label: string; userValue: number; optimalRange: string; isHigh?: boolean };
+
+  const labInsights = useMemo<LabInsight[]>(() => {
+    const labValues = profileData?.profile?.labValues as Record<string, number> | null | undefined;
+    const micros = analysis?.totalNutrients?.micronutrients as Record<string, number> | null | undefined;
+    if (!labValues || !micros) return [];
+
+    const insights: LabInsight[] = [];
+
+    if (labValues.vitaminD != null && labValues.vitaminD < 50 && (micros.vitaminD ?? 0) > 0) {
+      insights.push({ label: "Vitamin D", userValue: labValues.vitaminD, optimalRange: "≥50 ng/mL" });
+    }
+    if (labValues.vitaminB12 != null && labValues.vitaminB12 < 400 && (micros.vitaminB12 ?? 0) > 0) {
+      insights.push({ label: "Vitamin B12", userValue: labValues.vitaminB12, optimalRange: "≥400 pg/mL" });
+    }
+    if (labValues.ferritin != null && labValues.ferritin < 30 && (micros.iron ?? 0) > 0) {
+      insights.push({ label: "Ferritin", userValue: labValues.ferritin, optimalRange: "≥30 ng/mL" });
+    } else if (labValues.iron != null && labValues.iron < 80 && (micros.iron ?? 0) > 0) {
+      insights.push({ label: "Iron", userValue: labValues.iron, optimalRange: "≥80 mcg/dL" });
+    }
+    if (labValues.magnesium != null && labValues.magnesium < 2.0 && (micros.magnesium ?? 0) > 0) {
+      insights.push({ label: "Magnesium", userValue: labValues.magnesium, optimalRange: "≥2.0 mg/dL" });
+    }
+    if (labValues.zinc != null && labValues.zinc < 80 && (micros.zinc ?? 0) > 0) {
+      insights.push({ label: "Zinc", userValue: labValues.zinc, optimalRange: "≥80 mcg/dL" });
+    }
+    if (labValues.crp != null && labValues.crp > 1.0 && (micros.omega3 ?? 0) > 0) {
+      insights.push({ label: "CRP (inflammation)", userValue: labValues.crp, optimalRange: "≤1.0 mg/L", isHigh: true });
+    }
+
+    return insights;
+  }, [profileData, analysis]);
+
   const microCount = Object.values(summary?.micronutrientTotals ?? {}).filter((v) => v && v > 0).length;
   const hasAnyData =
     (summary?.totalCalories ?? 0) > 0 ||
@@ -614,6 +650,28 @@ export default function Home() {
                         <p className="font-bold text-lg">{formatNumber(analysis.totalNutrients.fat)}g</p>
                       </div>
                     </div>
+
+                    {labInsights.length > 0 && (
+                      <div className="mt-4 rounded-xl bg-primary/5 border border-primary/15 p-4">
+                        <p className="text-xs font-semibold text-primary flex items-center gap-1.5 mb-3">
+                          <FlaskConical className="w-3.5 h-3.5" />
+                          How this helps you
+                        </p>
+                        <div className="space-y-2">
+                          {labInsights.map((insight) => (
+                            <div key={insight.label} className="flex items-center justify-between gap-2">
+                              <span className="text-xs font-medium text-foreground flex items-center gap-1">
+                                <span className="text-primary">↑</span> {insight.label}
+                              </span>
+                              <span className="text-xs text-muted-foreground shrink-0">
+                                you're at <span className="font-semibold text-foreground">{formatNumber(insight.userValue)}</span>
+                                {" "}· target {insight.optimalRange}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     <Button
                       className="w-full mt-5 text-lg h-14"
