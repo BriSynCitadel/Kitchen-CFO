@@ -3,10 +3,11 @@ import { useGetRecommendations, useRefreshRecommendations } from "@workspace/api
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, RefreshCw, FlaskConical } from "lucide-react";
+import { Sparkles, RefreshCw, FlaskConical, Brain, ShoppingBasket, ClipboardList, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetRecommendationsQueryKey } from "@workspace/api-client-react";
 import { formatNumber } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 type RecommendationWithLabTarget = {
   title: string;
@@ -21,15 +22,50 @@ type RecommendationWithLabTarget = {
   optimalRange?: string | null;
 };
 
+const LOADING_STEPS = [
+  { message: "Analyzing your lab values...", icon: FlaskConical },
+  { message: "Checking your kitchen inventory...", icon: ShoppingBasket },
+  { message: "Building your personalized plan...", icon: ClipboardList },
+  { message: "Almost ready...", icon: Brain },
+];
+
+const STEP_DURATION_MS = 2500;
+
 export default function Recommendations() {
   const queryClient = useQueryClient();
   const { data, isLoading } = useGetRecommendations();
-  
+  const [loadingStep, setLoadingStep] = useState(0);
+
   const refreshMutation = useRefreshRecommendations({
     mutation: {
       onSuccess: () => queryClient.invalidateQueries({ queryKey: getGetRecommendationsQueryKey() })
     }
   });
+
+  useEffect(() => {
+    if (!refreshMutation.isPending) {
+      setLoadingStep(0);
+      return;
+    }
+
+    setLoadingStep(0);
+    const interval = setInterval(() => {
+      setLoadingStep(prev => {
+        const next = prev + 1;
+        if (next >= LOADING_STEPS.length - 1) {
+          clearInterval(interval);
+          return LOADING_STEPS.length - 1;
+        }
+        return next;
+      });
+    }, STEP_DURATION_MS);
+
+    return () => clearInterval(interval);
+  }, [refreshMutation.isPending]);
+
+  const isRefreshing = refreshMutation.isPending;
+  const currentStep = LOADING_STEPS[loadingStep];
+  const StepIcon = currentStep.icon;
 
   return (
     <div className="pb-24 max-w-md mx-auto min-h-screen bg-background">
@@ -50,14 +86,75 @@ export default function Recommendations() {
             variant="ghost" 
             size="icon" 
             onClick={() => refreshMutation.mutate()}
-            disabled={refreshMutation.isPending || isLoading}
-            className={refreshMutation.isPending ? "animate-spin" : ""}
+            disabled={isRefreshing || isLoading}
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
         </div>
 
-        {isLoading ? (
+        {isRefreshing ? (
+          <div className="flex flex-col items-center justify-center py-16 px-6 gap-6">
+            <div className="relative flex items-center justify-center w-20 h-20">
+              <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <StepIcon className="w-7 h-7" />
+              </div>
+            </div>
+
+            <div className="text-center space-y-2">
+              <p className="font-semibold text-foreground text-base transition-all duration-500">
+                {currentStep.message}
+              </p>
+              <p className="text-xs text-muted-foreground">This takes about 10–15 seconds</p>
+            </div>
+
+            <div className="flex gap-2">
+              {LOADING_STEPS.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    i === loadingStep
+                      ? "w-6 bg-primary"
+                      : i < loadingStep
+                      ? "w-3 bg-primary/40"
+                      : "w-3 bg-border"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <div className="w-full space-y-3 mt-2">
+              {LOADING_STEPS.map((step, i) => {
+                const Icon = step.icon;
+                return (
+                  <div
+                    key={i}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-500 ${
+                      i === loadingStep
+                        ? "bg-primary/10 border-primary/20 opacity-100"
+                        : i < loadingStep
+                        ? "bg-secondary/50 border-transparent opacity-60"
+                        : "bg-secondary/20 border-transparent opacity-30"
+                    }`}
+                  >
+                    {i < loadingStep ? (
+                      <div className="w-4 h-4 rounded-full bg-primary/30 flex items-center justify-center shrink-0">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                      </div>
+                    ) : i === loadingStep ? (
+                      <Loader2 className="w-4 h-4 text-primary animate-spin shrink-0" />
+                    ) : (
+                      <Icon className="w-4 h-4 text-muted-foreground shrink-0" />
+                    )}
+                    <span className={`text-xs font-medium ${i <= loadingStep ? "text-foreground" : "text-muted-foreground"}`}>
+                      {step.message}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : isLoading ? (
           <div className="space-y-4">
             {[1, 2].map(i => (
               <div key={i} className="h-48 bg-secondary animate-pulse rounded-3xl" />
@@ -70,7 +167,7 @@ export default function Recommendations() {
              </div>
              <h3 className="font-display text-xl font-semibold mb-2">No recommendations yet</h3>
              <p className="text-muted-foreground text-sm mb-6">Complete your profile and add items to your kitchen to get personalized meal ideas.</p>
-             <Button onClick={() => refreshMutation.mutate()} disabled={refreshMutation.isPending}>
+             <Button onClick={() => refreshMutation.mutate()} disabled={isRefreshing}>
                 Generate Ideas
              </Button>
            </div>

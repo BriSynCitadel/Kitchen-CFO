@@ -110,39 +110,12 @@ router.get("/recommendations", async (req, res) => {
       return;
     }
 
-    const { prompt, profileComplete, inventoryItemCount, recentLogCount } = await buildRecommendationPrompt();
-
-    try {
-      const raw = await generateText(prompt);
-      const parsed = JSON.parse(raw);
-      const items = parsed.recommendations || [];
-      const basedOn = { profileComplete, inventoryItemCount, recentLogCount };
-
-      const [saved] = await db
-        .insert(recommendationsTable)
-        .values({ items, basedOn })
-        .returning();
-
-      res.json({
-        recommendations: items,
-        generatedAt: saved.generatedAt.toISOString(),
-        basedOn,
-        cached: false,
-      });
-    } catch (geminiErr: unknown) {
-      const message = geminiErr instanceof Error ? geminiErr.message : "Unknown error";
-      if (message.includes("No Gemini API key")) {
-        res.json({
-          recommendations: [],
-          generatedAt: new Date().toISOString(),
-          basedOn: { profileComplete: false, inventoryItemCount: 0, recentLogCount: 0 },
-          cached: false,
-          _error: "no_api_key",
-        });
-        return;
-      }
-      throw geminiErr;
-    }
+    res.json({
+      recommendations: [],
+      generatedAt: new Date().toISOString(),
+      basedOn: { profileComplete: false, inventoryItemCount: 0, recentLogCount: 0 },
+      cached: false,
+    });
   } catch (err) {
     req.log.error({ err }, "Failed to get recommendations");
     res.status(500).json({ error: "generation_failed", message: "Failed to get recommendations" });
