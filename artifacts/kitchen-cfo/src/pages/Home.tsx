@@ -552,6 +552,9 @@ export default function Home() {
                         </span>
                       </div>
                     )}
+                    {suggestionError && (
+                      <p className="mt-2 text-xs text-destructive">{suggestionError}</p>
+                    )}
                     <button
                       onClick={fetchSuggestion}
                       className="mt-3 text-xs text-primary/70 hover:text-primary font-medium transition-colors"
