@@ -3,13 +3,9 @@ import { Camera, FlaskConical, Sparkles, Check, X, ArrowRight, Leaf, Stethoscope
 import { Button } from "@/components/ui/button";
 
 export default function Landing() {
-  const handleScrollToHowItWorks = (e: React.MouseEvent) => {
-    e.preventDefault();
-    document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
-  };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden scroll-smooth" style={{ scrollBehavior: "smooth" }}>
 
       {/* ── NAV ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
@@ -71,12 +67,13 @@ export default function Landing() {
                 Try it free <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
-            <button
-              onClick={handleScrollToHowItWorks}
+            <a
+              href="#how-it-works"
               className="w-full sm:w-auto flex items-center justify-center gap-2 h-12 px-8 rounded-xl border border-white/30 text-white/90 text-base font-medium hover:bg-white/10 transition-colors"
+              style={{ scrollBehavior: "smooth" }}
             >
               See how it works <ChevronDown className="w-4 h-4" />
-            </button>
+            </a>
           </div>
         </div>
       </section>
@@ -212,8 +209,8 @@ export default function Landing() {
             {[
               { label: "Photo Scan", desc: "AI identifies every nutrient" },
               { label: "Lab Integration", desc: "Your bloodwork shapes every rec" },
-              { label: "Kitchen Inventory", desc: "Recs from what you have" },
-              { label: "AI Guidance", desc: "Personal, not generic" },
+              { label: "Bioindividual Profile", desc: "Recs built around your biology" },
+              { label: "AI Guidance", desc: "Personal, never generic" },
             ].map(({ label, desc }) => (
               <div key={label} className="bg-white/10 rounded-xl p-3 text-center">
                 <p className="font-display font-bold text-white text-sm mb-0.5">{label}</p>
@@ -309,16 +306,23 @@ export default function Landing() {
 
       {/* ── FOOTER ── */}
       <footer className="bg-background border-t border-border/40 py-10 px-5">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-              <Leaf className="w-3.5 h-3.5 text-white" />
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
+                <Leaf className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="font-display font-bold text-sm text-foreground">Kitchen CFO</span>
             </div>
-            <span className="font-display font-bold text-sm text-foreground">Kitchen CFO</span>
+            <Link href="/">
+              <Button size="sm" className="h-8 px-5 text-xs font-semibold">
+                Try it free <ArrowRight className="w-3 h-3 ml-1.5" />
+              </Button>
+            </Link>
           </div>
 
           <p className="text-xs text-muted-foreground text-center max-w-md leading-relaxed">
-            Kitchen CFO is not a medical device and does not provide medical advice. Always consult a qualified health professional before making changes to your diet or health regimen.
+            Kitchen CFO is not a medical device and does not provide medical advice. Always consult a qualified health professional.
           </p>
 
           <p className="text-xs text-muted-foreground">
