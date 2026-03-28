@@ -15,6 +15,7 @@ import Kitchen from "@/pages/Kitchen";
 import Recommendations from "@/pages/Recommendations";
 import Profile from "@/pages/Profile";
 import Settings from "@/pages/Settings";
+import Landing from "@/pages/Landing";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,19 +37,26 @@ function Router() {
         <Route path="/recommendations" component={Recommendations} />
         <Route path="/profile" component={Profile} />
         <Route path="/settings" component={Settings} />
+        <Route path="/landing" component={Landing} />
         <Route component={NotFound} />
       </Switch>
       
-      {/* Show bottom nav on main app routes (hidden on settings) */}
+      {/* Show bottom nav on main app routes (hidden on settings and landing) */}
       <Switch>
         <Route path="/settings" /> {/* Hide on settings */}
+        <Route path="/landing" /> {/* Hide on landing page */}
         <Route>
           <BottomNav />
         </Route>
       </Switch>
 
-      {/* Feedback widget is visible on every screen */}
-      <FeedbackWidget />
+      {/* Feedback widget — hidden on landing page */}
+      <Switch>
+        <Route path="/landing" />
+        <Route>
+          <FeedbackWidget />
+        </Route>
+      </Switch>
     </div>
   );
 }
