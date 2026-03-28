@@ -661,7 +661,7 @@ export default function Home() {
                           {labInsights.map((insight) => (
                             <div key={insight.label} className="flex items-center justify-between gap-2">
                               <span className="text-xs font-medium text-foreground flex items-center gap-1">
-                                <span className="text-primary">↑</span> {insight.label}
+                                <span className="text-primary">{insight.isHigh ? "↓" : "↑"}</span> {insight.label}
                               </span>
                               <span className="text-xs text-muted-foreground shrink-0">
                                 you're at <span className="font-semibold text-foreground">{formatNumber(insight.userValue)}</span>

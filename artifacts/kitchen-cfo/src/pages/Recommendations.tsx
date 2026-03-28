@@ -8,6 +8,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getGetRecommendationsQueryKey } from "@workspace/api-client-react";
 import { formatNumber } from "@/lib/utils";
 
+type RecommendationWithLabTarget = {
+  title: string;
+  description: string;
+  reason: string;
+  category: string;
+  ingredients?: string[];
+  priority: string;
+  estimatedNutrients?: { calories?: number };
+  targetMarker?: string | null;
+  userValue?: number | null;
+  optimalRange?: string | null;
+};
+
 export default function Recommendations() {
   const queryClient = useQueryClient();
   const { data, isLoading } = useGetRecommendations();
@@ -63,7 +76,7 @@ export default function Recommendations() {
            </div>
         ) : (
           <div className="space-y-4">
-            {data.recommendations.map((rec, i) => (
+            {(data.recommendations as RecommendationWithLabTarget[]).map((rec, i) => (
               <Card key={i} className="overflow-hidden border-border/60 hover:border-primary/30 transition-colors">
                 <CardContent className="p-0">
                   <div className="p-5">
@@ -89,23 +102,22 @@ export default function Recommendations() {
                       <p className="text-xs text-muted-foreground">{rec.reason}</p>
                     </div>
 
-                    {(rec as { targetMarker?: string; userValue?: number; optimalRange?: string }).targetMarker && (
+                    {rec.targetMarker && (
                       <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-primary/10 border border-primary/15">
                         <FlaskConical className="w-3.5 h-3.5 text-primary shrink-0" />
                         <span className="text-xs font-medium text-primary">
-                          {(rec as { targetMarker?: string }).targetMarker}:
+                          {rec.targetMarker}:
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {(rec as { userValue?: number }).userValue != null
-                            ? `${formatNumber((rec as { userValue?: number }).userValue!)} → target ${(rec as { optimalRange?: string }).optimalRange}`
-                            : (rec as { optimalRange?: string }).optimalRange}
+                          {rec.userValue != null
+                            ? `${formatNumber(rec.userValue)} → target ${rec.optimalRange}`
+                            : rec.optimalRange}
                         </span>
                       </div>
                     )}
 
                     <div className="flex items-center justify-between mt-2 pt-4 border-t border-border/50">
                       <div className="flex -space-x-2">
-                        {/* Placeholder ingredient icons based on names */}
                         {rec.ingredients?.slice(0, 3).map((ing, j) => (
                            <div key={j} className="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center text-[10px] font-bold shadow-sm" title={ing}>
                              {ing.charAt(0).toUpperCase()}
