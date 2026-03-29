@@ -4,18 +4,31 @@ import { useGetFoodLogs, useGetFoodLogSummary, useDeleteFoodLog } from "@workspa
 import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatNumber } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Flame, Droplet, Wheat, Trash2, Utensils } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, Trash2, Utensils, TrendingUp, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { getGetFoodLogsQueryKey, getGetFoodLogSummaryQueryKey } from "@workspace/api-client-react";
+
+type WeeklyNutrient = { key: string; label: string; daysHit: number; totalDays: number };
+type WeeklyTrendsData = { nutrients: WeeklyNutrient[]; insight: string | null };
 
 export default function Diary() {
   const [date, setDate] = useState(new Date());
   const dateStr = format(date, 'yyyy-MM-dd');
   const queryClient = useQueryClient();
 
-  const { data: summary, isLoading: loadingSummary } = useGetFoodLogSummary({ date: dateStr });
+  const { data: summary } = useGetFoodLogSummary({ date: dateStr });
   const { data: logsData, isLoading: loadingLogs } = useGetFoodLogs({ date: dateStr });
+
+  const { data: weeklyData, isLoading: loadingWeekly } = useQuery<WeeklyTrendsData>({
+    queryKey: ['food-logs-weekly'],
+    queryFn: async () => {
+      const res = await fetch('/api/food-logs/weekly');
+      if (!res.ok) throw new Error('Failed to fetch weekly trends');
+      return res.json() as Promise<WeeklyTrendsData>;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
   
   const deleteMutation = useDeleteFoodLog({
     mutation: {
@@ -41,7 +54,7 @@ export default function Diary() {
 
   const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack', 'other'];
 
-  const targetCalories = 2000; // In a real app, fetch from profile
+  const targetCalories = 2000;
   const calPercent = Math.min(100, ((summary?.totalCalories || 0) / targetCalories) * 100);
 
   return (
@@ -177,6 +190,83 @@ export default function Diary() {
               </motion.div>
             );
           })}
+        </div>
+
+        {/* ── This Week ── */}
+        <div className="space-y-3 pb-4">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            <h3 className="font-display font-semibold text-foreground">This Week</h3>
+          </div>
+
+          <Card className="border-border/30">
+            <CardContent className="p-4 space-y-4">
+              {loadingWeekly ? (
+                <div className="space-y-3 animate-pulse">
+                  <div className="h-3 w-4/5 bg-secondary rounded mb-4" />
+                  {[1, 2, 3, 4, 5, 6].map(i => (
+                    <div key={i} className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <div className="h-3 w-20 bg-secondary rounded" />
+                        <div className="h-3 w-12 bg-secondary rounded" />
+                      </div>
+                      <div className="h-2 w-full bg-secondary rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : weeklyData ? (
+                <>
+                  {weeklyData.insight && (
+                    <div className="flex items-start gap-2 pb-3 border-b border-border/40">
+                      <Sparkles className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-muted-foreground italic leading-relaxed">
+                        {weeklyData.insight}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {weeklyData.nutrients.map(({ key, label, daysHit, totalDays }) => {
+                      const pct = (daysHit / totalDays) * 100;
+                      const barColor =
+                        daysHit >= 5
+                          ? "bg-green-500"
+                          : daysHit >= 3
+                            ? "bg-yellow-400"
+                            : "bg-red-400";
+                      const labelColor =
+                        daysHit >= 5
+                          ? "text-green-600 dark:text-green-400"
+                          : daysHit >= 3
+                            ? "text-yellow-600 dark:text-yellow-400"
+                            : "text-red-500 dark:text-red-400";
+
+                      return (
+                        <div key={key} className="space-y-1">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs font-medium text-foreground">{label}</span>
+                            <span className={`text-xs font-semibold ${labelColor}`}>
+                              {daysHit}/{totalDays} days
+                            </span>
+                          </div>
+                          <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                            <div
+                              className={`h-full ${barColor} rounded-full transition-all duration-700 ease-out`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <p className="text-[10px] text-muted-foreground/60 text-center pt-1">
+                    Days a nutrient appeared in any meal · last 7 days
+                  </p>
+                </>
+              ) : null}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

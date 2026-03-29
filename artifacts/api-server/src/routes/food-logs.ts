@@ -1,15 +1,83 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { foodLogsTable } from "@workspace/db/schema";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, gte } from "drizzle-orm";
 import {
   CreateFoodLogBody,
   DeleteFoodLogParams,
   GetFoodLogSummaryQueryParams,
   GetFoodLogsQueryParams,
 } from "@workspace/api-zod";
+import { generateText } from "../lib/gemini";
 
 const router: IRouter = Router();
+
+const WEEKLY_NUTRIENTS = [
+  { key: "vitaminD", label: "Vitamin D" },
+  { key: "iron", label: "Iron" },
+  { key: "calcium", label: "Calcium" },
+  { key: "magnesium", label: "Magnesium" },
+  { key: "zinc", label: "Zinc" },
+  { key: "vitaminC", label: "Vitamin C" },
+] as const;
+
+router.get("/food-logs/weekly", async (req, res) => {
+  try {
+    // Query the last 7 days (today + 6 preceding days)
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 6);
+    startDate.setHours(0, 0, 0, 0);
+
+    const logs = await db
+      .select()
+      .from(foodLogsTable)
+      .where(gte(foodLogsTable.loggedAt, startDate))
+      .orderBy(desc(foodLogsTable.loggedAt));
+
+    // Group logs by calendar date string (YYYY-MM-DD)
+    const logsByDate: Record<string, typeof logs> = {};
+    for (const log of logs) {
+      const dateKey = log.loggedAt.toISOString().split("T")[0];
+      if (!logsByDate[dateKey]) logsByDate[dateKey] = [];
+      logsByDate[dateKey].push(log);
+    }
+
+    const dates = Object.keys(logsByDate);
+
+    // Count how many distinct days each nutrient appeared (value > 0)
+    const nutrients = WEEKLY_NUTRIENTS.map(({ key, label }) => {
+      let daysHit = 0;
+      for (const dateKey of dates) {
+        const hasNutrient = logsByDate[dateKey].some((log) => {
+          const n = log.nutrients as Record<string, unknown>;
+          const micro = (n.micronutrients as Record<string, number>) || {};
+          return (micro[key] || 0) > 0;
+        });
+        if (hasNutrient) daysHit++;
+      }
+      return { key, label, daysHit, totalDays: 7 };
+    });
+
+    // Generate one AI insight sentence
+    let insight: string | null = null;
+    try {
+      const summary = nutrients
+        .map((n) => `${n.label}: ${n.daysHit}/7 days`)
+        .join(", ");
+      const prompt = `You are a nutrition coach. Based on this week's micronutrient tracking data, write ONE concise sentence (max 25 words) that highlights either a strong area or the biggest gap. Keep it encouraging and specific. Data: ${summary}. Return JSON: {"insight": "Your sentence here."}`;
+      const raw = await generateText(prompt);
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
+      if (typeof parsed.insight === "string") insight = parsed.insight;
+    } catch {
+      // AI unavailable — respond without insight
+    }
+
+    res.json({ nutrients, insight });
+  } catch (err) {
+    req.log.error({ err }, "Failed to get weekly trends");
+    res.status(500).json({ error: "db_error", message: "Failed to get weekly trends" });
+  }
+});
 
 router.get("/food-logs/summary", async (req, res) => {
   const parseResult = GetFoodLogSummaryQueryParams.safeParse(req.query);
