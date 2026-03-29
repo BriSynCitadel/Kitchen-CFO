@@ -35,6 +35,7 @@ export default function Diary() {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getGetFoodLogsQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetFoodLogSummaryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: ['food-logs-weekly'] });
       }
     }
   });
