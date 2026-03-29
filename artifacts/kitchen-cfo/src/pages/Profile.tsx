@@ -270,17 +270,16 @@ export default function Profile() {
                   { label: "Any Lab Test Now", href: "https://www.anylabtestnow.com" },
                   { label: "Walk-In Lab", href: "https://www.walkinlab.com" },
                 ].map(({ label, href }) => (
-                  <Button
+                  <a
                     key={href}
-                    variant="outline"
-                    className="w-full justify-between border-violet-200 dark:border-violet-700 text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/30"
-                    asChild
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-between gap-2 w-full rounded-xl border border-violet-200 dark:border-violet-700 px-4 py-2.5 text-sm font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors"
                   >
-                    <a href={href} target="_blank" rel="noopener noreferrer">
-                      {label}
-                      <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-70" />
-                    </a>
-                  </Button>
+                    {label}
+                    <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-70" />
+                  </a>
                 ))}
               </div>
             </div>
