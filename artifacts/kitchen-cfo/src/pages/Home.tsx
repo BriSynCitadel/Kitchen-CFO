@@ -161,7 +161,7 @@ export default function Home() {
   type LabInsight = { label: string; userValue: number; optimalRange: string; isHigh?: boolean };
 
   const labInsights = useMemo<LabInsight[]>(() => {
-    const labValues = profileData?.profile?.labValues as Record<string, number> | null | undefined;
+    const labValues = profileData?.labValues as Record<string, number> | null | undefined;
     const micros = analysis?.totalNutrients?.micronutrients as Record<string, number> | null | undefined;
     if (!labValues || !micros) return [];
 
