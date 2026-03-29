@@ -106,6 +106,7 @@ export default function Home() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<FoodAnalysisResult | null>(null);
   const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem("cfo_welcomed"));
+  const [showDemoBanner, setShowDemoBanner] = useState(() => !!localStorage.getItem("cfo_demo_mode") && !localStorage.getItem("cfo_demo_banner_dismissed"));
 
   type QuickSuggestion = {
     title: string;
@@ -208,7 +209,7 @@ export default function Home() {
     (summary?.totalCalories ?? 0) === 0 &&
     (inventoryData?.items?.length ?? 0) === 0;
 
-  const shouldShowWelcome = showWelcome && isEmptyState;
+  const shouldShowWelcome = showWelcome;
 
   const dismissWelcome = () => {
     localStorage.setItem("cfo_welcomed", "1");
@@ -246,6 +247,9 @@ export default function Home() {
     dismissLoadingToast();
 
     if (succeeded) {
+      localStorage.setItem("cfo_demo_mode", "1");
+      localStorage.removeItem("cfo_demo_banner_dismissed");
+      setShowDemoBanner(true);
       try {
         await queryClient.invalidateQueries();
       } catch {
@@ -332,7 +336,7 @@ export default function Home() {
               </div>
 
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                Welcome to Kitchen CFO — the first food intelligence app that connects your bloodwork to your kitchen. Start by scanning a food photo, or explore with our demo data.
+                You're viewing a live demo of Kitchen CFO — an AI-powered nutrition app that connects your bloodwork to your kitchen. Load sample data to explore all features, or dive straight in.
               </p>
 
               <div className="space-y-3">
@@ -347,7 +351,7 @@ export default function Home() {
                   className="w-full h-11"
                   onClick={dismissWelcome}
                 >
-                  Explore the App
+                  Explore Without Demo
                 </Button>
               </div>
             </motion.div>
@@ -355,7 +359,34 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Hidden file inputs */}
+      {/* Demo mode banner */}
+      <AnimatePresence>
+        {showDemoBanner && (
+          <motion.div
+            key="demo-banner"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="mx-4 mt-3 flex items-center justify-between gap-2 rounded-xl bg-accent/10 border border-accent/20 px-4 py-2.5"
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-accent flex-shrink-0" />
+              <span className="text-xs font-medium text-foreground/80">Viewing demo data — explore freely.</span>
+            </div>
+            <button
+              onClick={() => {
+                localStorage.setItem("cfo_demo_banner_dismissed", "1");
+                setShowDemoBanner(false);
+              }}
+              className="p-1 hover:bg-accent/10 rounded-lg text-muted-foreground"
+              aria-label="Dismiss demo banner"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <input
         type="file"
         accept="image/*"

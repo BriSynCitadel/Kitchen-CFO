@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Camera, FlaskConical, Sparkles, Check, X, ArrowRight, Leaf, Stethoscope, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import QRCode from "qrcode";
@@ -8,6 +8,12 @@ const APP_URL = "https://kitchen-intelligence.replit.app";
 
 export default function Landing() {
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [, setLocation] = useLocation();
+
+  const handleTryDemo = () => {
+    localStorage.removeItem("cfo_welcomed");
+    setLocation("/");
+  };
 
   useEffect(() => {
     if (qrCanvasRef.current) {
@@ -82,12 +88,12 @@ export default function Landing() {
                 Try it free <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
-            <a
-              href="#how-it-works"
+            <button
+              onClick={handleTryDemo}
               className="w-full sm:w-auto flex items-center justify-center gap-2 h-12 px-8 rounded-xl border border-white/30 text-white/90 text-base font-medium hover:bg-white/10 transition-colors"
             >
-              See how it works <ChevronDown className="w-4 h-4" />
-            </a>
+              <Sparkles className="w-4 h-4" /> Try Demo
+            </button>
           </div>
         </div>
       </section>
