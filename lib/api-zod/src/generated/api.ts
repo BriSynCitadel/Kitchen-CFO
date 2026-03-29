@@ -417,6 +417,11 @@ export const GetProfileResponse = zod.object({
       magnesium: zod.number().nullish().describe("Serum magnesium mg\/dL"),
       zinc: zod.number().nullish().describe("Serum zinc mcg\/dL"),
       tsh: zod.number().nullish().describe("TSH mIU\/L"),
+      folate: zod.number().nullish().describe("Folate ng\/mL"),
+      uricAcid: zod.number().nullish().describe("Uric Acid mg\/dL"),
+      potassium: zod.number().nullish().describe("Potassium mEq\/L"),
+      freeT4: zod.number().nullish().describe("Free T4 ng\/dL"),
+      freeT3: zod.number().nullish().describe("Free T3 pg\/mL"),
     })
     .nullish(),
   symptoms: zod
@@ -472,6 +477,11 @@ export const UpdateProfileBody = zod.object({
       magnesium: zod.number().nullish().describe("Serum magnesium mg\/dL"),
       zinc: zod.number().nullish().describe("Serum zinc mcg\/dL"),
       tsh: zod.number().nullish().describe("TSH mIU\/L"),
+      folate: zod.number().nullish().describe("Folate ng\/mL"),
+      uricAcid: zod.number().nullish().describe("Uric Acid mg\/dL"),
+      potassium: zod.number().nullish().describe("Potassium mEq\/L"),
+      freeT4: zod.number().nullish().describe("Free T4 ng\/dL"),
+      freeT3: zod.number().nullish().describe("Free T3 pg\/mL"),
     })
     .nullish(),
   symptoms: zod
@@ -532,6 +542,11 @@ export const UpdateProfileResponse = zod.object({
       magnesium: zod.number().nullish().describe("Serum magnesium mg\/dL"),
       zinc: zod.number().nullish().describe("Serum zinc mcg\/dL"),
       tsh: zod.number().nullish().describe("TSH mIU\/L"),
+      folate: zod.number().nullish().describe("Folate ng\/mL"),
+      uricAcid: zod.number().nullish().describe("Uric Acid mg\/dL"),
+      potassium: zod.number().nullish().describe("Potassium mEq\/L"),
+      freeT4: zod.number().nullish().describe("Free T4 ng\/dL"),
+      freeT3: zod.number().nullish().describe("Free T3 pg\/mL"),
     })
     .nullish(),
   symptoms: zod

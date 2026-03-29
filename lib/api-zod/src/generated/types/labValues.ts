@@ -35,4 +35,14 @@ export interface LabValues {
   zinc?: number | null;
   /** TSH mIU/L */
   tsh?: number | null;
+  /** Folate ng/mL */
+  folate?: number | null;
+  /** Uric Acid mg/dL */
+  uricAcid?: number | null;
+  /** Potassium mEq/L */
+  potassium?: number | null;
+  /** Free T4 ng/dL */
+  freeT4?: number | null;
+  /** Free T3 pg/mL */
+  freeT3?: number | null;
 }
