@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { foodLogsTable } from "@workspace/db/schema";
-import { eq, desc, sql, gte } from "drizzle-orm";
+import { eq, desc, sql, gte, and, lte } from "drizzle-orm";
 import {
   CreateFoodLogBody,
   DeleteFoodLogParams,
@@ -23,21 +23,26 @@ const WEEKLY_NUTRIENTS = [
 
 router.get("/food-logs/weekly", async (req, res) => {
   try {
-    // Query the last 7 days (today + 6 preceding days)
+    // Strict 7-day window: start of day 6 days ago → end of today
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 6);
     startDate.setHours(0, 0, 0, 0);
 
+    const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999);
+
     const logs = await db
       .select()
       .from(foodLogsTable)
-      .where(gte(foodLogsTable.loggedAt, startDate))
+      .where(and(gte(foodLogsTable.loggedAt, startDate), lte(foodLogsTable.loggedAt, endDate)))
       .orderBy(desc(foodLogsTable.loggedAt));
 
-    // Group logs by calendar date string (YYYY-MM-DD)
+    // Group logs by calendar date using DATE() SQL semantics (same as the rest of the app)
+    // We extract YYYY-MM-DD using local-time date parts to match DB DATE() behavior
     const logsByDate: Record<string, typeof logs> = {};
     for (const log of logs) {
-      const dateKey = log.loggedAt.toISOString().split("T")[0];
+      const d = log.loggedAt;
+      const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       if (!logsByDate[dateKey]) logsByDate[dateKey] = [];
       logsByDate[dateKey].push(log);
     }
