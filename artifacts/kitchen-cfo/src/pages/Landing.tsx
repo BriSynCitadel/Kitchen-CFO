@@ -11,7 +11,7 @@ export default function Landing() {
 
   useEffect(() => {
     if (qrCanvasRef.current) {
-      QRCode.toCanvas(qrCanvasRef.current, APP_URL, {
+      void QRCode.toCanvas(qrCanvasRef.current, APP_URL, {
         width: 128,
         margin: 2,
         color: {
