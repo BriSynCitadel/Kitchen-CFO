@@ -171,6 +171,42 @@ export default function Landing() {
         </div>
       </section>
 
+      <section className="py-20 px-5 bg-secondary/30">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-2">Real people, real results</p>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">Loved by users</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {[
+              {
+                quote: "I love the detail of the app and it helps to keep me in check.",
+                initials: "S.M.",
+              },
+              {
+                quote: "Finally an app that connects what I eat to my actual bloodwork. The AI recommendations feel personal, not generic.",
+                initials: "R.T.",
+              },
+            ].map(({ quote, initials }) => (
+              <div key={initials} className="bg-card border border-border/60 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <svg key={s} className="w-4 h-4 text-orange-400 fill-orange-400" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <p className="text-foreground text-base leading-relaxed flex-1">
+                  "{quote}"
+                </p>
+                <p className="text-sm font-semibold text-muted-foreground">— {initials}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="py-20 px-5 bg-primary text-white">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
