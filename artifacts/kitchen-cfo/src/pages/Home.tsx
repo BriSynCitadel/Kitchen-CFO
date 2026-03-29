@@ -336,7 +336,7 @@ export default function Home() {
               </div>
 
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                You're viewing a live demo of Kitchen CFO — an AI-powered nutrition app that connects your bloodwork to your kitchen. Load sample data to explore all features, or dive straight in.
+                You're viewing Kitchen CFO — an AI-powered nutrition app that connects your bloodwork to your kitchen. Any data visible may belong to another user. Load fresh demo data to explore all features with sample information.
               </p>
 
               <div className="space-y-3">

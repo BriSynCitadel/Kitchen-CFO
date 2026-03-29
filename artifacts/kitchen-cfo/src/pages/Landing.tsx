@@ -95,6 +95,12 @@ export default function Landing() {
               <Sparkles className="w-4 h-4" /> Try Demo
             </button>
           </div>
+          <a
+            href="#how-it-works"
+            className="inline-flex items-center gap-1 text-white/60 text-sm mt-4 hover:text-white/90 transition-colors"
+          >
+            See how it works <ChevronDown className="w-3.5 h-3.5" />
+          </a>
         </div>
       </section>
 
