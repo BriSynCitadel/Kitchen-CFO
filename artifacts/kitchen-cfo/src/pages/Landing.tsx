@@ -1,8 +1,27 @@
+import { useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { Camera, FlaskConical, Sparkles, Check, X, ArrowRight, Leaf, Stethoscope, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import QRCode from "qrcode";
+
+const APP_URL = "https://kitchen-intelligence.replit.app";
 
 export default function Landing() {
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (qrCanvasRef.current) {
+      QRCode.toCanvas(qrCanvasRef.current, APP_URL, {
+        width: 128,
+        margin: 2,
+        color: {
+          dark: "#1a1a1a",
+          light: "#ffffff",
+        },
+      });
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden" style={{ scrollBehavior: "smooth" }}>
 
@@ -306,6 +325,17 @@ export default function Landing() {
                 Try it free <ArrowRight className="w-3 h-3 ml-1.5" />
               </Button>
             </Link>
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <canvas
+              ref={qrCanvasRef}
+              className="rounded-lg shadow-sm"
+              aria-label="QR code to open Kitchen CFO on your phone"
+            />
+            <p className="text-xs text-muted-foreground text-center">
+              Scan to open Kitchen CFO on your phone.
+            </p>
           </div>
 
           <p className="text-xs text-muted-foreground text-center max-w-md leading-relaxed">
