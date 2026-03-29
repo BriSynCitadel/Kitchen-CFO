@@ -179,11 +179,7 @@ router.post("/analyze", async (req, res) => {
         req.log.info("Meal scan returned no items — retrying with permissive prompt");
         try {
           const retryRaw = await analyzeImage(imageBase64, mimeType, FOOD_ANALYSIS_PERMISSIVE_PROMPT, geminiApiKey ?? undefined);
-          const retryParsed = parseRaw(retryRaw);
-          const retryItems = retryParsed.items;
-          if (Array.isArray(retryItems) && retryItems.length > 0) {
-            parsed = retryParsed;
-          }
+          parsed = parseRaw(retryRaw);
         } catch {
           // Retry failed — fall through and return the original empty result
         }
