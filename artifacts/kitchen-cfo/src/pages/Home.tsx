@@ -191,6 +191,11 @@ export default function Home() {
     return insights;
   }, [profileData, analysis]);
 
+  const rawLabValues = profileData?.labValues as Record<string, number | null | undefined> | null | undefined;
+  const hasAnyLabValue = rawLabValues
+    ? Object.values(rawLabValues).some((v) => v !== null && v !== undefined && v !== 0)
+    : false;
+
   const microCount = Object.values(summary?.micronutrientTotals ?? {}).filter((v) => v && v > 0).length;
   const hasAnyData =
     (summary?.totalCalories ?? 0) > 0 ||
@@ -504,6 +509,29 @@ export default function Home() {
                 )}
               </div>
             </div>
+
+            {/* ── Lab Results Prompt ── */}
+            {!hasAnyLabValue && (
+              <div className="px-4 mt-3">
+                <div className="bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4 flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground mb-0.5">Unlock personalised recommendations</p>
+                    <p className="text-xs text-muted-foreground mb-3">Add your lab results to get food guidance tailored to your specific biology.</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-violet-300 text-violet-700 hover:bg-violet-100 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-900/30 text-xs h-8"
+                      onClick={() => setLocation("/profile")}
+                    >
+                      Add Lab Results →
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* ── What Should I Eat Next? ── */}
             <div className="px-4 mt-3">

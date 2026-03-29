@@ -746,6 +746,26 @@ components:
           type: number
           description: TSH mIU/L
           nullable: true
+        folate:
+          type: number
+          description: Folate ng/mL
+          nullable: true
+        uricAcid:
+          type: number
+          description: Uric Acid mg/dL
+          nullable: true
+        potassium:
+          type: number
+          description: Potassium mEq/L
+          nullable: true
+        freeT4:
+          type: number
+          description: Free T4 ng/dL
+          nullable: true
+        freeT3:
+          type: number
+          description: Free T3 pg/mL
+          nullable: true
 
     NutritionProfile:
       type: object

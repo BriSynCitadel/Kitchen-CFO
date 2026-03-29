@@ -11,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { User, Activity, FlaskConical, Zap, Check } from "lucide-react";
+import { User, Activity, FlaskConical, Zap, Check, ExternalLink } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 const DIETS = ["vegan", "vegetarian", "keto", "paleo", "gluten_free", "dairy_free", "low_fodmap", "carnivore"];
@@ -46,6 +46,12 @@ const LAB_MARKERS: LabMarker[] = [
   { key: "hdl", label: "HDL Cholesterol", unit: "mg/dL", placeholder: "e.g. 55", ref: ">40 (M) / >50 (F)" },
   { key: "magnesium", label: "Magnesium", unit: "mg/dL", placeholder: "e.g. 2.0", ref: "1.7–2.2 normal" },
   { key: "zinc", label: "Zinc", unit: "mcg/dL", placeholder: "e.g. 90", ref: "60–130 normal" },
+  { key: "tsh", label: "TSH", unit: "mIU/L", placeholder: "e.g. 2.0", ref: "0.4–4.0 normal" },
+  { key: "folate", label: "Folate", unit: "ng/mL", placeholder: "e.g. 12", ref: "2.7–17 normal" },
+  { key: "uricAcid", label: "Uric Acid", unit: "mg/dL", placeholder: "e.g. 5.5", ref: "2.4–7.0 normal" },
+  { key: "potassium", label: "Potassium", unit: "mEq/L", placeholder: "e.g. 4.1", ref: "3.5–5.0 normal" },
+  { key: "freeT4", label: "Free T4", unit: "ng/dL", placeholder: "e.g. 1.1", ref: "0.8–1.8 normal" },
+  { key: "freeT3", label: "Free T3", unit: "pg/mL", placeholder: "e.g. 3.2", ref: "2.3–4.2 normal" },
 ];
 
 function SectionHeader({ icon: Icon, label, color = "text-primary" }: { icon: React.ElementType; label: string; color?: string }) {
@@ -248,6 +254,36 @@ export default function Profile() {
               </div>
             </CardContent>
           </Card>
+
+          {LAB_MARKERS.every((m) => !formData.labValues[m.key]) && (
+            <div className="mt-4 bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4">
+              <div className="flex items-center gap-2 mb-1.5">
+                <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400 flex-shrink-0" />
+                <p className="text-sm font-semibold text-foreground">Get Your Labs Done</p>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Don't have recent bloodwork? These services let you order lab tests directly — no doctor required.
+              </p>
+              <div className="flex flex-col gap-2">
+                {[
+                  { label: "Ulta Lab Tests", href: "https://www.ultalab.com" },
+                  { label: "Any Lab Test Now", href: "https://www.anylabtestnow.com" },
+                  { label: "Walk-In Lab", href: "https://www.walkinlab.com" },
+                ].map(({ label, href }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-between gap-2 rounded-xl border border-violet-200 dark:border-violet-700 px-4 py-2.5 text-sm font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors"
+                  >
+                    {label}
+                    <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-70" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* ── DIETARY PREFERENCES ── */}
