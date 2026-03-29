@@ -669,6 +669,10 @@ export default function Home() {
                 <Upload className="w-4 h-4" />
                 Upload from Gallery
               </button>
+
+              <p className="text-xs text-muted-foreground text-center max-w-[260px] leading-relaxed">
+                For best results: hold phone 12 inches above food, ensure good lighting, keep food in center of frame.
+              </p>
             </div>
 
             {/* ── Recent Scans ── */}
