@@ -52,20 +52,19 @@ export default function Slide1Cover() {
 
       </div>
 
-      {/* Bottom strip */}
-      <div className="absolute bottom-[5vh] left-[10vw] right-[7vw] flex items-center justify-between">
-        <div className="flex items-center gap-[0.8vw]">
-          <svg width="1.4vw" height="1.4vw" viewBox="0 0 20 20" fill="none">
-            <path d="M10 2C6.5 2 3 5.5 3 9.5c0 5.25 7 10.5 7 10.5s7-5.25 7-10.5C17 5.5 13.5 2 10 2z" fill="#f97316"/>
-            <circle cx="10" cy="9" r="2.5" fill="white"/>
-          </svg>
-          <span className="font-body text-[1.3vw]" style={{ color: "rgba(255,255,255,0.45)" }}>
-            kitchen-intelligence.replit.app
+      {/* Bottom strip — founder credentials */}
+      <div className="absolute bottom-[5vh] left-[10vw] right-[7vw] flex items-end justify-between">
+        <div className="flex flex-col gap-[0.4vh]">
+          <span className="font-body text-[1.2vw]" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <span style={{ color: "rgba(255,255,255,0.25)" }}>Profession:</span> Security Coordinator, NY Presbyterian Queens
+          </span>
+          <span className="font-body text-[1.2vw]" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <span style={{ color: "rgba(255,255,255,0.25)" }}>Company:</span> BriSyn Citadel LLC
+          </span>
+          <span className="font-body text-[1.2vw]" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <span style={{ color: "rgba(255,255,255,0.25)" }}>Project:</span> Kitchen CFO · Replit Agent 4 Buildathon 2026
           </span>
         </div>
-        <span className="font-body text-[1.3vw]" style={{ color: "rgba(255,255,255,0.3)" }}>
-          2026
-        </span>
       </div>
 
     </div>
