@@ -104,7 +104,7 @@ router.put("/inventory/:id", async (req, res) => {
         notes: notes ?? null,
         updatedAt: new Date(),
       })
-      .where(eq(inventoryTable.id, id))
+      .where(and(eq(inventoryTable.id, id), eq(inventoryTable.replitUserId, getUserId(req))))
       .returning();
 
     if (!updated) {
@@ -129,7 +129,7 @@ router.delete("/inventory/:id", async (req, res) => {
   try {
     const deleted = await db
       .delete(inventoryTable)
-      .where(eq(inventoryTable.id, paramsResult.data.id))
+      .where(and(eq(inventoryTable.id, paramsResult.data.id), eq(inventoryTable.replitUserId, getUserId(req))))
       .returning();
 
     if (deleted.length === 0) {

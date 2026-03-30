@@ -50,6 +50,7 @@ router.get("/feedback", async (req, res) => {
     const rows = await db
       .select()
       .from(feedbackTable)
+      .where(eq(feedbackTable.replitUserId, getUserId(req)))
       .orderBy(desc(feedbackTable.createdAt));
 
     res.json({ feedback: rows, total: rows.length });
