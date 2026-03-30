@@ -1,0 +1,66 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "position": 1,
+    "filepath": "src/pages/slides/Slide1Cover.tsx",
+    "title": "Cover",
+    "description": "Kitchen CFO opening title slide with tagline and visual identity.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567802",
+    "position": 2,
+    "filepath": "src/pages/slides/Slide2Problem.tsx",
+    "title": "The Problem",
+    "description": "One-size-fits-all nutrition ignores individual biology.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567803",
+    "position": 3,
+    "filepath": "src/pages/slides/Slide3Solution.tsx",
+    "title": "The Solution",
+    "description": "Kitchen CFO connects bloodwork, kitchen inventory, and food scans.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567804",
+    "position": 4,
+    "filepath": "src/pages/slides/Slide4HowItWorks.tsx",
+    "title": "How It Works",
+    "description": "Three steps: scan food, enter labs, get personalized guidance.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567805",
+    "position": 5,
+    "filepath": "src/pages/slides/Slide5Difference.tsx",
+    "title": "The Difference",
+    "description": "Side-by-side comparison: other apps vs Kitchen CFO.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567806",
+    "position": 6,
+    "filepath": "src/pages/slides/Slide6Traction.tsx",
+    "title": "Traction",
+    "description": "4 five-star reviews, built and shipped in 1 week.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807",
+    "position": 7,
+    "filepath": "src/pages/slides/Slide7Vision.tsx",
+    "title": "The Vision",
+    "description": "B2B2C model: practitioners acquire, patients convert.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567808",
+    "position": 8,
+    "filepath": "src/pages/slides/Slide8TheAsk.tsx",
+    "title": "The Ask",
+    "description": "Try Kitchen CFO today at kitchen-intelligence.replit.app.",
+    "speakerNotes": ""
+  }
+]
