@@ -26,9 +26,22 @@ export default function SlideFounder() {
       {/* Main content */}
       <div className="absolute left-[10vw] right-[20vw] top-0 bottom-0 flex flex-col justify-center">
 
-        <h2 className="font-display font-black text-[4.5vw] tracking-tight text-white leading-tight mb-[6vh]">
+        <h2 className="font-display font-black text-[4.5vw] tracking-tight text-white leading-tight mb-[3vh]">
           Built from the<br />inside out.
         </h2>
+
+        {/* Body copy */}
+        <div className="mb-[4vh] space-y-[1.2vh]" style={{ maxWidth: "52vw" }}>
+          <p className="font-body text-[1.35vw] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+            I built my first version as a Telegram bot — a personal chef for a single dad who knew his family's food wasn't good enough but couldn't figure out how to fix it.
+          </p>
+          <p className="font-body text-[1.35vw] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+            The bot solved the logistics. But it couldn't answer the real question: what should I eat for my specific body?
+          </p>
+          <p className="font-body text-[1.35vw] leading-relaxed font-semibold" style={{ color: "rgba(255,255,255,0.75)" }}>
+            That question led to Kitchen CFO.
+          </p>
+        </div>
 
         {/* Credentials block */}
         <div className="flex flex-col gap-[3vh]">
