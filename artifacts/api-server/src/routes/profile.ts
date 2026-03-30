@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
 import { profilesTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
@@ -6,13 +6,22 @@ import { UpdateProfileBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
-async function getOrCreateProfile() {
-  const [existing] = await db.select().from(profilesTable).limit(1);
+function getUserId(req: Request): string {
+  return req.user?.id ?? "demo_user";
+}
+
+async function getOrCreateProfile(userId: string) {
+  const [existing] = await db
+    .select()
+    .from(profilesTable)
+    .where(eq(profilesTable.replitUserId, userId))
+    .limit(1);
   if (existing) return existing;
 
   const [created] = await db
     .insert(profilesTable)
     .values({
+      replitUserId: userId,
       dietaryPreferences: [],
       healthGoals: [],
       allergies: [],
@@ -26,7 +35,7 @@ async function getOrCreateProfile() {
 
 router.get("/profile", async (req, res) => {
   try {
-    const profile = await getOrCreateProfile();
+    const profile = await getOrCreateProfile(getUserId(req));
     res.json(profile);
   } catch (err) {
     req.log.error({ err }, "Failed to get profile");
@@ -42,7 +51,8 @@ router.put("/profile", async (req, res) => {
   }
 
   try {
-    const existing = await getOrCreateProfile();
+    const userId = getUserId(req);
+    const existing = await getOrCreateProfile(userId);
     const data = parseResult.data;
 
     const [updated] = await db

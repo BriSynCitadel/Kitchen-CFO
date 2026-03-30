@@ -1,7 +1,8 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
 import { foodLogsTable } from "@workspace/db/schema";
 import { eq, desc, sql, gte, and, lte } from "drizzle-orm";
+
 import {
   CreateFoodLogBody,
   DeleteFoodLogParams,
@@ -9,6 +10,10 @@ import {
   GetFoodLogsQueryParams,
 } from "@workspace/api-zod";
 import { generateText } from "../lib/gemini";
+
+function getUserId(req: Request): string {
+  return req.user?.id ?? "demo_user";
+}
 
 const router: IRouter = Router();
 
@@ -31,10 +36,15 @@ router.get("/food-logs/weekly", async (req, res) => {
     const endDate = new Date();
     endDate.setHours(23, 59, 59, 999);
 
+    const userId = getUserId(req);
     const logs = await db
       .select()
       .from(foodLogsTable)
-      .where(and(gte(foodLogsTable.loggedAt, startDate), lte(foodLogsTable.loggedAt, endDate)))
+      .where(and(
+        eq(foodLogsTable.replitUserId, userId),
+        gte(foodLogsTable.loggedAt, startDate),
+        lte(foodLogsTable.loggedAt, endDate),
+      ))
       .orderBy(desc(foodLogsTable.loggedAt));
 
     // Group logs by calendar date using DATE() SQL semantics (same as the rest of the app)
@@ -91,10 +101,11 @@ router.get("/food-logs/summary", async (req, res) => {
     : new Date().toISOString().split("T")[0];
 
   try {
+    const userId = getUserId(req);
     const logs = await db
       .select()
       .from(foodLogsTable)
-      .where(sql`DATE(${foodLogsTable.loggedAt}) = ${date}`);
+      .where(and(eq(foodLogsTable.replitUserId, userId), sql`DATE(${foodLogsTable.loggedAt}) = ${date}`));
 
     let totalCalories = 0;
     let totalProtein = 0;
@@ -141,10 +152,13 @@ router.get("/food-logs", async (req, res) => {
   const { date, limit = 50, offset = 0 } = parseResult.success ? parseResult.data : {};
 
   try {
+    const userId = getUserId(req);
     let query = db.select().from(foodLogsTable).$dynamic();
 
     if (date) {
-      query = query.where(sql`DATE(${foodLogsTable.loggedAt}) = ${date}`);
+      query = query.where(and(eq(foodLogsTable.replitUserId, userId), sql`DATE(${foodLogsTable.loggedAt}) = ${date}`));
+    } else {
+      query = query.where(eq(foodLogsTable.replitUserId, userId));
     }
 
     const logs = await query
@@ -179,6 +193,7 @@ router.post("/food-logs", async (req, res) => {
     const [created] = await db
       .insert(foodLogsTable)
       .values({
+        replitUserId: getUserId(req),
         foodName,
         quantity: quantity ?? null,
         mealType,
@@ -209,7 +224,7 @@ router.delete("/food-logs/:id", async (req, res) => {
   try {
     const deleted = await db
       .delete(foodLogsTable)
-      .where(eq(foodLogsTable.id, parseResult.data.id))
+      .where(and(eq(foodLogsTable.id, parseResult.data.id), eq(foodLogsTable.replitUserId, getUserId(req))))
       .returning();
 
     if (deleted.length === 0) {

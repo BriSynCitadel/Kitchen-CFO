@@ -1,7 +1,11 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
 import { feedbackTable } from "@workspace/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
+
+function getUserId(req: Request): string {
+  return req.user?.id ?? "demo_user";
+}
 
 const router: IRouter = Router();
 
@@ -27,6 +31,7 @@ router.post("/feedback", async (req, res) => {
     const [created] = await db
       .insert(feedbackTable)
       .values({
+        replitUserId: getUserId(req),
         rating,
         liked: liked ?? null,
         improvements: improvements ?? null,

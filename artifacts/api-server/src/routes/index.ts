@@ -10,9 +10,11 @@ import demoRouter from "./demo";
 import feedbackRouter from "./feedback";
 import quantitySuggestionsRouter from "./quantity-suggestions";
 import quickSuggestionRouter from "./quick-suggestion";
+import authRouter from "./auth";
 
 const router: IRouter = Router();
 
+router.use(authRouter);
 router.use(healthRouter);
 router.use(analyzeRouter);
 router.use(foodLogsRouter);

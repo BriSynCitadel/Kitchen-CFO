@@ -1,7 +1,11 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
 import { profilesTable, inventoryTable, foodLogsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
+
+function getUserId(req: Request): string {
+  return req.user?.id ?? "demo_user";
+}
 
 const router: IRouter = Router();
 
@@ -220,10 +224,16 @@ router.post("/demo/load", async (req, res) => {
     },
   ];
 
+  const userId = getUserId(req);
+
   try {
     await db.transaction(async (tx) => {
       // Upsert demo profile
-      const [existingProfile] = await tx.select().from(profilesTable).limit(1);
+      const [existingProfile] = await tx
+        .select()
+        .from(profilesTable)
+        .where(eq(profilesTable.replitUserId, userId))
+        .limit(1);
       const profileData = {
         age: 34,
         gender: "female",
@@ -246,6 +256,7 @@ router.post("/demo/load", async (req, res) => {
             .where(eq(profilesTable.id, existingProfile.id));
         } else {
           await tx.insert(profilesTable).values({
+            replitUserId: userId,
             ...profileData,
             dietaryPreferences: [],
             allergies: [],
@@ -256,10 +267,11 @@ router.post("/demo/load", async (req, res) => {
         req.log.warn({ err }, "Demo load: profile upsert failed (non-fatal)");
       }
 
-      // Clear ALL food logs and replace with rich 7-day demo set
-      await tx.delete(foodLogsTable);
+      // Clear this user's food logs and replace with rich 7-day demo set
+      await tx.delete(foodLogsTable).where(eq(foodLogsTable.replitUserId, userId));
       for (const log of demoLogs) {
         await tx.insert(foodLogsTable).values({
+          replitUserId: userId,
           foodName: log.foodName,
           quantity: log.quantity,
           mealType: log.mealType,
@@ -268,11 +280,11 @@ router.post("/demo/load", async (req, res) => {
         });
       }
 
-      // Upsert inventory (skip duplicates)
+      // Upsert inventory (skip duplicates for this user)
       try {
         for (const item of demoInventory) {
           await tx.insert(inventoryTable)
-            .values({ name: item.name, category: item.category, quantity: item.quantity })
+            .values({ replitUserId: userId, name: item.name, category: item.category, quantity: item.quantity })
             .onConflictDoNothing();
         }
       } catch (err) {

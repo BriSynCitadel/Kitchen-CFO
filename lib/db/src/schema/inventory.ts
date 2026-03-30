@@ -1,10 +1,11 @@
-import { pgTable, serial, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
 export const inventoryTable = pgTable("inventory", {
   id: serial("id").primaryKey(),
+  replitUserId: varchar("replit_user_id").notNull().default("demo_user"),
   name: text("name").notNull(),
   category: text("category").notNull().default("other"),
   quantity: text("quantity"),
@@ -14,7 +15,7 @@ export const inventoryTable = pgTable("inventory", {
   addedAt: timestamp("added_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
-  uniqueIndex("inventory_name_lower_unique").on(sql`lower(${table.name})`),
+  uniqueIndex("inventory_name_user_unique").on(table.replitUserId, sql`lower(${table.name})`),
 ]);
 
 export const insertInventorySchema = createInsertSchema(inventoryTable).omit({ id: true, addedAt: true, updatedAt: true });

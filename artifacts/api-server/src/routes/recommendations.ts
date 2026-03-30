@@ -1,23 +1,35 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
 import { profilesTable, inventoryTable, foodLogsTable, recommendationsTable } from "@workspace/db/schema";
-import { desc, sql } from "drizzle-orm";
+import { desc, sql, eq, and } from "drizzle-orm";
 import { generateText } from "../lib/gemini";
+
+function getUserId(req: Request): string {
+  return req.user?.id ?? "demo_user";
+}
 
 const router: IRouter = Router();
 
-async function buildRecommendationPrompt(): Promise<{
+async function buildRecommendationPrompt(userId: string): Promise<{
   prompt: string;
   profileComplete: boolean;
   inventoryItemCount: number;
   recentLogCount: number;
 }> {
-  const [profile] = await db.select().from(profilesTable).limit(1);
-  const inventory = await db.select().from(inventoryTable).orderBy(desc(inventoryTable.addedAt));
+  const [profile] = await db
+    .select()
+    .from(profilesTable)
+    .where(eq(profilesTable.replitUserId, userId))
+    .limit(1);
+  const inventory = await db
+    .select()
+    .from(inventoryTable)
+    .where(eq(inventoryTable.replitUserId, userId))
+    .orderBy(desc(inventoryTable.addedAt));
   const recentLogs = await db
     .select()
     .from(foodLogsTable)
-    .where(sql`${foodLogsTable.loggedAt} >= NOW() - INTERVAL '3 days'`)
+    .where(and(eq(foodLogsTable.replitUserId, userId), sql`${foodLogsTable.loggedAt} >= NOW() - INTERVAL '3 days'`))
     .orderBy(desc(foodLogsTable.loggedAt))
     .limit(20);
 
@@ -94,9 +106,11 @@ Assign "high" priority to recommendations that directly address lab values outsi
 
 router.get("/recommendations", async (req, res) => {
   try {
+    const userId = getUserId(req);
     const [cached] = await db
       .select()
       .from(recommendationsTable)
+      .where(eq(recommendationsTable.replitUserId, userId))
       .orderBy(desc(recommendationsTable.generatedAt))
       .limit(1);
 
@@ -124,7 +138,8 @@ router.get("/recommendations", async (req, res) => {
 
 router.post("/recommendations", async (req, res) => {
   try {
-    const { prompt, profileComplete, inventoryItemCount, recentLogCount } = await buildRecommendationPrompt();
+    const userId = getUserId(req);
+    const { prompt, profileComplete, inventoryItemCount, recentLogCount } = await buildRecommendationPrompt(userId);
 
     try {
       const raw = await generateText(prompt);
@@ -134,7 +149,7 @@ router.post("/recommendations", async (req, res) => {
 
       const [saved] = await db
         .insert(recommendationsTable)
-        .values({ items, basedOn })
+        .values({ replitUserId: userId, items, basedOn })
         .returning();
 
       res.json({

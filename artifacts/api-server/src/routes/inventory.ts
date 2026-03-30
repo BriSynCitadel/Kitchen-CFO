@@ -1,7 +1,8 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
 import { inventoryTable } from "@workspace/db/schema";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
+
 import {
   AddInventoryItemBody,
   UpdateInventoryItemBody,
@@ -9,13 +10,19 @@ import {
   DeleteInventoryItemParams,
 } from "@workspace/api-zod";
 
+function getUserId(req: import("express").Request): string {
+  return req.user?.id ?? "demo_user";
+}
+
 const router: IRouter = Router();
 
 router.get("/inventory", async (req, res) => {
   try {
+    const userId = getUserId(req);
     const items = await db
       .select()
       .from(inventoryTable)
+      .where(eq(inventoryTable.replitUserId, userId))
       .orderBy(desc(inventoryTable.addedAt));
 
     res.json({ items, total: items.length });
@@ -35,11 +42,12 @@ router.post("/inventory", async (req, res) => {
   const { name, category, quantity, unit, expiryDate, notes } = parseResult.data;
 
   try {
-    // Check for an existing item with the same name (case-insensitive)
+    const userId = getUserId(req);
+    // Check for an existing item with the same name (case-insensitive) for this user
     const [existing] = await db
       .select()
       .from(inventoryTable)
-      .where(sql`lower(${inventoryTable.name}) = lower(${name})`)
+      .where(and(eq(inventoryTable.replitUserId, userId), sql`lower(${inventoryTable.name}) = lower(${name})`))
       .limit(1);
 
     if (existing) {
@@ -51,6 +59,7 @@ router.post("/inventory", async (req, res) => {
     const [created] = await db
       .insert(inventoryTable)
       .values({
+        replitUserId: userId,
         name,
         category,
         quantity: quantity ?? null,

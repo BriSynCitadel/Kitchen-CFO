@@ -1,4 +1,4 @@
-import { pgTable, serial, jsonb, timestamp, integer, text } from "drizzle-orm/pg-core";
+import { pgTable, serial, jsonb, timestamp, integer, text, varchar } from "drizzle-orm/pg-core";
 import { z } from "zod/v4";
 
 export const recommendationItemSchema = z.object({
@@ -14,6 +14,7 @@ export type RecommendationItem = z.infer<typeof recommendationItemSchema>;
 
 export const recommendationsTable = pgTable("recommendations", {
   id: serial("id").primaryKey(),
+  replitUserId: varchar("replit_user_id").notNull().default("demo_user"),
   items: jsonb("items").$type<RecommendationItem[]>().notNull().default([]),
   basedOn: jsonb("based_on").$type<{
     profileComplete: boolean;

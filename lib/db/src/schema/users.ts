@@ -1,9 +1,10 @@
-import { pgTable, serial, text, real, integer, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, real, integer, jsonb, timestamp, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
 export const profilesTable = pgTable("profiles", {
   id: serial("id").primaryKey(),
+  replitUserId: varchar("replit_user_id").notNull().default("demo_user"),
   age: integer("age"),
   gender: text("gender"),
   heightCm: real("height_cm"),

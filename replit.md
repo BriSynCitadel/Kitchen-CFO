@@ -38,13 +38,28 @@ artifacts-monorepo/
 └── package.json
 ```
 
+## Auth
+
+Replit Auth (OpenID Connect) is integrated:
+- **Browser login**: `GET /api/login` → OIDC flow → `GET /api/callback` → session cookie (`sid`)
+- **Logout**: `GET /api/logout`
+- **Session storage**: `sessions` table in PostgreSQL (via Drizzle)
+- **Users table**: `users` table caches Replit identity claims
+- **Auth endpoint**: `GET /api/auth/user` → `{ user: AuthUser | null }`
+- **Web hook**: `useAuth()` from `@workspace/replit-auth-web` — login/logout UI in Settings page
+- **Data scoping**: All data routes filter by `replit_user_id`; unauthenticated requests use `"demo_user"` as sentinel
+
 ## Database Schema
 
 Tables in PostgreSQL:
-- `profiles` — User nutrition profile (age, gender, height, weight, blood type, dietary preferences, health goals, allergies, medical conditions, lab values)
-- `food_logs` — Food diary entries with full nutrient data as JSONB
-- `inventory` — Kitchen inventory items (name, category, quantity, expiry)
-- `settings` — User settings (Gemini API key, unit system, default meal type)
+- `sessions` — OIDC session store (sid, sess JSONB, expire)
+- `users` — Cached Replit user identity (id, email, firstName, lastName, profileImageUrl)
+- `profiles` — User nutrition profile; scoped by `replit_user_id`
+- `food_logs` — Food diary entries with full nutrient data as JSONB; scoped by `replit_user_id`
+- `inventory` — Kitchen inventory items; scoped by `replit_user_id` (unique per user+name)
+- `recommendations` — Cached AI recommendations; scoped by `replit_user_id`
+- `feedback` — User feedback/ratings; scoped by `replit_user_id`
+- `settings` — Global app settings (Gemini API key, unit system, default meal type)
 
 ## API Endpoints
 
