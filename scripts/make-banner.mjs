@@ -55,7 +55,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" v
     fill="white"
     fill-opacity="0.42"
     letter-spacing="7"
-  >AI NUTRITION INTELLIGENCE</text>
+  >FOOD INTELLIGENCE</text>
 
   <line x1="340" y1="416" x2="860" y2="416" stroke="#f97316" stroke-width="2" stroke-opacity="0.45"/>
 </svg>`;

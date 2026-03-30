@@ -160,7 +160,7 @@ export default function Landing() {
                   icon: Sparkles,
                   title: "Get personalized guidance",
                   description:
-                    "Your Chef cross-references your kitchen inventory, recent meals, and lab values to recommend exactly what you should eat next — and explains precisely why.",
+                    "Your Kitchen CFO cross-references your kitchen inventory, recent meals, and lab values to recommend exactly what you should eat next — and explains precisely why.",
                 },
               ].map(({ step, icon: Icon, title, description }) => (
                 <div key={step} className="flex gap-5 sm:gap-7 items-start">
