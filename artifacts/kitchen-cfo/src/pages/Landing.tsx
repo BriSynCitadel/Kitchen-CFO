@@ -283,26 +283,29 @@ export default function Landing() {
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-2">Why we built this</p>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">A digital heirloom</h2>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">A tool I needed first</h2>
           </div>
 
           <div className="relative">
             <div className="absolute -left-3 top-0 bottom-0 w-0.5 bg-primary/30 rounded-full" />
             <div className="pl-6 space-y-5 text-muted-foreground text-base leading-relaxed italic">
               <p>
-                My grandmother used to pick flowers from the grass, boil them in water, make teas and remedies. I thought she was crazy. She passed before I could ask her what she knew.
+                I'm a single dad. I can cook, but nothing fancy. And like most people, I already knew the food we were eating wasn't doing us any favors — the nutrition facts are everywhere. But knowing that and being able to do something about it are two different things.
               </p>
               <p>
-                She knew something we've forgotten — that food is medicine. That what you put in your body determines how it performs. We existed for thousands of years without doctors because we understood that.
+                Eating healthy felt either too expensive, too complicated, or too generic. What works for someone else may not work for me. And nobody was telling me what to actually put on my plate based on my body.
               </p>
               <p>
-                I built Kitchen CFO because I want that knowledge back. Not just for me — for anyone who's tired of being told to 'eat better' with zero guidance on what that actually means for their body, their kitchen, their life.
-              </p>
-              <p>
-                This isn't a calorie counter. It's a food intelligence system that learns you — your bloodwork, your pantry, your health goals — and tells you what to eat next based on what you actually have and what your body actually needs.
+                So I built a Telegram bot — my own personal chef. It tracked what was in my kitchen, helped me plan meals from what I already had, and flagged where to find the best grocery prices. It solved the logistics. But it still couldn't answer the deeper question.
               </p>
               <p className="font-semibold text-foreground not-italic">
-                My grandmother knew. Kitchen CFO helps you know too.
+                What should I eat for my specific body?
+              </p>
+              <p>
+                That question led to Kitchen CFO. Not a calorie counter. A food intelligence system that connects your bloodwork, your kitchen, and your actual life — and tells you what to eat next based on what your body actually needs.
+              </p>
+              <p className="font-semibold text-foreground not-italic">
+                Built by a dad who was tired of guessing. Designed so you don't have to.
               </p>
             </div>
           </div>
