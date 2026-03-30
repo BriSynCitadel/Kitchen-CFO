@@ -1,11 +1,9 @@
-import { Router, type IRouter, type Request } from "express";
+import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { profilesTable, inventoryTable, foodLogsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 
-function getUserId(req: Request): string {
-  return req.user?.id ?? "demo_user";
-}
+const DEMO_USER_ID = "demo_user";
 
 const router: IRouter = Router();
 
@@ -224,7 +222,7 @@ router.post("/demo/load", async (req, res) => {
     },
   ];
 
-  const userId = getUserId(req);
+  const userId = DEMO_USER_ID;
 
   try {
     await db.transaction(async (tx) => {
