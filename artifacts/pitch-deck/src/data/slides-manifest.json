@@ -48,8 +48,16 @@
     "speakerNotes": ""
   },
   {
-    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807",
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567809",
     "position": 7,
+    "filepath": "src/pages/slides/SlideFounder.tsx",
+    "title": "The Founder",
+    "description": "Founder credentials: profession, company, and project context.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567807",
+    "position": 8,
     "filepath": "src/pages/slides/Slide7Vision.tsx",
     "title": "The Vision",
     "description": "B2B2C model: practitioners acquire, patients convert.",
@@ -57,7 +65,7 @@
   },
   {
     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567808",
-    "position": 8,
+    "position": 9,
     "filepath": "src/pages/slides/Slide8TheAsk.tsx",
     "title": "The Ask",
     "description": "Try Kitchen CFO today at kitchen-intelligence.replit.app.",

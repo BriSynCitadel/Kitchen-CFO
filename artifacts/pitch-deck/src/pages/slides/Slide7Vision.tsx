@@ -110,7 +110,7 @@ export default function Slide7Vision() {
 
       {/* Slide number */}
       <div className="absolute bottom-[4vh] right-[5vw]">
-        <span className="font-body text-[1.2vw]" style={{ color: "rgba(255,255,255,0.25)" }}>07 / 08</span>
+        <span className="font-body text-[1.2vw]" style={{ color: "rgba(255,255,255,0.25)" }}>08 / 09</span>
       </div>
 
     </div>
