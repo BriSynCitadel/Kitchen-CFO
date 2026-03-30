@@ -336,7 +336,7 @@ export default function Home() {
               </div>
 
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                You're viewing Kitchen CFO — an AI-powered nutrition app that connects your bloodwork to your kitchen. Any data visible may belong to another user. Load fresh demo data to explore all features with sample information.
+                You're viewing Kitchen CFO — a food intelligence app that connects your bloodwork to your kitchen. Any data visible may belong to another user. Load fresh demo data to explore all features with sample information.
               </p>
 
               <div className="space-y-3">
@@ -579,7 +579,7 @@ export default function Home() {
                       <div className="w-4 h-4 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-foreground">Asking your AI nutritionist…</p>
+                      <p className="text-sm font-medium text-foreground">Personalizing your suggestion…</p>
                       <p className="text-xs text-muted-foreground">Checking your labs, kitchen & today's meals</p>
                     </div>
                   </motion.div>
@@ -656,7 +656,7 @@ export default function Home() {
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold text-sm text-foreground">What Should I Eat Next?</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">AI picks a meal based on your labs, kitchen & today's food</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Personalized meal suggestion based on your labs, kitchen & today's food</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
                   </motion.button>
@@ -809,7 +809,7 @@ export default function Home() {
                     <div className="absolute inset-0 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
                     <Sparkles className="absolute inset-0 m-auto text-primary w-6 h-6 animate-pulse" />
                   </div>
-                  <p className="mt-4 font-medium text-foreground animate-pulse">Analyzing your food with AI...</p>
+                  <p className="mt-4 font-medium text-foreground animate-pulse">Analyzing your food...</p>
                 </div>
               )}
             </div>

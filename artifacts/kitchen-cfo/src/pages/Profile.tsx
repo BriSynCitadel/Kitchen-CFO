@@ -228,7 +228,7 @@ export default function Profile() {
         <section>
           <SectionHeader icon={FlaskConical} label="Lab Results" color="text-violet-500" />
           <p className="text-xs text-muted-foreground mb-3 -mt-1">
-            Enter your most recent bloodwork. AI will flag out-of-range values and suggest targeted foods.
+            Enter your most recent bloodwork. Out-of-range values will surface personalized food suggestions.
           </p>
           <Card>
             <CardContent className="p-4">
@@ -322,7 +322,7 @@ export default function Profile() {
         <section>
           <SectionHeader icon={Zap} label="Current Symptoms" color="text-amber-500" />
           <p className="text-xs text-muted-foreground mb-3 -mt-1">
-            Select symptoms you're currently experiencing so AI can tailor recommendations.
+            Select symptoms you're currently experiencing so recommendations can be tailored to you.
           </p>
           <div className="flex flex-wrap gap-2">
             {SYMPTOMS.map(({ id, label }) => (

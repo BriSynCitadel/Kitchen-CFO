@@ -86,7 +86,7 @@ export default function Recommendations() {
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-semibold text-sm">AI Chef</p>
+              <p className="font-semibold text-sm">Your Chef</p>
               <p className="text-xs text-muted-foreground">Based on your profile & kitchen</p>
             </div>
           </div>

@@ -68,7 +68,7 @@ export default function Landing() {
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6">
             <Sparkles className="w-3.5 h-3.5 text-white/80" />
-            <span className="text-white/80 text-xs font-medium tracking-wide">AI-Powered Bioindividual Nutrition</span>
+            <span className="text-white/80 text-xs font-medium tracking-wide">Bioindividual Nutrition</span>
           </div>
 
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-5">
@@ -146,7 +146,7 @@ export default function Landing() {
                   icon: Camera,
                   title: "Scan your food",
                   description:
-                    "Photograph any meal, snack, ingredient, or receipt. Gemini Vision AI instantly identifies everything — macronutrients, micronutrients, ingredients — with no manual entry.",
+                    "Photograph any meal, snack, ingredient, or receipt. Vision technology instantly identifies everything — macronutrients, micronutrients, ingredients — with no manual entry.",
                 },
                 {
                   step: "02",
@@ -160,7 +160,7 @@ export default function Landing() {
                   icon: Sparkles,
                   title: "Get personalized guidance",
                   description:
-                    "Your AI Chef cross-references your kitchen inventory, recent meals, and lab values to recommend exactly what you should eat next — and explains precisely why.",
+                    "Your Chef cross-references your kitchen inventory, recent meals, and lab values to recommend exactly what you should eat next — and explains precisely why.",
                 },
               ].map(({ step, icon: Icon, title, description }) => (
                 <div key={step} className="flex gap-5 sm:gap-7 items-start">
@@ -197,7 +197,7 @@ export default function Landing() {
                 initials: "S.M.",
               },
               {
-                quote: "Finally an app that connects what I eat to my actual bloodwork. The AI recommendations feel personal, not generic.",
+                quote: "Finally an app that connects what I eat to my actual bloodwork. The recommendations feel personal, not generic.",
                 initials: "R.T.",
               },
             ].map(({ quote, initials }) => (
@@ -249,7 +249,7 @@ export default function Landing() {
             <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
               <p className="font-semibold text-white text-sm mb-4 uppercase tracking-wide">Kitchen CFO</p>
               {[
-                "Tracks 30+ micronutrients per meal via AI vision",
+                "Tracks 30+ micronutrients per meal via photo scan",
                 "Connects your bloodwork to food choices",
                 "Knows what's in your kitchen right now",
                 "Recommends based on your unique biology",
@@ -265,10 +265,10 @@ export default function Landing() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Photo Scan", desc: "AI identifies every nutrient" },
+              { label: "Photo Scan", desc: "Identifies every nutrient" },
               { label: "Lab Integration", desc: "Your bloodwork shapes every rec" },
               { label: "Bioindividual Profile", desc: "Recs built around your biology" },
-              { label: "AI Guidance", desc: "Personal, never generic" },
+              { label: "Smart Guidance", desc: "Personal, never generic" },
             ].map(({ label, desc }) => (
               <div key={label} className="bg-white/10 rounded-xl p-3 text-center">
                 <p className="font-display font-bold text-white text-sm mb-0.5">{label}</p>
