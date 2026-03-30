@@ -7,23 +7,23 @@ export default function Slide1Cover() {
         background: "radial-gradient(ellipse 70% 60% at 80% 50%, rgba(30,107,66,0.55) 0%, transparent 65%), radial-gradient(ellipse 50% 40% at 20% 80%, rgba(249,115,22,0.08) 0%, transparent 60%)"
       }} />
 
-      {/* Ghost camera SVG — top right */}
-      <svg className="absolute top-[6vh] right-[5vw] opacity-[0.07]" width="22vw" height="22vw" viewBox="0 0 100 80" fill="none">
-        <rect x="4" y="18" width="92" height="58" rx="10" stroke="white" strokeWidth="4"/>
-        <circle cx="50" cy="47" r="18" stroke="white" strokeWidth="4"/>
-        <circle cx="50" cy="47" r="8" stroke="white" strokeWidth="3"/>
-        <rect x="30" y="8" width="20" height="14" rx="4" fill="white"/>
-        <circle cx="80" cy="28" r="5" fill="#f97316"/>
-      </svg>
-
-      {/* Ghost chart SVG — bottom left */}
-      <svg className="absolute bottom-[4vh] left-[3vw] opacity-[0.06]" width="18vw" height="18vw" viewBox="0 0 100 100" fill="none">
-        <rect x="10" y="60" width="15" height="35" rx="3" fill="white"/>
-        <rect x="35" y="40" width="15" height="55" rx="3" fill="white"/>
-        <rect x="60" y="20" width="15" height="75" rx="3" fill="white"/>
-        <rect x="85" y="45" width="15" height="50" rx="3" fill="white"/>
-        <line x1="5" y1="98" x2="105" y2="98" stroke="white" strokeWidth="3"/>
-      </svg>
+      {/* Ghost icons grouped — top right */}
+      <div className="absolute top-[5vh] right-[4vw] flex gap-[2vw] opacity-[0.07]">
+        <svg width="14vw" height="14vw" viewBox="0 0 100 80" fill="none">
+          <rect x="4" y="18" width="92" height="58" rx="10" stroke="white" strokeWidth="4"/>
+          <circle cx="50" cy="47" r="18" stroke="white" strokeWidth="4"/>
+          <circle cx="50" cy="47" r="8" stroke="white" strokeWidth="3"/>
+          <rect x="30" y="8" width="20" height="14" rx="4" fill="white"/>
+          <circle cx="80" cy="28" r="5" fill="#f97316"/>
+        </svg>
+        <svg width="11vw" height="11vw" viewBox="0 0 100 100" fill="none">
+          <rect x="10" y="60" width="15" height="35" rx="3" fill="white"/>
+          <rect x="35" y="40" width="15" height="55" rx="3" fill="white"/>
+          <rect x="60" y="20" width="15" height="75" rx="3" fill="white"/>
+          <rect x="85" y="45" width="15" height="50" rx="3" fill="white"/>
+          <line x1="5" y1="98" x2="105" y2="98" stroke="white" strokeWidth="3"/>
+        </svg>
+      </div>
 
       {/* Orange accent line */}
       <div className="absolute left-[7vw] top-[50%] translate-y-[-50%] w-1 h-[28vh] rounded-full" style={{ background: "#f97316" }} />
@@ -64,7 +64,7 @@ export default function Slide1Cover() {
           </span>
         </div>
         <span className="font-body text-[1.3vw]" style={{ color: "rgba(255,255,255,0.3)" }}>
-          Confidential
+          2026
         </span>
       </div>
 
