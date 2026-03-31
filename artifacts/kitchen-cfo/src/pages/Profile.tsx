@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Header } from "@/components/layout/Header";
 import {
   useGetProfile,
@@ -11,8 +11,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { User, Activity, FlaskConical, Zap, Check, ExternalLink } from "lucide-react";
+import { User, Activity, FlaskConical, Zap, Check, ExternalLink, FileUp, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { fileToBase64 } from "@/lib/utils";
+import { LabImportModal } from "@/components/LabImportModal";
 
 const DIETS = ["vegan", "vegetarian", "keto", "paleo", "gluten_free", "dairy_free", "low_fodmap", "carnivore"];
 const GOALS = ["weight_loss", "muscle_gain", "energy", "longevity", "gut_health", "hormone_balance", "anti_inflammatory"];
@@ -83,6 +85,65 @@ export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { data: profile, isLoading } = useGetProfile();
+
+  const labFileInputRef = useRef<HTMLInputElement>(null);
+  const [labImportLoading, setLabImportLoading] = useState(false);
+  const [labImportModalOpen, setLabImportModalOpen] = useState(false);
+  const [labExtractedValues, setLabExtractedValues] = useState<Partial<Record<keyof LabValues, number | null>>>({});
+
+  const handleLabFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+
+    const MAX_SIZE_MB = 15;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: `Please upload a file smaller than ${MAX_SIZE_MB} MB. Lab reports are usually well under this limit.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLabImportLoading(true);
+
+    try {
+      const { base64, mimeType: detectedMime } = await fileToBase64(file);
+      const mimeType = (
+        detectedMime === "application/pdf" ||
+        detectedMime === "image/jpeg" ||
+        detectedMime === "image/png" ||
+        detectedMime === "image/webp"
+      ) ? detectedMime : "image/jpeg";
+
+      const res = await fetch("/api/import-labs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileBase64: base64, mimeType }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 413) {
+          throw new Error("File is too large for the server to process. Please try a smaller file.");
+        }
+        const err = await res.json().catch(() => ({})) as { message?: string };
+        throw new Error(err.message ?? `Request failed (${res.status})`);
+      }
+
+      const data = await res.json() as { labValues: Partial<Record<keyof LabValues, number | null>>; found: number };
+      setLabExtractedValues(data.labValues);
+      setLabImportModalOpen(true);
+    } catch (err) {
+      toast({
+        title: "Lab import failed",
+        description: err instanceof Error ? err.message : "Unable to process the file. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLabImportLoading(false);
+    }
+  };
 
   const updateMutation = useUpdateProfile({
     mutation: {
@@ -230,6 +291,18 @@ export default function Profile() {
           <p className="text-xs text-muted-foreground mb-3 -mt-1">
             Enter your most recent bloodwork. Out-of-range values will surface personalized food suggestions.
           </p>
+          <button
+            onClick={() => labFileInputRef.current?.click()}
+            disabled={labImportLoading}
+            className="w-full flex items-center justify-center gap-2 mb-3 py-2.5 px-4 rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 text-sm font-semibold hover:bg-violet-100 dark:hover:bg-violet-900/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {labImportLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <FileUp className="w-4 h-4" />
+            )}
+            {labImportLoading ? "Reading your lab report…" : "Import Lab Results"}
+          </button>
           <Card>
             <CardContent className="p-4">
               <div className="grid grid-cols-2 gap-x-4 gap-y-4">
@@ -346,6 +419,20 @@ export default function Profile() {
           {updateMutation.isPending ? "Saving..." : "Save Profile"}
         </Button>
       </div>
+
+      <input
+        type="file"
+        accept=".pdf,image/jpeg,image/png,image/webp"
+        className="hidden"
+        ref={labFileInputRef}
+        onChange={handleLabFileSelect}
+      />
+
+      <LabImportModal
+        open={labImportModalOpen}
+        extractedValues={labExtractedValues}
+        onClose={() => setLabImportModalOpen(false)}
+      />
     </div>
   );
 }
