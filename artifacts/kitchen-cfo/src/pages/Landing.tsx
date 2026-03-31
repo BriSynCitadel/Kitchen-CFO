@@ -46,11 +46,6 @@ export default function Landing() {
             </div>
             <span className="font-display font-bold text-base text-foreground">Kitchen CFO</span>
           </div>
-          <Link href="/">
-            <Button size="sm" className="h-8 px-4 text-xs font-semibold">
-              Open App
-            </Button>
-          </Link>
         </div>
       </nav>
 
@@ -87,7 +82,7 @@ export default function Landing() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a href="/api/auth/login">
+            <a href="/api/login">
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-white text-primary hover:bg-white/90 font-semibold px-8 h-12 text-base shadow-xl shadow-primary/30"
@@ -358,7 +353,7 @@ export default function Landing() {
           <p className="text-white/75 text-lg mb-8">
             Free to try. No account required. Just a photo and a few minutes.
           </p>
-          <a href="/api/auth/login">
+          <a href="/api/login">
             <Button
               size="lg"
               className="bg-white text-primary hover:bg-white/90 font-semibold px-10 h-12 text-base shadow-xl shadow-primary/30"
@@ -378,7 +373,7 @@ export default function Landing() {
               </div>
               <span className="font-display font-bold text-sm text-foreground">Kitchen CFO</span>
             </div>
-            <a href="/api/auth/login">
+            <a href="/api/login">
               <Button size="sm" className="h-8 px-5 text-xs font-semibold">
                 Try it free <ArrowRight className="w-3 h-3 ml-1.5" />
               </Button>
