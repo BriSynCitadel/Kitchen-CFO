@@ -64,8 +64,16 @@
     "speakerNotes": ""
   },
   {
-    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567808",
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567810",
     "position": 9,
+    "filepath": "src/pages/slides/Slide9TheMarket.tsx",
+    "title": "The Market",
+    "description": "$946B digital health, $31B personalized nutrition — zero apps bridging bloodwork to meals.",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567808",
+    "position": 10,
     "filepath": "src/pages/slides/Slide8TheAsk.tsx",
     "title": "The Ask",
     "description": "Try Kitchen CFO today at kitchen-intelligence.replit.app.",
