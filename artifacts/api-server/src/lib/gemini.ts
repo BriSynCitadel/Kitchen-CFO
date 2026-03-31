@@ -31,7 +31,7 @@ export async function analyzeImage(
         parts: [
           {
             inlineData: {
-              mimeType: mimeType as "image/jpeg" | "image/png" | "image/webp",
+              mimeType: mimeType as "image/jpeg" | "image/png" | "image/webp" | "application/pdf",
               data: imageBase64,
             },
           },

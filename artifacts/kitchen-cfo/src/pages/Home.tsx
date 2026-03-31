@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
-import { Camera, Upload, Utensils, X, Sparkles, ChevronRight, Flame, Beef, Wheat, Leaf, FlaskConical } from "lucide-react";
+import { Camera, Upload, Utensils, X, Sparkles, ChevronRight, Flame, Beef, Wheat, Leaf, FlaskConical, FileUp, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -11,6 +11,7 @@ import {
   useGetInventory,
   useGetProfile,
 } from "@workspace/api-client-react";
+import type { LabValues } from "@workspace/api-client-react";
 import { compressImage, fileToBase64, formatNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import type { FoodAnalysisResult } from "@workspace/api-client-react";
+import { LabImportModal } from "@/components/LabImportModal";
 
 
 const MEAL_LABELS: Record<string, string> = {
@@ -102,6 +104,7 @@ export default function Home() {
   const queryClient = useQueryClient();
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const labFileInputRef = useRef<HTMLInputElement>(null);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<FoodAnalysisResult | null>(null);
@@ -118,6 +121,58 @@ export default function Home() {
   const [suggestion, setSuggestion] = useState<QuickSuggestion | null>(null);
   const [suggestionLoading, setSuggestionLoading] = useState(false);
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
+
+  const [labImportLoading, setLabImportLoading] = useState(false);
+  const [labImportModalOpen, setLabImportModalOpen] = useState(false);
+  const [labExtractedValues, setLabExtractedValues] = useState<Partial<Record<keyof LabValues, number>>>({});
+
+  const handleLabFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+
+    const MAX_SIZE_MB = 20;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: `Please upload a file smaller than ${MAX_SIZE_MB} MB.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLabImportLoading(true);
+
+    try {
+      const { base64, mimeType: detectedMime } = await fileToBase64(file);
+      const mimeType = (detectedMime === "application/pdf" || detectedMime === "image/jpeg" || detectedMime === "image/png" || detectedMime === "image/webp")
+        ? detectedMime
+        : "image/jpeg";
+
+      const res = await fetch("/api/import-labs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileBase64: base64, mimeType }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { message?: string };
+        throw new Error(err.message ?? `Request failed (${res.status})`);
+      }
+
+      const data = await res.json() as { labValues: Partial<Record<keyof LabValues, number>>; found: number };
+      setLabExtractedValues(data.labValues);
+      setLabImportModalOpen(true);
+    } catch (err) {
+      toast({
+        title: "Lab import failed",
+        description: err instanceof Error ? err.message : "Unable to process the file. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLabImportLoading(false);
+    }
+  };
 
   const fetchSuggestion = async () => {
     setSuggestionLoading(true);
@@ -402,6 +457,13 @@ export default function Home() {
         ref={galleryInputRef}
         onChange={handleFileSelect}
       />
+      <input
+        type="file"
+        accept=".pdf,image/jpeg,image/png,image/webp"
+        className="hidden"
+        ref={labFileInputRef}
+        onChange={handleLabFileSelect}
+      />
 
       <AnimatePresence mode="wait">
         {!imagePreview ? (
@@ -664,6 +726,36 @@ export default function Home() {
               </AnimatePresence>
             </div>
 
+            {/* ── Import Lab Results ── */}
+            <div className="px-4 mt-3">
+              <button
+                onClick={() => labFileInputRef.current?.click()}
+                disabled={labImportLoading}
+                className="w-full bg-card border border-border/50 rounded-2xl p-4 flex items-center gap-3 hover:border-violet-400/40 hover:shadow-sm hover:shadow-violet-500/5 transition-all text-left group disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <div className="w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-100/80 transition-colors">
+                  {labImportLoading ? (
+                    <Loader2 className="w-4 h-4 text-violet-600 dark:text-violet-400 animate-spin" />
+                  ) : (
+                    <FileUp className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm text-foreground">
+                    {labImportLoading ? "Reading your lab report…" : "Import Lab Results"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {labImportLoading
+                      ? "This may take a few seconds"
+                      : "Upload a PDF or photo — values auto-fill your health profile"}
+                  </p>
+                </div>
+                {!labImportLoading && (
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/50 group-hover:text-violet-500 transition-colors flex-shrink-0" />
+                )}
+              </button>
+            </div>
+
             {/* ── Camera Button ── */}
             <div className="flex flex-col items-center py-8 gap-4">
               <div className="relative">
@@ -910,6 +1002,12 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <LabImportModal
+        open={labImportModalOpen}
+        extractedValues={labExtractedValues}
+        onClose={() => setLabImportModalOpen(false)}
+      />
     </div>
   );
 }

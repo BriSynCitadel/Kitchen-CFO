@@ -10,6 +10,7 @@ import demoRouter from "./demo";
 import feedbackRouter from "./feedback";
 import quantitySuggestionsRouter from "./quantity-suggestions";
 import quickSuggestionRouter from "./quick-suggestion";
+import importLabsRouter from "./import-labs";
 import authRouter from "./auth";
 
 const router: IRouter = Router();
@@ -26,5 +27,6 @@ router.use(demoRouter);
 router.use(feedbackRouter);
 router.use(quantitySuggestionsRouter);
 router.use(quickSuggestionRouter);
+router.use(importLabsRouter);
 
 export default router;
