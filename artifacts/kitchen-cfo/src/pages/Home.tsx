@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Camera, Upload, Utensils, X, Sparkles, ChevronRight, Flame, Beef, Wheat, Leaf, FlaskConical, FileUp, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import type { FoodAnalysisResult } from "@workspace/api-client-react";
 import { LabImportModal } from "@/components/LabImportModal";
+import { useAuth } from "@workspace/replit-auth-web";
 
 
 const MEAL_LABELS: Record<string, string> = {
@@ -102,6 +103,8 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
+
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const labFileInputRef = useRef<HTMLInputElement>(null);
@@ -110,6 +113,14 @@ export default function Home() {
   const [analysis, setAnalysis] = useState<FoodAnalysisResult | null>(null);
   const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem("cfo_welcomed"));
   const [showDemoBanner, setShowDemoBanner] = useState(() => !!localStorage.getItem("cfo_demo_mode") && !localStorage.getItem("cfo_demo_banner_dismissed"));
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      localStorage.removeItem("cfo_demo_mode");
+      localStorage.removeItem("cfo_demo_banner_dismissed");
+      setShowDemoBanner(false);
+    }
+  }, [isAuthenticated]);
 
   type QuickSuggestion = {
     title: string;
