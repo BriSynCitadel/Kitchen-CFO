@@ -131,11 +131,11 @@ export default function Home() {
     if (!file) return;
     e.target.value = "";
 
-    const MAX_SIZE_MB = 20;
+    const MAX_SIZE_MB = 15;
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
       toast({
         title: "File too large",
-        description: `Please upload a file smaller than ${MAX_SIZE_MB} MB.`,
+        description: `Please upload a file smaller than ${MAX_SIZE_MB} MB. Lab reports are usually well under this limit.`,
         variant: "destructive",
       });
       return;
@@ -156,6 +156,9 @@ export default function Home() {
       });
 
       if (!res.ok) {
+        if (res.status === 413) {
+          throw new Error("File is too large for the server to process. Please try a smaller file.");
+        }
         const err = await res.json().catch(() => ({})) as { message?: string };
         throw new Error(err.message ?? `Request failed (${res.status})`);
       }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, FlaskConical, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,14 +46,24 @@ export function LabImportModal({ open, extractedValues, onClose }: Props) {
   const queryClient = useQueryClient();
   const { data: profile } = useGetProfile();
 
-  const [values, setValues] = useState<Record<string, string>>(() => {
+  const buildValues = (ev: Partial<Record<keyof LabValues, number | null>>) => {
     const initial: Record<string, string> = {};
     for (const marker of LAB_MARKERS) {
-      const extracted = extractedValues[marker.key];
+      const extracted = ev[marker.key];
       initial[marker.key] = extracted != null ? String(extracted) : "";
     }
     return initial;
-  });
+  };
+
+  const [values, setValues] = useState<Record<string, string>>(() =>
+    buildValues(extractedValues)
+  );
+
+  useEffect(() => {
+    if (open) {
+      setValues(buildValues(extractedValues));
+    }
+  }, [open, extractedValues]);
 
   const foundKeys = new Set(
     LAB_MARKERS
