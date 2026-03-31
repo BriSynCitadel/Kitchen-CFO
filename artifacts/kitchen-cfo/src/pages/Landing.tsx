@@ -10,8 +10,15 @@ export default function Landing() {
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
   const [, setLocation] = useLocation();
 
-  const handleTryDemo = () => {
-    localStorage.removeItem("cfo_welcomed");
+  const handleTryDemo = async () => {
+    try {
+      await fetch("/api/demo/load", { method: "POST" });
+    } catch {
+      // navigate anyway — demo data will be missing but app is usable
+    }
+    localStorage.setItem("cfo_demo_mode", "1");
+    localStorage.setItem("cfo_welcomed", "1");
+    localStorage.removeItem("cfo_demo_banner_dismissed");
     setLocation("/");
   };
 
@@ -80,14 +87,14 @@ export default function Landing() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link href="/">
+            <a href="/api/auth/login">
               <Button
                 size="lg"
                 className="w-full sm:w-auto bg-white text-primary hover:bg-white/90 font-semibold px-8 h-12 text-base shadow-xl shadow-primary/30"
               >
                 Try it free <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-            </Link>
+            </a>
             <button
               onClick={handleTryDemo}
               className="w-full sm:w-auto flex items-center justify-center gap-2 h-12 px-8 rounded-xl border border-white/30 text-white/90 text-base font-medium hover:bg-white/10 transition-colors"
@@ -266,7 +273,7 @@ export default function Landing() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label: "Photo Scan", desc: "Identifies every nutrient" },
-              { label: "Lab Integration", desc: "Your bloodwork shapes every rec" },
+              { label: "Lab Integration", desc: "Your bloodwork shapes every recommendation" },
               { label: "Bioindividual Profile", desc: "Recs built around your biology" },
               { label: "Smart Guidance", desc: "Personal, never generic" },
             ].map(({ label, desc }) => (
@@ -351,14 +358,14 @@ export default function Landing() {
           <p className="text-white/75 text-lg mb-8">
             Free to try. No account required. Just a photo and a few minutes.
           </p>
-          <Link href="/">
+          <a href="/api/auth/login">
             <Button
               size="lg"
               className="bg-white text-primary hover:bg-white/90 font-semibold px-10 h-12 text-base shadow-xl shadow-primary/30"
             >
               Try it free <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -371,11 +378,11 @@ export default function Landing() {
               </div>
               <span className="font-display font-bold text-sm text-foreground">Kitchen CFO</span>
             </div>
-            <Link href="/">
+            <a href="/api/auth/login">
               <Button size="sm" className="h-8 px-5 text-xs font-semibold">
                 Try it free <ArrowRight className="w-3 h-3 ml-1.5" />
               </Button>
-            </Link>
+            </a>
           </div>
 
           <div className="flex flex-col items-center gap-2">

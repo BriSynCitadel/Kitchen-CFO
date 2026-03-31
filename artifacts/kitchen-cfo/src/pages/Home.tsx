@@ -348,7 +348,7 @@ export default function Home() {
               </div>
 
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                You're viewing Kitchen CFO — a food intelligence app that connects your bloodwork to your kitchen. Any data visible may belong to another user. Load fresh demo data to explore all features with sample information.
+                Kitchen CFO connects your bloodwork to your kitchen and tells you exactly what to eat next — based on your biology, not someone else's. Load demo data to explore all features, or log in to start tracking your own.
               </p>
 
               <div className="space-y-3">
