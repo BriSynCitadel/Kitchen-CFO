@@ -16,7 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { fileToBase64 } from "@/lib/utils";
 import { LabImportModal } from "@/components/LabImportModal";
 
-const DIETS = ["vegan", "vegetarian", "keto", "paleo", "gluten_free", "dairy_free", "low_fodmap", "carnivore"];
+const DIETS = ["vegan", "vegetarian", "keto", "paleo", "gluten_free", "dairy_free", "low_fodmap", "carnivore", "pork", "seafood", "pescatarian"];
 const GOALS = ["weight_loss", "muscle_gain", "energy", "longevity", "gut_health", "hormone_balance", "anti_inflammatory"];
 
 const SYMPTOMS: { id: string; label: string }[] = [
