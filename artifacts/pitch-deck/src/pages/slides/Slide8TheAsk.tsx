@@ -37,18 +37,12 @@ export default function Slide8TheAsk() {
       </svg>
 
       {/* Ghost bars — bottom left */}
-      <svg
-        className="absolute bottom-[3vh] left-[2vw] opacity-[0.05]"
-        width="16vw"
-        height="16vw"
-        viewBox="0 0 100 100"
-        fill="none"
-      >
-        <rect x="10" y="60" width="15" height="35" rx="3" fill="white" />
-        <rect x="35" y="40" width="15" height="55" rx="3" fill="white" />
-        <rect x="60" y="20" width="15" height="75" rx="3" fill="white" />
-        <rect x="85" y="45" width="15" height="50" rx="3" fill="white" />
-        <line x1="5" y1="98" x2="105" y2="98" stroke="white" strokeWidth="3" />
+      <svg className="absolute bottom-[3vh] left-[2vw] opacity-[0.05]" width="16vw" height="16vw" viewBox="0 0 100 100" fill="none">
+        <rect x="10" y="60" width="15" height="35" rx="3" fill="white"/>
+        <rect x="35" y="40" width="15" height="55" rx="3" fill="white"/>
+        <rect x="60" y="20" width="15" height="75" rx="3" fill="white"/>
+        <rect x="85" y="45" width="15" height="50" rx="3" fill="white"/>
+        <line x1="5" y1="98" x2="105" y2="98" stroke="white" strokeWidth="3"/>
       </svg>
 
       {/* Orange accent line — left side */}
@@ -67,31 +61,17 @@ export default function Slide8TheAsk() {
         </p>
 
         <h2 className="font-display font-black text-[6vw] tracking-tight text-white mb-[4vh] leading-none">
-          THE ASK Where Kitchen CFO goes next. We're looking for beta
-          practitioners — functional medicine doctors, nutritionists, and health
-          coaches — to pilot Kitchen CFO with their patients and validate the
-          B2B2C model. If you prescribe it, your patients convert. 1
-          practitioner = 200+ users. Try it now: kitchen-intelligence.replit.app
+          Where Kitchen CFO goes next.
         </h2>
-
-        <p
-          className="font-body text-[1.7vw] leading-relaxed mb-[6vh]"
-          style={{ color: "rgba(255,255,255,0.6)" }}
-        >
-          "Your body is finally being listened to."
+        <p className="font-body text-[1.8vw] leading-relaxed mb-[3vh]" style={{ color: "rgba(255,255,255,0.85)" }}>
+          We're looking for beta practitioners — functional medicine doctors, nutritionists, and health coaches — to pilot Kitchen CFO with their patients and validate the B2B2C model.
         </p>
-
-        {/* Divider */}
-        <div
-          className="w-[20vw] h-px mb-[4vh]"
-          style={{ background: "rgba(249,115,22,0.4)" }}
-        />
-
-        <p
-          className="font-body text-[1.4vw]"
-          style={{ color: "rgba(255,255,255,0.35)" }}
-        >
-          Kitchen CFO — Food Intelligence for Your Biology
+        <p className="font-display font-black text-[2.5vw] leading-none mb-[3vh]" style={{ color: "#f97316" }}>
+          If you prescribe it, your patients convert.<br />
+          1 practitioner = 200+ users.
+        </p>
+        <p className="font-body text-[1.6vw]" style={{ color: "rgba(255,255,255,0.7)" }}>
+          Try it now: kitchen-intelligence.replit.app
         </p>
       </div>
     </div>
