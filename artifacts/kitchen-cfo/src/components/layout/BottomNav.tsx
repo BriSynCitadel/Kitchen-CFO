@@ -11,9 +11,9 @@ export function BottomNav() {
 
   const navItems = [
     { href: "/", icon: Camera, label: "Scan", active: isHome },
-    { href: "/diary", icon: Book, label: "Diary", active: isDiary },
-    { href: "/kitchen", icon: Refrigerator, label: "Kitchen", active: isKitchen },
     { href: "/recommendations", icon: Sparkles, label: "For You", active: isRecommendations },
+    { href: "/kitchen", icon: Refrigerator, label: "Kitchen", active: isKitchen },
+    { href: "/diary", icon: Book, label: "Diary", active: isDiary },
     { href: "/profile", icon: User, label: "Profile", active: isProfile },
   ];
 
