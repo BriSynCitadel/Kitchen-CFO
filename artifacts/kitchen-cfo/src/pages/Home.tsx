@@ -124,7 +124,7 @@ export default function Home() {
 
   const [labImportLoading, setLabImportLoading] = useState(false);
   const [labImportModalOpen, setLabImportModalOpen] = useState(false);
-  const [labExtractedValues, setLabExtractedValues] = useState<Partial<Record<keyof LabValues, number>>>({});
+  const [labExtractedValues, setLabExtractedValues] = useState<Partial<Record<keyof LabValues, number | null>>>({});
 
   const handleLabFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -160,7 +160,7 @@ export default function Home() {
         throw new Error(err.message ?? `Request failed (${res.status})`);
       }
 
-      const data = await res.json() as { labValues: Partial<Record<keyof LabValues, number>>; found: number };
+      const data = await res.json() as { labValues: Partial<Record<keyof LabValues, number | null>>; found: number };
       setLabExtractedValues(data.labValues);
       setLabImportModalOpen(true);
     } catch (err) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, FlaskConical, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { X, FlaskConical, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUpdateProfile, useGetProfile, getGetProfileQueryKey } from "@workspace/api-client-react";
@@ -37,7 +37,7 @@ const LAB_MARKERS: LabMarker[] = [
 
 interface Props {
   open: boolean;
-  extractedValues: Partial<Record<keyof LabValues, number>>;
+  extractedValues: Partial<Record<keyof LabValues, number | null>>;
   onClose: () => void;
 }
 
@@ -55,16 +55,16 @@ export function LabImportModal({ open, extractedValues, onClose }: Props) {
     return initial;
   });
 
-  const [showAll, setShowAll] = useState(false);
-
-  const foundCount = LAB_MARKERS.filter((m) => extractedValues[m.key] != null).length;
   const foundKeys = new Set(
-    LAB_MARKERS.filter((m) => extractedValues[m.key] != null).map((m) => m.key)
+    LAB_MARKERS
+      .filter((m) => {
+        const v = extractedValues[m.key];
+        return v != null;
+      })
+      .map((m) => m.key)
   );
 
-  const visibleMarkers = showAll
-    ? LAB_MARKERS
-    : LAB_MARKERS.filter((m) => foundKeys.has(m.key));
+  const foundCount = foundKeys.size;
 
   const updateMutation = useUpdateProfile({
     mutation: {
@@ -123,14 +123,14 @@ export function LabImportModal({ open, extractedValues, onClose }: Props) {
             <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-border/50 flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-2xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                  <FlaskConical className="w-4.5 h-4.5 text-violet-600 dark:text-violet-400" />
+                  <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                 </div>
                 <div>
                   <h2 className="font-display font-bold text-base">Review Lab Results</h2>
                   <p className="text-xs text-muted-foreground">
                     {foundCount > 0
-                      ? `${foundCount} marker${foundCount !== 1 ? "s" : ""} found — review and correct if needed`
-                      : "No markers detected — enter values manually below"}
+                      ? `${foundCount} of ${LAB_MARKERS.length} markers detected — review all and correct if needed`
+                      : "No markers detected — enter your values manually below"}
                   </p>
                 </div>
               </div>
@@ -143,66 +143,50 @@ export function LabImportModal({ open, extractedValues, onClose }: Props) {
               </button>
             </div>
 
-            {/* Body */}
+            {/* Body — all 17 markers always visible */}
             <div className="overflow-y-auto flex-1 px-5 py-4 space-y-3">
               {foundCount === 0 && (
                 <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-800 dark:text-amber-300">
-                  No lab values were automatically detected. You can still enter your values manually below.
+                  No lab values were automatically detected. Enter your values manually below.
                 </div>
               )}
 
-              {visibleMarkers.map((marker) => {
-                const wasFound = foundKeys.has(marker.key);
+              {LAB_MARKERS.map((marker) => {
+                const wasDetected = foundKeys.has(marker.key);
                 return (
-                  <div key={marker.key} className="flex items-center gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        {wasFound && (
-                          <CheckCircle className="w-3 h-3 text-primary flex-shrink-0" />
-                        )}
-                        <span className="text-sm font-medium text-foreground">{marker.label}</span>
-                        <span className="text-xs text-muted-foreground">· {marker.ref}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          step="any"
-                          value={values[marker.key] ?? ""}
-                          onChange={(e) =>
-                            setValues((prev) => ({ ...prev, [marker.key]: e.target.value }))
-                          }
-                          placeholder="—"
-                          className="h-9 text-sm"
-                        />
-                        <span className="text-xs text-muted-foreground whitespace-nowrap w-16 flex-shrink-0">
-                          {marker.unit}
-                        </span>
-                      </div>
+                  <div
+                    key={marker.key}
+                    className={`rounded-xl px-3 py-2.5 border ${
+                      wasDetected
+                        ? "border-primary/20 bg-primary/5"
+                        : "border-border/50 bg-transparent"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      {wasDetected && (
+                        <CheckCircle className="w-3 h-3 text-primary flex-shrink-0" />
+                      )}
+                      <span className="text-sm font-medium text-foreground">{marker.label}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">{marker.ref}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        step="any"
+                        value={values[marker.key] ?? ""}
+                        onChange={(e) =>
+                          setValues((prev) => ({ ...prev, [marker.key]: e.target.value }))
+                        }
+                        placeholder="Not found"
+                        className="h-8 text-sm"
+                      />
+                      <span className="text-xs text-muted-foreground whitespace-nowrap w-16 flex-shrink-0">
+                        {marker.unit}
+                      </span>
                     </div>
                   </div>
                 );
               })}
-
-              {/* Toggle show all / show found only */}
-              {foundCount > 0 && foundCount < LAB_MARKERS.length && (
-                <button
-                  type="button"
-                  onClick={() => setShowAll((v) => !v)}
-                  className="w-full flex items-center justify-center gap-1.5 text-xs text-primary/70 hover:text-primary font-medium transition-colors py-1"
-                >
-                  {showAll ? (
-                    <>
-                      <ChevronUp className="w-3.5 h-3.5" />
-                      Show detected only
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-3.5 h-3.5" />
-                      Show all {LAB_MARKERS.length} markers
-                    </>
-                  )}
-                </button>
-              )}
             </div>
 
             {/* Footer */}
