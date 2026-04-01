@@ -493,11 +493,8 @@ export default function Home() {
                 </div>
 
                 <h1 className="text-3xl font-display font-bold text-white leading-snug">
-                  Food is Medicine.
+                  Your body is finally<br />being listened to.
                 </h1>
-                <p className="text-white/75 text-base mt-1 font-medium">
-                  Know What You're Eating.
-                </p>
               </div>
             </div>
 

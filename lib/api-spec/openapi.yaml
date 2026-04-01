@@ -900,6 +900,10 @@ components:
           type: number
           description: Free T3 pg/mL
           nullable: true
+        sodium:
+          type: number
+          description: Serum Sodium mEq/L
+          nullable: true
 
     NutritionProfile:
       type: object

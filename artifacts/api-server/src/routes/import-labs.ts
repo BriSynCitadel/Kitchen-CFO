@@ -13,7 +13,7 @@ const ALLOWED_MIME_TYPES = new Set([
 const LAB_MARKER_KEYS = [
   "vitaminD", "vitaminB12", "iron", "ferritin", "crp", "glucose",
   "totalCholesterol", "ldl", "hdl", "magnesium", "zinc", "tsh",
-  "folate", "uricAcid", "potassium", "freeT4", "freeT3",
+  "folate", "uricAcid", "potassium", "freeT4", "freeT3", "sodium",
 ] as const;
 
 type LabMarkerKey = typeof LAB_MARKER_KEYS[number];
@@ -21,8 +21,8 @@ type LabResult = Record<LabMarkerKey, number | null>;
 
 const LAB_EXTRACTION_PROMPT = `You are a medical lab report parser. Examine this document carefully and extract lab test results.
 
-You must return a JSON object with EXACTLY these 17 keys:
-vitaminD, vitaminB12, iron, ferritin, crp, glucose, totalCholesterol, ldl, hdl, magnesium, zinc, tsh, folate, uricAcid, potassium, freeT4, freeT3
+You must return a JSON object with EXACTLY these 18 keys:
+vitaminD, vitaminB12, iron, ferritin, crp, glucose, totalCholesterol, ldl, hdl, magnesium, zinc, tsh, folate, uricAcid, potassium, freeT4, freeT3, sodium
 
 For each marker:
 - If the value is explicitly present in the document, return the numeric value (no units, no reference ranges).
@@ -48,8 +48,9 @@ Expected units:
 - potassium: Potassium (mEq/L or mmol/L)
 - freeT4: Free T4 / Free Thyroxine (ng/dL)
 - freeT3: Free T3 / Free Triiodothyronine (pg/mL)
+- sodium: Serum Sodium / Sodium (mEq/L)
 
-Return ONLY valid JSON with all 17 keys. Example (if only vitaminD and tsh were found):
+Return ONLY valid JSON with all 18 keys. Example (if only vitaminD and tsh were found):
 {
   "vitaminD": 32.5,
   "vitaminB12": null,
@@ -67,7 +68,8 @@ Return ONLY valid JSON with all 17 keys. Example (if only vitaminD and tsh were 
   "uricAcid": null,
   "potassium": null,
   "freeT4": null,
-  "freeT3": null
+  "freeT3": null,
+  "sodium": null
 }`;
 
 function getUserId(req: Request): string {

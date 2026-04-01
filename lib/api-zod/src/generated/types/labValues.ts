@@ -45,4 +45,6 @@ export interface LabValues {
   freeT4?: number | null;
   /** Free T3 pg/mL */
   freeT3?: number | null;
+  /** Serum Sodium mEq/L */
+  sodium?: number | null;
 }

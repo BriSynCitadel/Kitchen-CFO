@@ -54,6 +54,7 @@ const LAB_MARKERS: LabMarker[] = [
   { key: "potassium", label: "Potassium", unit: "mEq/L", placeholder: "e.g. 4.1", ref: "3.5–5.0 normal" },
   { key: "freeT4", label: "Free T4", unit: "ng/dL", placeholder: "e.g. 1.1", ref: "0.8–1.8 normal" },
   { key: "freeT3", label: "Free T3", unit: "pg/mL", placeholder: "e.g. 3.2", ref: "2.3–4.2 normal" },
+  { key: "sodium", label: "Sodium", unit: "mEq/L", placeholder: "e.g. 140", ref: "136–145 normal" },
 ];
 
 function SectionHeader({ icon: Icon, label, color = "text-primary" }: { icon: React.ElementType; label: string; color?: string }) {
@@ -88,6 +89,7 @@ export default function Profile() {
 
   const labFileInputRef = useRef<HTMLInputElement>(null);
   const [labImportLoading, setLabImportLoading] = useState(false);
+  const [showLabFields, setShowLabFields] = useState(false);
   const [labImportModalOpen, setLabImportModalOpen] = useState(false);
   const [labExtractedValues, setLabExtractedValues] = useState<Partial<Record<keyof LabValues, number | null>>>({});
 
@@ -251,9 +253,13 @@ export default function Profile() {
             PDF or image · Gemini AI reads your bloodwork instantly
           </span>
         </button>
-        <p className="text-xs text-muted-foreground text-center mt-2.5">
-          Or enter values manually below
-        </p>
+        <button
+          type="button"
+          onClick={() => setShowLabFields((v) => !v)}
+          className="w-full text-xs text-muted-foreground text-center mt-2.5 hover:text-foreground transition-colors py-1"
+        >
+          {showLabFields ? "Hide manual entry ↑" : "Or enter values manually below ↓"}
+        </button>
       </div>
 
       <div className="px-4 py-6 space-y-8">
@@ -321,6 +327,8 @@ export default function Profile() {
           <p className="text-xs text-muted-foreground mb-3 -mt-1">
             Enter your most recent bloodwork. Out-of-range values will surface personalized food suggestions.
           </p>
+
+          {showLabFields && (
           <Card>
             <CardContent className="p-4">
               <div className="grid grid-cols-2 gap-x-4 gap-y-4">
@@ -345,8 +353,9 @@ export default function Profile() {
               </div>
             </CardContent>
           </Card>
+          )}
 
-          {LAB_MARKERS.every((m) => !formData.labValues[m.key]) && (
+          {showLabFields && LAB_MARKERS.every((m) => !formData.labValues[m.key]) && (
             <div className="mt-4 bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-1.5">
                 <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400 flex-shrink-0" />

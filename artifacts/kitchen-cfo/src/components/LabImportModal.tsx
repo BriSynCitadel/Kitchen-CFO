@@ -33,6 +33,7 @@ const LAB_MARKERS: LabMarker[] = [
   { key: "potassium", label: "Potassium", unit: "mEq/L", ref: "3.5–5.0 normal" },
   { key: "freeT4", label: "Free T4", unit: "ng/dL", ref: "0.8–1.8 normal" },
   { key: "freeT3", label: "Free T3", unit: "pg/mL", ref: "2.3–4.2 normal" },
+  { key: "sodium", label: "Sodium", unit: "mEq/L", ref: "136–145 normal" },
 ];
 
 interface Props {

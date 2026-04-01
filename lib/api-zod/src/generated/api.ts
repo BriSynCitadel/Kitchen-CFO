@@ -422,6 +422,7 @@ export const GetProfileResponse = zod.object({
       potassium: zod.number().nullish().describe("Potassium mEq\/L"),
       freeT4: zod.number().nullish().describe("Free T4 ng\/dL"),
       freeT3: zod.number().nullish().describe("Free T3 pg\/mL"),
+      sodium: zod.number().nullish().describe("Serum Sodium mEq\/L"),
     })
     .nullish(),
   symptoms: zod
@@ -482,6 +483,7 @@ export const UpdateProfileBody = zod.object({
       potassium: zod.number().nullish().describe("Potassium mEq\/L"),
       freeT4: zod.number().nullish().describe("Free T4 ng\/dL"),
       freeT3: zod.number().nullish().describe("Free T3 pg\/mL"),
+      sodium: zod.number().nullish().describe("Serum Sodium mEq\/L"),
     })
     .nullish(),
   symptoms: zod
@@ -547,6 +549,7 @@ export const UpdateProfileResponse = zod.object({
       potassium: zod.number().nullish().describe("Potassium mEq\/L"),
       freeT4: zod.number().nullish().describe("Free T4 ng\/dL"),
       freeT3: zod.number().nullish().describe("Free T3 pg\/mL"),
+      sodium: zod.number().nullish().describe("Serum Sodium mEq\/L"),
     })
     .nullish(),
   symptoms: zod
