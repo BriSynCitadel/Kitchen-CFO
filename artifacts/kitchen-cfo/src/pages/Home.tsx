@@ -923,6 +923,34 @@ export default function Home() {
                     </Badge>
                   </div>
                 </div>
+
+                {!hasAnyLabValue && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                    className="mx-2 rounded-2xl bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 p-4 flex items-start gap-3"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground mb-1">
+                        Want recommendations based on your biology?
+                      </p>
+                      <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                        Add your lab results to unlock personalized guidance.
+                      </p>
+                      <Button
+                        size="sm"
+                        className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
+                        onClick={() => setLocation("/profile")}
+                      >
+                        Add Lab Results →
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             )}
           </motion.div>

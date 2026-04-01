@@ -229,6 +229,33 @@ export default function Profile() {
     <div className="pb-28 max-w-md mx-auto">
       <Header title="My Health Profile" showSettings />
 
+      {/* ── TOP IMPORT CTA ── */}
+      <div className="px-4 pt-6 pb-2">
+        <button
+          id="lab-import"
+          onClick={() => labFileInputRef.current?.click()}
+          disabled={labImportLoading}
+          className="w-full flex flex-col items-center justify-center gap-2 py-5 px-4 rounded-2xl border-2 border-violet-300 dark:border-violet-700 bg-violet-50 dark:bg-violet-950/30 hover:bg-violet-100 dark:hover:bg-violet-900/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+        >
+          <div className="flex items-center gap-3 text-violet-700 dark:text-violet-300">
+            {labImportLoading ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <FileUp className="w-6 h-6" />
+            )}
+            <span className="text-base font-bold">
+              {labImportLoading ? "Reading your lab report…" : "Import Lab Results"}
+            </span>
+          </div>
+          <span className="text-xs text-violet-500 dark:text-violet-400 font-medium">
+            PDF or image · Gemini AI reads your bloodwork instantly
+          </span>
+        </button>
+        <p className="text-xs text-muted-foreground text-center mt-2.5">
+          Or enter values manually below
+        </p>
+      </div>
+
       <div className="px-4 py-6 space-y-8">
         {/* ── BASIC INFO ── */}
         <section>
@@ -294,18 +321,6 @@ export default function Profile() {
           <p className="text-xs text-muted-foreground mb-3 -mt-1">
             Enter your most recent bloodwork. Out-of-range values will surface personalized food suggestions.
           </p>
-          <button
-            onClick={() => labFileInputRef.current?.click()}
-            disabled={labImportLoading}
-            className="w-full flex items-center justify-center gap-2 mb-3 py-2.5 px-4 rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 text-sm font-semibold hover:bg-violet-100 dark:hover:bg-violet-900/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {labImportLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <FileUp className="w-4 h-4" />
-            )}
-            {labImportLoading ? "Reading your lab report…" : "Import Lab Results"}
-          </button>
           <Card>
             <CardContent className="p-4">
               <div className="grid grid-cols-2 gap-x-4 gap-y-4">
