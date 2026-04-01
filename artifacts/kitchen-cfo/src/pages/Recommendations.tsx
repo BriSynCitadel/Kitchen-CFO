@@ -248,15 +248,7 @@ export default function Recommendations() {
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between mt-2 pt-4 border-t border-border/50">
-                      <div className="flex -space-x-2">
-                        {rec.ingredients?.slice(0, 3).map((ing, j) => (
-                           <div key={j} className="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center text-[10px] font-bold shadow-sm" title={ing}>
-                             {ing.charAt(0).toUpperCase()}
-                           </div>
-                        ))}
-                      </div>
-                      
+                    <div className="flex items-center justify-end mt-2 pt-4 border-t border-border/50">
                       {rec.estimatedNutrients && (
                         <div className="text-right">
                           <p className="text-sm font-bold text-foreground">{formatNumber(rec.estimatedNutrients.calories)} kcal</p>
