@@ -122,6 +122,8 @@ export default function Home() {
   type QuickSuggestion = {
     title: string;
     description: string;
+    cookTime: string | null;
+    difficulty: string | null;
     labMarker: string | null;
     userValue: number | null;
     optimalRange: string | null;
@@ -609,6 +611,11 @@ export default function Home() {
                       <div className="flex-1 min-w-0">
                         <p className="text-[10px] font-semibold text-primary uppercase tracking-widest mb-0.5">Eat This Next</p>
                         <p className="font-display font-bold text-foreground text-base leading-snug">{suggestion.title}</p>
+                        {(suggestion.cookTime || suggestion.difficulty) && (
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            ⏱ {suggestion.cookTime} · {suggestion.difficulty}
+                          </p>
+                        )}
                         <p className="text-sm text-muted-foreground mt-1 leading-snug">{suggestion.description}</p>
                       </div>
                     </div>

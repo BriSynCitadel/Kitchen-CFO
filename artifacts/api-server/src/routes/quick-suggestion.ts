@@ -76,11 +76,14 @@ RULES:
 4. Be specific: name an actual meal (e.g. "Sautéed Spinach & Eggs with Sardines"), not a vague category.
 5. The description must be one sentence, max 20 words, explaining why this meal is right for them right now.
 6. If a lab marker is being targeted, include labMarker (human-readable, e.g. "Vitamin D"), userValue (number), and optimalRange (string).
+7. Include cookTime (realistic prep + cook time, e.g. "20 min") and difficulty ("Easy", "Medium", or "Advanced").
 
 Return ONLY valid JSON with no markdown. Example with a lab target:
 {
   "title": "Specific Meal Name",
   "description": "One sentence, max 20 words, why this is perfect for them right now.",
+  "cookTime": "20 min",
+  "difficulty": "Easy",
   "labMarker": "Vitamin D",
   "userValue": 18,
   "optimalRange": "≥50 ng/mL"
@@ -90,6 +93,8 @@ Example without a lab target:
 {
   "title": "Specific Meal Name",
   "description": "One sentence, max 20 words, why this is perfect for them right now.",
+  "cookTime": "15 min",
+  "difficulty": "Easy",
   "labMarker": null,
   "userValue": null,
   "optimalRange": null
@@ -101,6 +106,8 @@ Example without a lab target:
       let parsed: {
         title: string;
         description: string;
+        cookTime?: string | null;
+        difficulty?: string | null;
         labMarker?: string | null;
         userValue?: number | null;
         optimalRange?: string | null;
@@ -121,6 +128,8 @@ Example without a lab target:
       res.json({
         title: parsed.title,
         description: parsed.description,
+        cookTime: parsed.cookTime ?? null,
+        difficulty: parsed.difficulty ?? null,
         labMarker: parsed.labMarker ?? null,
         userValue: parsed.userValue ?? null,
         optimalRange: parsed.optimalRange ?? null,

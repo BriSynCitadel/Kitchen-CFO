@@ -17,6 +17,8 @@ type RecommendationWithLabTarget = {
   category: string;
   ingredients?: string[];
   priority: string;
+  cookTime?: string | null;
+  difficulty?: string | null;
   estimatedNutrients?: { calories?: number };
   targetMarker?: string | null;
   userValue?: number | null;
@@ -213,9 +215,14 @@ export default function Recommendations() {
                         <Badge className="bg-accent/10 text-accent hover:bg-accent/10 border-0">Highly Recommended</Badge>
                       )}
                     </div>
-                    <h3 className="font-display text-lg font-bold text-foreground leading-tight mb-2">
+                    <h3 className="font-display text-lg font-bold text-foreground leading-tight mb-1">
                       {rec.title}
                     </h3>
+                    {(rec.cookTime || rec.difficulty) && (
+                      <p className="text-xs text-muted-foreground mb-2">
+                        ⏱ {rec.cookTime} · {rec.difficulty}
+                      </p>
+                    )}
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
                       {rec.description}
                     </p>
