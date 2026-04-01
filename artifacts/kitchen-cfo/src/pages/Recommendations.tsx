@@ -79,7 +79,7 @@ export default function Recommendations() {
 
   return (
     <div className="pb-24 max-w-md mx-auto min-h-screen bg-background">
-      <Header title="For You" showSettings />
+      <Header title="For You" />
       
       <div className="px-4 py-6 space-y-6">
         <div className="flex items-center justify-between bg-primary/5 p-4 rounded-2xl border border-primary/10">
