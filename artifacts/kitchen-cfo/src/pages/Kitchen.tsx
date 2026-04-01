@@ -328,7 +328,7 @@ export default function Kitchen() {
   if (scanState === "analyzing") {
     return (
       <div className="pb-24 max-w-md mx-auto">
-        <Header title="My Kitchen" showSettings />
+        <Header title="My Kitchen" />
         <div className="px-4 py-8 flex flex-col items-center gap-6">
           {imagePreview && (
             <div className="w-full rounded-2xl overflow-hidden border border-border/50 shadow-lg">
@@ -351,7 +351,7 @@ export default function Kitchen() {
     const selectedCount = scannedItems.filter((i) => i.selected).length;
     return (
       <div className="pb-24 max-w-md mx-auto">
-        <Header title="My Kitchen" showSettings />
+        <Header title="My Kitchen" />
         <div className="px-4 py-6 space-y-4">
           {imagePreview && (
             <div className="w-full rounded-2xl overflow-hidden border border-border/50 shadow-md">
@@ -434,7 +434,7 @@ export default function Kitchen() {
 
   return (
     <div className="pb-24 max-w-md mx-auto">
-      <Header title="My Kitchen" showSettings />
+      <Header title="My Kitchen" />
 
       <input
         type="file"
