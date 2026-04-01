@@ -2,19 +2,16 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
 export function Scene4Outro() {
+  const [showDivider, setShowDivider] = useState(false);
   const [showTagline, setShowTagline] = useState(false);
-  const [showAccent, setShowAccent] = useState(false);
+  const [showURL, setShowURL] = useState(false);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setShowTagline(true), 1800);
-    const t2 = setTimeout(() => setShowAccent(true), 2600);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
+    const t1 = setTimeout(() => setShowDivider(true), 2600);
+    const t2 = setTimeout(() => setShowTagline(true), 3400);
+    const t3 = setTimeout(() => setShowURL(true), 5800);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
-
-  const brand = 'Kitchen CFO';
 
   return (
     <motion.div
@@ -25,87 +22,111 @@ export function Scene4Outro() {
       exit={{ clipPath: 'circle(0% at 50% 50%)' }}
       transition={{ duration: 1.1, ease: [0.4, 0, 0.2, 1] }}
     >
-      {/* Cream background for this scene */}
-      <div className="absolute inset-0" style={{ backgroundColor: '#faf7f2' }} />
+      <div className="absolute inset-0" style={{ backgroundColor: '#071a0e' }} />
+
+      {/* Dot grid */}
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.5) 1px, transparent 0)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      {/* Centre radial glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(249,115,22,0.1), transparent 70%)' }}
+      />
 
       {/* Subtle radiating rings */}
       {[1, 2, 3].map((n) => (
         <motion.div
           key={n}
-          className="absolute rounded-full border border-primary/10 pointer-events-none"
-          style={{ width: `${n * 20}vw`, height: `${n * 20 * 9 / 16}vw` }}
-          initial={{ opacity: 0, scale: 0.8 }}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: `${n * 22}vw`,
+            height: `${n * 22 * 9 / 16}vw`,
+            border: '1px solid rgba(249,115,22,0.08)',
+          }}
+          initial={{ opacity: 0, scale: 0.7 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4 + n * 0.15, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ delay: 0.3 + n * 0.15, duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
         />
       ))}
 
-      {/* Decorative cross lines */}
-      <motion.div
-        className="absolute"
-        style={{ top: '20%', left: '50%', width: '1px', height: '60%', transform: 'translateX(-50%)', backgroundColor: 'rgba(26,92,56,0.15)' }}
-        initial={{ scaleY: 0 }}
-        animate={{ scaleY: 1 }}
-        transition={{ duration: 1.2, delay: 0.5, ease: 'circOut' }}
-      />
-      <motion.div
-        className="absolute"
-        style={{ top: '50%', left: '20%', width: '60%', height: '1px', transform: 'translateY(-50%)', backgroundColor: 'rgba(26,92,56,0.15)' }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 1.2, delay: 0.5, ease: 'circOut' }}
-      />
+      <div className="relative z-10 flex flex-col items-center text-center px-[15vw]">
 
-      <div className="relative z-10 flex flex-col items-center">
-        {/* Logo mark + brand name */}
-        <div className="flex items-center gap-[1.2vw] mb-[1.5vw]">
+        {/* Stats row */}
+        <motion.div
+          className="flex items-center gap-[5vw] mb-[4vh]"
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          {[
+            { val: '1 week', label: 'Built in' },
+            { val: '11', label: 'Reviews' },
+            { val: '4.6★', label: 'Stars' },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              className="flex flex-col items-center"
+              initial={{ opacity: 0, scale: 0.75 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6 + i * 0.2, type: 'spring', stiffness: 280, damping: 18 }}
+            >
+              <span
+                className="font-display font-black"
+                style={{ fontSize: '3.8vw', color: '#f97316', letterSpacing: '-0.03em', lineHeight: 1 }}
+              >
+                {stat.val}
+              </span>
+              <span
+                className="font-body uppercase tracking-widest mt-[0.4vw]"
+                style={{ fontSize: '1vw', color: 'rgba(250,247,242,0.35)' }}
+              >
+                {stat.label}
+              </span>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Divider */}
+        {showDivider && (
           <motion.div
-            className="rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ width: '4vw', height: '4vw', backgroundColor: '#f97316' }}
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 18, delay: 0.8 }}
-          >
-            <div className="rounded-full bg-white" style={{ width: '1.2vw', height: '1.2vw' }} />
-          </motion.div>
-
-          <motion.h1
-            className="font-display font-bold tracking-tight"
-            style={{ fontSize: '5.5vw', color: '#1a5c38', letterSpacing: '-0.03em' }}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.8, delay: 1, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {brand}
-          </motion.h1>
-        </div>
-
-        {/* Full lockup tagline as one phrase */}
-        {showTagline && (
-          <motion.p
-            className="font-body text-center"
-            style={{ fontSize: '2vw', color: '#4a6b57', letterSpacing: '0.01em' }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'circOut' }}
-          >
-            Kitchen CFO — Food Intelligence for your body.
-          </motion.p>
-        )}
-
-        {/* Orange accent rule below tagline */}
-        {showAccent && (
-          <motion.div
-            className="mt-[2.5vw]"
-            style={{ height: '0.25vw', backgroundColor: '#f97316', borderRadius: '9999px' }}
+            style={{ height: '1px', backgroundColor: 'rgba(249,115,22,0.28)', marginBottom: '4vh' }}
             initial={{ width: 0 }}
-            animate={{ width: '20vw' }}
-            exit={{ width: 0 }}
+            animate={{ width: '28vw' }}
             transition={{ duration: 1, ease: 'circOut' }}
           />
+        )}
+
+        {/* Tagline */}
+        {showTagline && (
+          <motion.h2
+            className="font-display font-black mb-[3vh]"
+            style={{ fontSize: '5vw', color: '#faf7f2', letterSpacing: '-0.03em', lineHeight: 1.1 }}
+            initial={{ opacity: 0, y: 18, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.9, ease: 'circOut' }}
+          >
+            Your body is finally<br />
+            <span style={{ color: '#f97316', fontStyle: 'italic' }}>being listened to.</span>
+          </motion.h2>
+        )}
+
+        {/* URL */}
+        {showURL && (
+          <motion.p
+            className="font-mono font-bold"
+            style={{ fontSize: '1.6vw', color: 'rgba(250,247,242,0.38)', letterSpacing: '0.03em' }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: 'circOut' }}
+          >
+            kitchen-intelligence.replit.app
+          </motion.p>
         )}
       </div>
     </motion.div>

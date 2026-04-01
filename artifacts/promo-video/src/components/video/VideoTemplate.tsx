@@ -6,13 +6,13 @@ import { Scene3Data } from './Scene3Data';
 import { Scene4Outro } from './Scene4Outro';
 
 const SCENE_DURATIONS = {
-  intro: 8000,
-  scan: 10000,
-  data: 8000,
-  outro: 8000,
+  intro: 12000,
+  features: 24000,
+  intelligence: 22000,
+  outro: 12000,
 };
 
-const SCENE_BG_COLORS = ['#1a5c38', '#faf7f2', '#1a5c38', '#faf7f2'];
+const SCENE_BG_COLORS = ['#071a0e', '#faf7f2', '#071a0e', '#071a0e'];
 
 export default function VideoTemplate() {
   const { currentScene } = useVideoPlayer({
@@ -39,13 +39,13 @@ export default function VideoTemplate() {
         {/* ── Persistent layer: floating accent orb ── */}
         <motion.div
           className="absolute z-0 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.35), transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.3), transparent 70%)' }}
           animate={{
-            width: currentScene === 0 ? '60vw' : currentScene === 2 ? '50vw' : '35vw',
-            height: currentScene === 0 ? '60vw' : currentScene === 2 ? '50vw' : '35vw',
-            x: currentScene === 0 ? '-10vw' : currentScene === 1 ? '55vw' : currentScene === 2 ? '40vw' : '0vw',
-            y: currentScene === 0 ? '-10vh' : currentScene === 1 ? '-5vh' : currentScene === 2 ? '30vh' : '10vh',
-            opacity: currentScene === 1 ? 0.15 : 0.28,
+            width: currentScene === 0 ? '55vw' : currentScene === 2 ? '50vw' : '32vw',
+            height: currentScene === 0 ? '55vw' : currentScene === 2 ? '50vw' : '32vw',
+            x: currentScene === 0 ? '-8vw' : currentScene === 1 ? '58vw' : currentScene === 2 ? '42vw' : '0vw',
+            y: currentScene === 0 ? '-8vh' : currentScene === 1 ? '-5vh' : currentScene === 2 ? '28vh' : '8vh',
+            opacity: currentScene === 1 ? 0.12 : 0.25,
           }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
         />
@@ -61,14 +61,14 @@ export default function VideoTemplate() {
             style={{
               width: '1.2vw',
               height: '1.2vw',
-              backgroundColor: currentScene === 1 || currentScene === 3 ? '#1a5c38' : '#f97316',
+              backgroundColor: currentScene === 1 ? '#1a5c38' : '#f97316',
             }}
           />
           <span
             className="font-display font-bold tracking-tight"
             style={{
               fontSize: '1vw',
-              color: currentScene === 1 || currentScene === 3 ? '#1a5c38' : '#faf7f2',
+              color: currentScene === 1 ? '#1a5c38' : '#faf7f2',
             }}
           >
             Kitchen CFO
@@ -78,8 +78,8 @@ export default function VideoTemplate() {
         {/* ── Scenes ── */}
         <AnimatePresence mode="sync">
           {currentScene === 0 && <Scene1Intro key="intro" />}
-          {currentScene === 1 && <Scene2Scan key="scan" />}
-          {currentScene === 2 && <Scene3Data key="data" />}
+          {currentScene === 1 && <Scene2Scan key="features" />}
+          {currentScene === 2 && <Scene3Data key="intelligence" />}
           {currentScene === 3 && <Scene4Outro key="outro" />}
         </AnimatePresence>
       </div>
