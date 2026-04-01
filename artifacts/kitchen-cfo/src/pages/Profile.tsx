@@ -110,12 +110,15 @@ export default function Profile() {
 
     try {
       const { base64, mimeType: detectedMime } = await fileToBase64(file);
-      const mimeType = (
-        detectedMime === "application/pdf" ||
-        detectedMime === "image/jpeg" ||
-        detectedMime === "image/png" ||
-        detectedMime === "image/webp"
-      ) ? detectedMime : "image/jpeg";
+      // Some browsers return an empty file.type for PDFs — fall back to extension check
+      const mimeType = (() => {
+        if (detectedMime === "application/pdf" || detectedMime === "image/jpeg" ||
+            detectedMime === "image/png" || detectedMime === "image/webp") {
+          return detectedMime;
+        }
+        if (file.name.toLowerCase().endsWith(".pdf")) return "application/pdf";
+        return "image/jpeg";
+      })();
 
       const res = await fetch("/api/import-labs", {
         method: "POST",

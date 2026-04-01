@@ -95,9 +95,24 @@ router.post("/import-labs", async (req, res) => {
 
   req.log.info({ userId, mimeType }, "Lab import request received");
 
+  // Enforce a server-side file size limit (base64 of a 15MB file ≈ 20MB string)
+  const MAX_BASE64_BYTES = 20 * 1024 * 1024;
+  if (fileBase64.length > MAX_BASE64_BYTES) {
+    res.status(413).json({
+      error: "file_too_large",
+      message: "The file is too large to process. Please use a PDF under 15 MB or a smaller image.",
+    });
+    return;
+  }
+
   let raw: string;
   try {
-    raw = await analyzeImage(fileBase64, mimeType, LAB_EXTRACTION_PROMPT);
+    // Wrap in a 60-second timeout — multi-page PDFs can be slow
+    const geminiPromise = analyzeImage(fileBase64, mimeType, LAB_EXTRACTION_PROMPT);
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Lab extraction timed out. Please try a smaller or simpler document.")), 60_000)
+    );
+    raw = await Promise.race([geminiPromise, timeoutPromise]);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Lab import failed";
     if (message.includes("No Gemini API key")) {
@@ -105,18 +120,26 @@ router.post("/import-labs", async (req, res) => {
       return;
     }
     req.log.error({ err }, "Gemini lab extraction error");
-    res.status(500).json({ error: "import_failed", message });
+    res.status(500).json({
+      error: "import_failed",
+      message: message.includes("timed out")
+        ? message
+        : "The document could not be analysed. Please ensure it is a clear, readable lab report and try again.",
+    });
     return;
   }
 
+  // Strip markdown code fences — Gemini occasionally wraps JSON in ```json ... ``` blocks
+  const stripped = raw.replace(/^```(?:json)?\s*\n?([\s\S]*?)\n?```\s*$/s, "$1").trim();
+
   let parsed: Record<string, unknown>;
   try {
-    parsed = JSON.parse(raw) as Record<string, unknown>;
+    parsed = JSON.parse(stripped) as Record<string, unknown>;
   } catch {
     req.log.error({ raw }, "Failed to parse Gemini lab extraction response as JSON");
     res.status(502).json({
       error: "parse_failed",
-      message: "Could not read the lab results from this document. Please try a clearer image or PDF.",
+      message: "Could not read the lab results from this document. Please try a clearer image or PDF, or enter your values manually.",
     });
     return;
   }
