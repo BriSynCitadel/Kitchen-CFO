@@ -72,16 +72,21 @@ export async function compressImage(
 export async function fileToBase64(file: File): Promise<{ base64: string, mimeType: string }> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (event) => {
-      if (typeof event.target?.result === 'string') {
-        const result = event.target.result;
-        const base64 = result.split(',')[1] || result;
-        resolve({ base64, mimeType: file.type });
-      } else {
-        reject(new Error("Failed to read file"));
+    reader.onloadend = () => {
+      if (reader.readyState !== FileReader.DONE) {
+        reject(new Error("File read did not complete"));
+        return;
       }
+      const result = reader.result;
+      if (typeof result !== 'string' || !result) {
+        reject(new Error("Failed to read file as data URL"));
+        return;
+      }
+      const commaIdx = result.indexOf(',');
+      const base64 = commaIdx !== -1 ? result.slice(commaIdx + 1) : result;
+      resolve({ base64, mimeType: file.type });
     };
-    reader.onerror = reject;
+    reader.onerror = () => reject(new Error("FileReader error: " + (reader.error?.message ?? "unknown")));
     reader.readAsDataURL(file);
   });
 }

@@ -92,12 +92,20 @@ export default function Profile() {
   const [showLabFields, setShowLabFields] = useState(false);
   const [labImportModalOpen, setLabImportModalOpen] = useState(false);
   const [labExtractedValues, setLabExtractedValues] = useState<Partial<Record<keyof LabValues, number | null>>>({});
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleLabFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = "";
+  const normalizeMimeType = (rawType: string, fileName: string): string => {
+    const name = fileName.toLowerCase();
+    if (rawType === "application/pdf" || rawType === "image/jpeg" ||
+        rawType === "image/png"       || rawType === "image/webp") return rawType;
+    if (name.endsWith(".pdf") || rawType === "application/x-pdf" || rawType === "application/octet-stream" && name.endsWith(".pdf")) return "application/pdf";
+    if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
+    if (name.endsWith(".png")) return "image/png";
+    if (name.endsWith(".webp")) return "image/webp";
+    return "image/jpeg";
+  };
 
+  const processLabFile = async (file: File) => {
     const MAX_SIZE_MB = 15;
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
       toast({
@@ -111,16 +119,8 @@ export default function Profile() {
     setLabImportLoading(true);
 
     try {
-      const { base64, mimeType: detectedMime } = await fileToBase64(file);
-      // Some browsers return an empty file.type for PDFs — fall back to extension check
-      const mimeType = (() => {
-        if (detectedMime === "application/pdf" || detectedMime === "image/jpeg" ||
-            detectedMime === "image/png" || detectedMime === "image/webp") {
-          return detectedMime;
-        }
-        if (file.name.toLowerCase().endsWith(".pdf")) return "application/pdf";
-        return "image/jpeg";
-      })();
+      const { base64, mimeType: rawMime } = await fileToBase64(file);
+      const mimeType = normalizeMimeType(rawMime, file.name);
 
       const res = await fetch("/api/import-labs", {
         method: "POST",
@@ -148,6 +148,35 @@ export default function Profile() {
     } finally {
       setLabImportLoading(false);
     }
+  };
+
+  const handleLabFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+    await processLabFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (labImportLoading) return;
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    await processLabFile(file);
   };
 
   const updateMutation = useUpdateProfile({
@@ -296,7 +325,15 @@ export default function Profile() {
             id="lab-import"
             onClick={() => labFileInputRef.current?.click()}
             disabled={labImportLoading}
-            className="w-full flex flex-col items-center justify-center gap-2 py-5 px-4 rounded-2xl border-2 border-violet-300 dark:border-violet-700 bg-violet-50 dark:bg-violet-950/30 hover:bg-violet-100 dark:hover:bg-violet-900/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm mb-2"
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`w-full flex flex-col items-center justify-center gap-2 py-5 px-4 rounded-2xl border-2 transition-colors shadow-sm mb-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+              isDragging
+                ? "border-violet-500 bg-violet-100 dark:bg-violet-900/50 scale-[1.01]"
+                : "border-violet-300 dark:border-violet-700 bg-violet-50 dark:bg-violet-950/30 hover:bg-violet-100 dark:hover:bg-violet-900/40"
+            }`}
           >
             <div className="flex items-center gap-3 text-violet-700 dark:text-violet-300">
               {labImportLoading ? (
@@ -441,7 +478,7 @@ export default function Profile() {
 
       <input
         type="file"
-        accept=".pdf,image/jpeg,image/png,image/webp"
+        accept="application/pdf,.pdf,image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
         className="hidden"
         ref={labFileInputRef}
         onChange={handleLabFileSelect}
