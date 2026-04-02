@@ -185,7 +185,7 @@ export default function Home() {
   const { data: summary, isLoading: loadingSummary } = useGetFoodLogSummary({ date: todayStr });
   const { data: logsData, isLoading: loadingLogs } = useGetFoodLogs({ date: todayStr });
   const { data: inventoryData, isLoading: loadingInventory } = useGetInventory();
-  const { data: profileData } = useGetProfile();
+  const { data: profileData, isLoading: isLoadingProfile } = useGetProfile();
 
   const recentLogs = (logsData?.logs ?? []).slice(0, 3);
 
@@ -568,7 +568,7 @@ export default function Home() {
             </div>
 
             {/* ── Lab Results Prompt ── */}
-            {!hasAnyLabValue && (
+            {!isLoadingProfile && !hasAnyLabValue && (
               <div className="px-4 mt-3">
                 <div className="bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4 flex items-start gap-3">
                   <div className="w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -1045,7 +1045,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                {!hasAnyLabValue && (
+                {!isLoadingProfile && !hasAnyLabValue && (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
