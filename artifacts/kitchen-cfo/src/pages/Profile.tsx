@@ -357,6 +357,35 @@ export default function Profile() {
             {showLabFields ? "Hide manual entry ↑" : "Or enter values manually below ↓"}
           </button>
 
+          <div className="mb-3 bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400 flex-shrink-0" />
+              <p className="text-sm font-semibold text-foreground">Don't have bloodwork yet?</p>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">
+              These services let you order lab tests directly — no doctor's referral required.
+            </p>
+            <div className="flex flex-col gap-2">
+              {[
+                { label: "Quest Diagnostics", href: "https://www.questdiagnostics.com/patients/get-tested" },
+                { label: "LabCorp OnDemand", href: "https://www.labcorpondemand.com" },
+                { label: "Any Lab Test Now", href: "https://www.anylabtestnow.com" },
+                { label: "Ulta Lab Tests", href: "https://www.ultalab.com" },
+              ].map(({ label, href }) => (
+                <a
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-between gap-2 w-full rounded-xl border border-violet-200 dark:border-violet-700 px-4 py-2.5 text-sm font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors"
+                >
+                  {label}
+                  <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-70" />
+                </a>
+              ))}
+            </div>
+          </div>
+
           {showLabFields && (
           <Card>
             <CardContent className="p-4">
@@ -384,35 +413,6 @@ export default function Profile() {
           </Card>
           )}
 
-          {showLabFields && LAB_MARKERS.every((m) => !formData.labValues[m.key]) && (
-            <div className="mt-4 bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4">
-              <div className="flex items-center gap-2 mb-1.5">
-                <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400 flex-shrink-0" />
-                <p className="text-sm font-semibold text-foreground">Get Your Labs Done</p>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">
-                Don't have recent bloodwork? These services let you order lab tests directly — no doctor required.
-              </p>
-              <div className="flex flex-col gap-2">
-                {[
-                  { label: "Ulta Lab Tests", href: "https://www.ultalab.com" },
-                  { label: "Any Lab Test Now", href: "https://www.anylabtestnow.com" },
-                  { label: "Walk-In Lab", href: "https://www.walkinlab.com" },
-                ].map(({ label, href }) => (
-                  <a
-                    key={href}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-between gap-2 w-full rounded-xl border border-violet-200 dark:border-violet-700 px-4 py-2.5 text-sm font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors"
-                  >
-                    {label}
-                    <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-70" />
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
         </section>
 
         {/* ── DIETARY PREFERENCES ── */}
