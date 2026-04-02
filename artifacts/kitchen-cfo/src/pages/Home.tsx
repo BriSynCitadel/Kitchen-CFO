@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Camera, Upload, Utensils, X, Sparkles, ChevronRight, Flame, Beef, Wheat, Leaf, FlaskConical } from "lucide-react";
+import { Camera, Upload, Utensils, X, Sparkles, ChevronRight, Flame, Beef, Wheat, Leaf, FlaskConical, Pencil, Check, Plus, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -14,6 +14,7 @@ import {
 import type { LabValues } from "@workspace/api-client-react";
 import { compressImage, fileToBase64, formatNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -121,7 +122,11 @@ export default function Home() {
 
   useEffect(() => {
     setEditedFoodName(analysis?.items[0]?.name || "Meal");
+    setEditedDescription(analysis?.description || "");
+    setEditedItems(analysis?.items.map(item => ({ name: item.name, quantity: item.quantity || "" })) ?? []);
     setShowAllMicros(false);
+    setIsEditingDescription(false);
+    setIsEditingItems(false);
   }, [analysis]);
 
   type QuickSuggestion = {
@@ -138,6 +143,10 @@ export default function Home() {
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
   const [showAllMicros, setShowAllMicros] = useState(false);
   const [editedFoodName, setEditedFoodName] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [editedItems, setEditedItems] = useState<{ name: string; quantity: string }[]>([]);
+  const [isEditingItems, setIsEditingItems] = useState(false);
 
 
   const fetchSuggestion = async () => {
@@ -844,8 +853,8 @@ export default function Home() {
               >
                 <Card className="border-primary/20 shadow-md shadow-primary/5">
                   <CardContent className="p-5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="flex-1 min-w-0 mr-3">
                         <input
                           type="text"
                           value={editedFoodName}
@@ -853,11 +862,38 @@ export default function Home() {
                           className="font-display text-xl font-bold bg-transparent border-b border-transparent focus:border-primary/40 focus:outline-none w-full leading-tight"
                           aria-label="Food name"
                         />
-                        <p className="text-sm text-muted-foreground capitalize">{analysis.description}</p>
                       </div>
-                      <Badge variant="accent" className="bg-primary/10 text-primary">
+                      <Badge variant="accent" className="bg-primary/10 text-primary shrink-0">
                         {formatNumber(analysis.totalNutrients.calories)} kcal
                       </Badge>
+                    </div>
+
+                    <p className="text-xs text-muted-foreground/60 mb-3">Not quite right? Tap to edit any field before logging.</p>
+
+                    <div className="flex items-start gap-2 mb-4">
+                      {isEditingDescription ? (
+                        <textarea
+                          value={editedDescription}
+                          onChange={(e) => setEditedDescription(e.target.value)}
+                          className="flex-1 text-sm text-muted-foreground bg-secondary/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/40 min-h-[60px]"
+                          rows={3}
+                          autoFocus
+                        />
+                      ) : (
+                        <p className="flex-1 text-sm text-muted-foreground capitalize">
+                          {editedDescription || analysis.description}
+                        </p>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingDescription((v) => !v)}
+                        className="shrink-0 p-1.5 rounded-lg hover:bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors"
+                        aria-label={isEditingDescription ? "Done editing description" : "Edit description"}
+                      >
+                        {isEditingDescription
+                          ? <Check className="w-3.5 h-3.5" />
+                          : <Pencil className="w-3.5 h-3.5" />}
+                      </button>
                     </div>
 
                     <div className="grid grid-cols-3 gap-3">
@@ -874,6 +910,77 @@ export default function Home() {
                         <p className="font-bold text-lg">{formatNumber(analysis.totalNutrients.fat)}g</p>
                       </div>
                     </div>
+
+                    {editedItems.length > 0 && (
+                      <div className="mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                            Ingredients / Items
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setIsEditingItems((v) => !v)}
+                            className="flex items-center gap-1 text-xs text-primary font-medium hover:text-primary/80 transition-colors"
+                          >
+                            {isEditingItems
+                              ? <><Check className="w-3.5 h-3.5" />Done</>
+                              : <><Pencil className="w-3.5 h-3.5" />Edit</>}
+                          </button>
+                        </div>
+                        {isEditingItems ? (
+                          <div className="space-y-2">
+                            {editedItems.map((item, i) => (
+                              <div key={i} className="flex items-center gap-2">
+                                <Input
+                                  value={item.name}
+                                  onChange={(e) =>
+                                    setEditedItems((prev) =>
+                                      prev.map((it, idx) => idx === i ? { ...it, name: e.target.value } : it)
+                                    )
+                                  }
+                                  placeholder="Food name"
+                                  className="flex-1 h-9 text-sm"
+                                />
+                                <Input
+                                  value={item.quantity}
+                                  onChange={(e) =>
+                                    setEditedItems((prev) =>
+                                      prev.map((it, idx) => idx === i ? { ...it, quantity: e.target.value } : it)
+                                    )
+                                  }
+                                  placeholder="qty"
+                                  className="w-20 h-9 text-sm"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setEditedItems((prev) => prev.filter((_, idx) => idx !== i))}
+                                  className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                                  aria-label="Remove ingredient"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => setEditedItems((prev) => [...prev, { name: "", quantity: "" }])}
+                              className="flex items-center gap-1.5 text-xs text-primary font-medium py-1 hover:text-primary/80 transition-colors"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              Add ingredient
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            {editedItems.map((item, i) => (
+                              <Badge key={i} variant="outline" className="bg-background">
+                                {item.name}{item.quantity ? ` · ${item.quantity}` : ""}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {labInsights.length > 0 && (
                       <div className="mt-4 rounded-xl bg-primary/5 border border-primary/15 p-4">
