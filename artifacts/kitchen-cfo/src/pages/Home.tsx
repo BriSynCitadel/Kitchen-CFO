@@ -119,6 +119,11 @@ export default function Home() {
     }
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    setEditedFoodName(analysis?.items[0]?.name || "Meal");
+    setShowAllMicros(false);
+  }, [analysis]);
+
   type QuickSuggestion = {
     title: string;
     description: string;
@@ -131,6 +136,8 @@ export default function Home() {
   const [suggestion, setSuggestion] = useState<QuickSuggestion | null>(null);
   const [suggestionLoading, setSuggestionLoading] = useState(false);
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
+  const [showAllMicros, setShowAllMicros] = useState(false);
+  const [editedFoodName, setEditedFoodName] = useState("");
 
 
   const fetchSuggestion = async () => {
@@ -310,7 +317,7 @@ export default function Home() {
 
   const handleLog = () => {
     if (!analysis) return;
-    const foodName = analysis.items[0]?.name || "Analyzed Meal";
+    const foodName = editedFoodName.trim() || analysis.items[0]?.name || "Analyzed Meal";
     const quantity = analysis.items[0]?.quantity || "1 serving";
     createLogMutation.mutate({
       data: { foodName, quantity, mealType: "other", nutrients: analysis.totalNutrients },
@@ -839,7 +846,13 @@ export default function Home() {
                   <CardContent className="p-5">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="font-display text-xl font-bold">{analysis.items[0]?.name || "Meal"}</h3>
+                        <input
+                          type="text"
+                          value={editedFoodName}
+                          onChange={(e) => setEditedFoodName(e.target.value)}
+                          className="font-display text-xl font-bold bg-transparent border-b border-transparent focus:border-primary/40 focus:outline-none w-full leading-tight"
+                          aria-label="Food name"
+                        />
                         <p className="text-sm text-muted-foreground capitalize">{analysis.description}</p>
                       </div>
                       <Badge variant="accent" className="bg-primary/10 text-primary">
@@ -909,14 +922,18 @@ export default function Home() {
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(analysis.totalNutrients.micronutrients || {})
                       .filter(([, val]) => val && val > 0)
-                      .slice(0, 6)
+                      .slice(0, showAllMicros ? undefined : 6)
                       .map(([key, val]) => (
                         <Badge key={key} variant="outline" className="bg-background">
                           {key.replace(/([A-Z])/g, " $1").trim()} {formatNumber(val)}
                         </Badge>
                       ))}
-                    <Badge variant="ghost" className="text-primary hover:bg-primary/10">
-                      + more
+                    <Badge
+                      variant="ghost"
+                      className="text-primary hover:bg-primary/10 cursor-pointer"
+                      onClick={() => setShowAllMicros((v) => !v)}
+                    >
+                      {showAllMicros ? "Show less" : "+ more"}
                     </Badge>
                   </div>
                 </div>
@@ -994,8 +1011,11 @@ function NutritionScoreBadge({ score }: { score: number }) {
       : { bg: "bg-red-100", text: "text-red-700" };
 
   return (
-    <div className={`${tier.bg} ${tier.text} rounded-lg px-2 py-1 flex flex-col items-center flex-shrink-0 min-w-[48px]`}>
-      <span className="font-bold text-sm leading-none">{score}</span>
+    <div
+      title="Micronutrient variety score — add your labs for a personalized health score."
+      className={`${tier.bg} ${tier.text} rounded-lg px-2 py-1 flex flex-col items-center flex-shrink-0 min-w-[56px] cursor-default`}
+    >
+      <span className="font-bold text-sm leading-none">{score}<span className="font-normal opacity-60">/10</span></span>
       <span className="text-[8px] font-medium leading-none mt-0.5 whitespace-nowrap">Nutrition Score</span>
     </div>
   );

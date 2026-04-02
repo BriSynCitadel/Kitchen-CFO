@@ -40,6 +40,14 @@ export default function Recommendations() {
   const { data: profileData } = useGetProfile();
   const [, setLocation] = useLocation();
   const [loadingStep, setLoadingStep] = useState(0);
+  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
+
+  const toggleCard = (i: number) =>
+    setExpandedCards((prev) => {
+      const next = new Set(prev);
+      next.has(i) ? next.delete(i) : next.add(i);
+      return next;
+    });
 
   const rawLabValues = profileData?.labValues as Record<string, number | null | undefined> | null | undefined;
   const hasAnyLabValue = rawLabValues
@@ -223,9 +231,16 @@ export default function Recommendations() {
                         ⏱ {rec.cookTime} · {rec.difficulty}
                       </p>
                     )}
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                    <p className={`text-sm text-muted-foreground mb-1 ${expandedCards.has(i) ? "" : "line-clamp-2"}`}>
                       {rec.description}
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => toggleCard(i)}
+                      className="text-xs text-primary font-medium mb-3 hover:underline"
+                    >
+                      {expandedCards.has(i) ? "Show less" : "Read more"}
+                    </button>
                     
                     <div className="bg-secondary/50 rounded-xl p-3 mb-3">
                       <p className="text-xs font-medium text-foreground flex items-center gap-1.5 mb-1">
