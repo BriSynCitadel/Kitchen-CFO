@@ -36,6 +36,7 @@ const POSITIONS: Pick<EmojiConfig, "top" | "left" | "duration" | "delay" | "size
 ];
 
 export default function CulturalFoodBackground({ culture }: Props) {
+  if (!culture || culture === "No preference") return null;
   const emojis = CULTURE_EMOJIS[culture];
   if (!emojis) return null;
 
