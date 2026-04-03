@@ -681,9 +681,7 @@ export default function Home() {
               ))}
               {/* Cultural food background — swaps by user's selected culture */}
               <CulturalFoodBackground
-                culture={
-                  (profileData as any)?.culturalBackground ?? "No preference"
-                }
+                culture={profileData?.culturalBackground ?? ""}
               />
 
               {/* Accent dots — kept, now above animation layers */}
