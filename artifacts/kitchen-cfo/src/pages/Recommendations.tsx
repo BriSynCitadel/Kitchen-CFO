@@ -247,6 +247,24 @@ export default function Recommendations() {
                         <Sparkles className="w-3 h-3 text-primary" /> Why this fits you:
                       </p>
                       <p className="text-xs text-muted-foreground">{rec.reason}</p>
+                      {rec.userValue != null && (() => {
+                        const m = rec.targetMarker?.toLowerCase() ?? "";
+                        if (m.includes("b12") || m.includes("b-12")) {
+                          return (
+                            <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/40">
+                              B12 works alongside folate in your methylation cycle. Low levels can impair energy metabolism and neurological function.
+                            </p>
+                          );
+                        }
+                        if (m.includes("b9") || m.includes("folate") || m.includes("folic")) {
+                          return (
+                            <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/40">
+                              Low folate directly impacts your methylation cycle — a biological process that affects energy production, mood regulation, and cellular repair.
+                            </p>
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
 
                     {rec.targetMarker && (
