@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
-import { analyzeImage } from "../lib/gemini";
+import { z } from "zod";
+import { analyzeImage, generateText } from "../lib/gemini";
 import { AnalyzeFoodBody, AnalyzeFoodResponse } from "@workspace/api-zod";
 
 const router: IRouter = Router();
@@ -141,6 +142,117 @@ Return a JSON object with the same structure as a normal food analysis:
 }
 
 For all numeric nutrient values, use reasonable scientific estimates. Never return null for nutrients - use 0 if trace/negligible.`;
+
+const TEXT_ANALYSIS_PROMPT = (foodName: string, ingredients: string | null | undefined, portionSize: string | null | undefined) => `
+You are a precise nutrition scientist. Estimate the full nutritional breakdown for the following food entry.
+
+Food name: "${foodName}"
+${ingredients ? `Ingredients / components: ${ingredients}` : ""}
+${portionSize ? `Portion size: ${portionSize}` : ""}
+
+Return a JSON object in EXACTLY this format — no extra text, no markdown, just valid JSON:
+
+{
+  "analysisType": "meal",
+  "description": "${portionSize ? portionSize + " of " : ""}${foodName}${ingredients ? " — key ingredients: " + ingredients.slice(0, 80) : ""}. Nutritional estimates based on standard food composition databases.",
+  "items": [
+    {
+      "name": "${foodName}",
+      "quantity": "${portionSize || "1 serving"}",
+      "confidence": 0.85,
+      "nutrients": {
+        "calories": 0,
+        "protein": 0,
+        "carbohydrates": 0,
+        "sugar": 0,
+        "fiber": 0,
+        "fat": 0,
+        "saturatedFat": 0,
+        "transFat": 0,
+        "cholesterol": 0,
+        "micronutrients": {
+          "vitaminA": 0, "vitaminB1": 0, "vitaminB2": 0, "vitaminB3": 0,
+          "vitaminB6": 0, "vitaminB9": 0, "vitaminB12": 0, "vitaminC": 0,
+          "vitaminD": 0, "vitaminE": 0, "vitaminK": 0,
+          "calcium": 0, "iron": 0, "magnesium": 0, "phosphorus": 0,
+          "potassium": 0, "sodium": 0, "zinc": 0, "selenium": 0,
+          "copper": 0, "manganese": 0, "chromium": 0, "iodine": 0,
+          "omega3": 0, "omega6": 0
+        }
+      }
+    }
+  ],
+  "totalNutrients": {
+    "calories": 0,
+    "protein": 0,
+    "carbohydrates": 0,
+    "sugar": 0,
+    "fiber": 0,
+    "fat": 0,
+    "saturatedFat": 0,
+    "transFat": 0,
+    "cholesterol": 0,
+    "micronutrients": {
+      "vitaminA": 0, "vitaminB1": 0, "vitaminB2": 0, "vitaminB3": 0,
+      "vitaminB6": 0, "vitaminB9": 0, "vitaminB12": 0, "vitaminC": 0,
+      "vitaminD": 0, "vitaminE": 0, "vitaminK": 0,
+      "calcium": 0, "iron": 0, "magnesium": 0, "phosphorus": 0,
+      "potassium": 0, "sodium": 0, "zinc": 0, "selenium": 0,
+      "copper": 0, "manganese": 0, "chromium": 0, "iodine": 0,
+      "omega3": 0, "omega6": 0
+    }
+  },
+  "inventoryItems": []
+}
+
+Replace ALL zeros with accurate numeric estimates from standard food composition databases (USDA, NIH, etc). Never return null — use 0 only if a nutrient is truly absent. Calories in kcal. Protein/carbs/fat/fiber in grams. Vitamins in mg or mcg. Minerals in mg or mcg.
+`;
+
+const AnalyzeTextBody = z.object({
+  foodName: z.string().min(1),
+  ingredients: z.string().nullable().optional(),
+  portionSize: z.string().nullable().optional(),
+  geminiApiKey: z.string().nullable().optional(),
+});
+
+router.post("/analyze/text", async (req, res) => {
+  const parseResult = AnalyzeTextBody.safeParse(req.body);
+  if (!parseResult.success) {
+    res.status(400).json({ error: "validation_error", message: parseResult.error.message });
+    return;
+  }
+
+  const { foodName, ingredients, portionSize, geminiApiKey } = parseResult.data;
+
+  try {
+    const prompt = TEXT_ANALYSIS_PROMPT(foodName, ingredients, portionSize);
+    const raw = await generateText(prompt, geminiApiKey ?? undefined);
+
+    let parsed: Record<string, unknown>;
+    try {
+      parsed = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      parsed = {
+        analysisType: "meal",
+        description: `${portionSize ? portionSize + " of " : ""}${foodName}`,
+        items: [],
+        totalNutrients: { calories: 0, protein: 0, carbohydrates: 0, fat: 0 },
+        inventoryItems: [],
+      };
+    }
+
+    const validated = AnalyzeFoodResponse.safeParse(parsed);
+    res.json(validated.success ? validated.data : { ...parsed, _warning: "Response validation warning" });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Analysis failed";
+    if (message.includes("No Gemini API key")) {
+      res.status(400).json({ error: "no_api_key", message });
+      return;
+    }
+    req.log.error({ err }, "Text food analysis error");
+    res.status(500).json({ error: "analysis_failed", message });
+  }
+});
 
 router.post("/analyze", async (req, res) => {
   const parseResult = AnalyzeFoodBody.safeParse(req.body);

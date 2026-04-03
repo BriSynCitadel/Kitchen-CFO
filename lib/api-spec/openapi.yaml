@@ -72,6 +72,38 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /analyze/text:
+    post:
+      operationId: analyzeTextFood
+      tags: [analyze]
+      summary: Estimate nutrition from text description
+      description: Uses AI to estimate nutritional breakdown from a typed food name, optional ingredients, and portion size. Returns the same structure as a photo scan.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeTextRequest"
+      responses:
+        "200":
+          description: Nutrition estimate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoodAnalysisResult"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Analysis failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /food-logs:
     get:
       operationId: getFoodLogs
@@ -664,6 +696,27 @@ components:
           description: Optional Gemini API key override (if not set as env var)
       required:
         - imageBase64
+
+    AnalyzeTextRequest:
+      type: object
+      properties:
+        foodName:
+          type: string
+          description: Name of the food or meal (e.g. "chicken stir fry", "large latte")
+        ingredients:
+          type: string
+          nullable: true
+          description: Optional comma-separated or freeform ingredients list
+        portionSize:
+          type: string
+          nullable: true
+          description: Optional portion size (e.g. "1 plate", "200g", "2 cups")
+        geminiApiKey:
+          type: string
+          nullable: true
+          description: Optional Gemini API key override
+      required:
+        - foodName
 
     FoodItem:
       type: object

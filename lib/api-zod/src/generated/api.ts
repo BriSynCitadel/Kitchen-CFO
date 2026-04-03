@@ -162,6 +162,153 @@ export const AnalyzeFoodResponse = zod.object({
 });
 
 /**
+ * Uses AI to estimate nutritional breakdown from a typed food name, optional ingredients, and portion size. Returns the same structure as a photo scan.
+ * @summary Estimate nutrition from text description
+ */
+export const AnalyzeTextFoodBody = zod.object({
+  foodName: zod
+    .string()
+    .describe(
+      'Name of the food or meal (e.g. \"chicken stir fry\", \"large latte\")',
+    ),
+  ingredients: zod
+    .string()
+    .nullish()
+    .describe("Optional comma-separated or freeform ingredients list"),
+  portionSize: zod
+    .string()
+    .nullish()
+    .describe('Optional portion size (e.g. \"1 plate\", \"200g\", \"2 cups\")'),
+  geminiApiKey: zod
+    .string()
+    .nullish()
+    .describe("Optional Gemini API key override"),
+});
+
+export const AnalyzeTextFoodResponse = zod.object({
+  analysisType: zod.enum(["meal", "receipt", "inventory"]),
+  items: zod.array(
+    zod.object({
+      name: zod.string(),
+      quantity: zod.string().optional().describe("Estimated portion\/quantity"),
+      nutrients: zod
+        .object({
+          calories: zod.number(),
+          protein: zod.number().describe("Protein in grams"),
+          carbohydrates: zod.number().describe("Total carbs in grams"),
+          sugar: zod.number().optional().describe("Total sugars in grams"),
+          fiber: zod.number().optional().describe("Dietary fiber in grams"),
+          fat: zod.number().describe("Total fat in grams"),
+          saturatedFat: zod
+            .number()
+            .optional()
+            .describe("Saturated fat in grams"),
+          transFat: zod.number().optional().describe("Trans fat in grams"),
+          cholesterol: zod.number().optional().describe("Cholesterol in mg"),
+          micronutrients: zod
+            .object({
+              vitaminA: zod.number().optional().describe("Vitamin A in mcg"),
+              vitaminB1: zod.number().optional().describe("Thiamin (B1) in mg"),
+              vitaminB2: zod
+                .number()
+                .optional()
+                .describe("Riboflavin (B2) in mg"),
+              vitaminB3: zod.number().optional().describe("Niacin (B3) in mg"),
+              vitaminB6: zod.number().optional().describe("Vitamin B6 in mg"),
+              vitaminB9: zod.number().optional().describe("Folate (B9) in mcg"),
+              vitaminB12: zod
+                .number()
+                .optional()
+                .describe("Vitamin B12 in mcg"),
+              vitaminC: zod.number().optional().describe("Vitamin C in mg"),
+              vitaminD: zod.number().optional().describe("Vitamin D in mcg"),
+              vitaminE: zod.number().optional().describe("Vitamin E in mg"),
+              vitaminK: zod.number().optional().describe("Vitamin K in mcg"),
+              calcium: zod.number().optional().describe("Calcium in mg"),
+              iron: zod.number().optional().describe("Iron in mg"),
+              magnesium: zod.number().optional().describe("Magnesium in mg"),
+              phosphorus: zod.number().optional().describe("Phosphorus in mg"),
+              potassium: zod.number().optional().describe("Potassium in mg"),
+              sodium: zod.number().optional().describe("Sodium in mg"),
+              zinc: zod.number().optional().describe("Zinc in mg"),
+              selenium: zod.number().optional().describe("Selenium in mcg"),
+              copper: zod.number().optional().describe("Copper in mg"),
+              manganese: zod.number().optional().describe("Manganese in mg"),
+              chromium: zod.number().optional().describe("Chromium in mcg"),
+              iodine: zod.number().optional().describe("Iodine in mcg"),
+              omega3: zod.number().optional().describe("Omega-3 in g"),
+              omega6: zod.number().optional().describe("Omega-6 in g"),
+            })
+            .optional()
+            .describe(
+              "Full micronutrient breakdown (all values in standard units)",
+            ),
+        })
+        .describe("Complete nutritional data for a food item"),
+      confidence: zod.number().optional().describe("AI confidence score 0-1"),
+    }),
+  ),
+  totalNutrients: zod
+    .object({
+      calories: zod.number(),
+      protein: zod.number().describe("Protein in grams"),
+      carbohydrates: zod.number().describe("Total carbs in grams"),
+      sugar: zod.number().optional().describe("Total sugars in grams"),
+      fiber: zod.number().optional().describe("Dietary fiber in grams"),
+      fat: zod.number().describe("Total fat in grams"),
+      saturatedFat: zod.number().optional().describe("Saturated fat in grams"),
+      transFat: zod.number().optional().describe("Trans fat in grams"),
+      cholesterol: zod.number().optional().describe("Cholesterol in mg"),
+      micronutrients: zod
+        .object({
+          vitaminA: zod.number().optional().describe("Vitamin A in mcg"),
+          vitaminB1: zod.number().optional().describe("Thiamin (B1) in mg"),
+          vitaminB2: zod.number().optional().describe("Riboflavin (B2) in mg"),
+          vitaminB3: zod.number().optional().describe("Niacin (B3) in mg"),
+          vitaminB6: zod.number().optional().describe("Vitamin B6 in mg"),
+          vitaminB9: zod.number().optional().describe("Folate (B9) in mcg"),
+          vitaminB12: zod.number().optional().describe("Vitamin B12 in mcg"),
+          vitaminC: zod.number().optional().describe("Vitamin C in mg"),
+          vitaminD: zod.number().optional().describe("Vitamin D in mcg"),
+          vitaminE: zod.number().optional().describe("Vitamin E in mg"),
+          vitaminK: zod.number().optional().describe("Vitamin K in mcg"),
+          calcium: zod.number().optional().describe("Calcium in mg"),
+          iron: zod.number().optional().describe("Iron in mg"),
+          magnesium: zod.number().optional().describe("Magnesium in mg"),
+          phosphorus: zod.number().optional().describe("Phosphorus in mg"),
+          potassium: zod.number().optional().describe("Potassium in mg"),
+          sodium: zod.number().optional().describe("Sodium in mg"),
+          zinc: zod.number().optional().describe("Zinc in mg"),
+          selenium: zod.number().optional().describe("Selenium in mcg"),
+          copper: zod.number().optional().describe("Copper in mg"),
+          manganese: zod.number().optional().describe("Manganese in mg"),
+          chromium: zod.number().optional().describe("Chromium in mcg"),
+          iodine: zod.number().optional().describe("Iodine in mcg"),
+          omega3: zod.number().optional().describe("Omega-3 in g"),
+          omega6: zod.number().optional().describe("Omega-6 in g"),
+        })
+        .optional()
+        .describe(
+          "Full micronutrient breakdown (all values in standard units)",
+        ),
+    })
+    .describe("Complete nutritional data for a food item"),
+  description: zod
+    .string()
+    .describe("Human-readable description of what was found"),
+  inventoryItems: zod
+    .array(
+      zod.object({
+        name: zod.string().optional(),
+        quantity: zod.string().optional(),
+        category: zod.string().optional(),
+      }),
+    )
+    .optional()
+    .describe("For receipt\/inventory analysis - items to add to kitchen"),
+});
+
+/**
  * Returns food log entries, optionally filtered by date
  * @summary Get food logs
  */

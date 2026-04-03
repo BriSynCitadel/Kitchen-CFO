@@ -16,11 +16,13 @@ import {
   Check,
   Plus,
   Trash2,
+  PenLine,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useAnalyzeFood,
+  useAnalyzeTextFood,
   useCreateFoodLog,
   useGetFoodLogs,
   useGetFoodLogSummary,
@@ -178,6 +180,7 @@ export default function Home() {
     );
     setShowAllMicros(false);
     setSelectedMealType("other");
+    setShowManualEntry(false);
     setIsEditingDescription(false);
     setIsEditingItems(false);
   }, [analysis]);
@@ -196,6 +199,10 @@ export default function Home() {
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
   const [showAllMicros, setShowAllMicros] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState("other");
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  const [manualFoodName, setManualFoodName] = useState("");
+  const [manualIngredients, setManualIngredients] = useState("");
+  const [manualPortionSize, setManualPortionSize] = useState("");
   const [editedFoodName, setEditedFoodName] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -227,6 +234,7 @@ export default function Home() {
   };
 
   const analyzeMutation = useAnalyzeFood();
+  const analyzeTextMutation = useAnalyzeTextFood();
   const createLogMutation = useCreateFoodLog({
     mutation: {
       onSuccess: () => {
@@ -999,6 +1007,101 @@ export default function Home() {
                 For best results: hold phone 12 inches above food, ensure good
                 lighting, keep food in center of frame.
               </p>
+
+              <button
+                onClick={() => setShowManualEntry((v) => !v)}
+                className="flex items-center gap-1.5 text-sm text-primary font-medium hover:text-primary/80 transition-colors"
+              >
+                <PenLine className="w-4 h-4" />
+                {showManualEntry ? "Cancel" : "Type it instead"}
+              </button>
+
+              <AnimatePresence>
+                {showManualEntry && (
+                  <motion.div
+                    key="manual-form"
+                    initial={{ opacity: 0, y: -8, height: 0 }}
+                    animate={{ opacity: 1, y: 0, height: "auto" }}
+                    exit={{ opacity: 0, y: -8, height: 0 }}
+                    transition={{ duration: 0.22 }}
+                    className="w-full px-4 overflow-hidden"
+                  >
+                    <div className="bg-card border border-border rounded-2xl p-4 space-y-3 shadow-sm">
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Food or meal name *</label>
+                        <Input
+                          value={manualFoodName}
+                          onChange={(e) => setManualFoodName(e.target.value)}
+                          placeholder="e.g. chicken stir fry, large latte, bowl of oats"
+                          className="h-10 text-sm"
+                          autoFocus
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Ingredients <span className="font-normal opacity-60">(optional)</span></label>
+                        <textarea
+                          value={manualIngredients}
+                          onChange={(e) => setManualIngredients(e.target.value)}
+                          placeholder="e.g. chicken breast, rice, broccoli, olive oil, soy sauce"
+                          rows={2}
+                          className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Portion size <span className="font-normal opacity-60">(optional)</span></label>
+                        <Input
+                          value={manualPortionSize}
+                          onChange={(e) => setManualPortionSize(e.target.value)}
+                          placeholder="e.g. 1 plate, 200g, 1 large cup"
+                          className="h-10 text-sm"
+                        />
+                      </div>
+                      <Button
+                        className="w-full"
+                        disabled={!manualFoodName.trim() || analyzeTextMutation.isPending}
+                        onClick={() => {
+                          if (!manualFoodName.trim()) return;
+                          analyzeTextMutation.mutate(
+                            {
+                              data: {
+                                foodName: manualFoodName.trim(),
+                                ingredients: manualIngredients.trim() || null,
+                                portionSize: manualPortionSize.trim() || null,
+                              },
+                            },
+                            {
+                              onSuccess: (res) => setAnalysis(res),
+                              onError: (err) => {
+                                toast({
+                                  title: "Could not estimate nutrition",
+                                  description: err.message,
+                                  variant: "destructive",
+                                });
+                              },
+                            },
+                          );
+                        }}
+                      >
+                        {analyzeTextMutation.isPending ? (
+                          <span className="flex items-center gap-2">
+                            <motion.span
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                              className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                            />
+                            Estimating nutrition…
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            Estimate Nutrition
+                          </span>
+                        )}
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* ── Recent Scans ── */}

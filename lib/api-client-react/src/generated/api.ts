@@ -18,6 +18,7 @@ import type {
 
 import type {
   AnalyzeFoodRequest,
+  AnalyzeTextRequest,
   AuthUserEnvelope,
   BeginBrowserLoginParams,
   CreateFoodLogRequest,
@@ -216,6 +217,93 @@ export const useAnalyzeFood = <
   TContext
 > => {
   return useMutation(getAnalyzeFoodMutationOptions(options));
+};
+
+/**
+ * Uses AI to estimate nutritional breakdown from a typed food name, optional ingredients, and portion size. Returns the same structure as a photo scan.
+ * @summary Estimate nutrition from text description
+ */
+export const getAnalyzeTextFoodUrl = () => {
+  return `/api/analyze/text`;
+};
+
+export const analyzeTextFood = async (
+  analyzeTextRequest: AnalyzeTextRequest,
+  options?: RequestInit,
+): Promise<FoodAnalysisResult> => {
+  return customFetch<FoodAnalysisResult>(getAnalyzeTextFoodUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(analyzeTextRequest),
+  });
+};
+
+export const getAnalyzeTextFoodMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof analyzeTextFood>>,
+    TError,
+    { data: BodyType<AnalyzeTextRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof analyzeTextFood>>,
+  TError,
+  { data: BodyType<AnalyzeTextRequest> },
+  TContext
+> => {
+  const mutationKey = ["analyzeTextFood"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof analyzeTextFood>>,
+    { data: BodyType<AnalyzeTextRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return analyzeTextFood(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AnalyzeTextFoodMutationResult = NonNullable<
+  Awaited<ReturnType<typeof analyzeTextFood>>
+>;
+export type AnalyzeTextFoodMutationBody = BodyType<AnalyzeTextRequest>;
+export type AnalyzeTextFoodMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Estimate nutrition from text description
+ */
+export const useAnalyzeTextFood = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof analyzeTextFood>>,
+    TError,
+    { data: BodyType<AnalyzeTextRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof analyzeTextFood>>,
+  TError,
+  { data: BodyType<AnalyzeTextRequest> },
+  TContext
+> => {
+  return useMutation(getAnalyzeTextFoodMutationOptions(options));
 };
 
 /**

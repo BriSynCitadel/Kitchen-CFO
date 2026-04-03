@@ -121,6 +121,17 @@ export interface AnalyzeFoodRequest {
   geminiApiKey?: string;
 }
 
+export interface AnalyzeTextRequest {
+  /** Name of the food or meal (e.g. "chicken stir fry", "large latte") */
+  foodName: string;
+  /** Optional comma-separated or freeform ingredients list */
+  ingredients?: string | null;
+  /** Optional portion size (e.g. "1 plate", "200g", "2 cups") */
+  portionSize?: string | null;
+  /** Optional Gemini API key override */
+  geminiApiKey?: string | null;
+}
+
 export interface FoodItem {
   name: string;
   /** Estimated portion/quantity */

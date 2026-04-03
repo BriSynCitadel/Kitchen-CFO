@@ -8,6 +8,7 @@
 
 export * from "./analyzeFoodRequest";
 export * from "./analyzeFoodRequestAnalysisType";
+export * from "./analyzeTextRequest";
 export * from "./authorizationSessionHeaderParameter";
 export * from "./authUser";
 export * from "./authUserEnvelope";
