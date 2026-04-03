@@ -315,6 +315,8 @@ export interface NutritionProfile {
   labValues?: LabValues | null;
   /** e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance */
   symptoms: string[];
+  /** e.g. West African, South Asian, Mediterranean, Latin American */
+  culturalBackground?: string | null;
   dailyCalorieTarget?: number | null;
   createdAt: string;
   updatedAt: string;
@@ -372,6 +374,8 @@ export interface UpdateProfileRequest {
   labValues?: LabValues | null;
   /** e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance */
   symptoms?: string[];
+  /** e.g. West African, South Asian, Mediterranean, Latin American */
+  culturalBackground?: string | null;
   dailyCalorieTarget?: number | null;
 }
 

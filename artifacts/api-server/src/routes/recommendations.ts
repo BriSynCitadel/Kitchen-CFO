@@ -44,6 +44,7 @@ async function buildRecommendationPrompt(userId: string): Promise<{
         allergies: profile.allergies,
         medicalConditions: profile.medicalConditions,
         symptoms: profile.symptoms,
+        culturalBackground: profile.culturalBackground,
         dailyCalorieTarget: profile.dailyCalorieTarget,
         labValues: profile.labValues,
       }
@@ -69,8 +70,9 @@ IMPORTANT ANALYSIS RULES:
 1. LAB VALUES: If labValues are present, identify which markers may be suboptimal based on standard reference ranges (e.g. Vitamin D < 30 ng/mL is insufficient; B12 < 300 pg/mL is low; ferritin < 20 ng/mL is low; CRP > 3 mg/L indicates inflammation; fasting glucose > 100 mg/dL is prediabetic). For each out-of-range marker, prioritize foods that are clinically proven to improve that marker. Name the specific marker in the "reason" field.
 2. SYMPTOMS: If symptoms are listed (fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance), prioritize foods and nutrients with evidence-based support for those symptoms. For example: fatigue → iron, B12, CoQ10-rich foods; brain_fog → omega-3, B vitamins, antioxidants; inflammation → turmeric, omega-3, leafy greens; digestive_issues → fermented foods, fiber, prebiotics; poor_sleep → magnesium, tryptophan, complex carbs; hormonal_imbalance → cruciferous vegetables, flaxseed, zinc-rich foods.
 3. DIETARY PREFERENCES & ALLERGIES: Strictly respect dietary restrictions and allergies.
-4. KITCHEN FIRST: Prioritize recipes using ingredients already in their inventory.
-5. VARIETY: Include a mix of meals, snacks, specific ingredients, and nutrient tips.
+4. CULTURAL BACKGROUND: If culturalBackground is set, prioritize foods, dishes, and ingredients that are familiar and traditional within that culinary culture. For example: West African → fufu, egusi, jollof rice, leafy greens; South Asian → dal, turmeric milk, roti, lentils; Mediterranean → olive oil, legumes, grilled fish; Latin American → beans, plantains, achiote, corn. Always frame recommendations using culturally relevant ingredients that also address the user's nutritional deficiencies.
+5. KITCHEN FIRST: Prioritize recipes using ingredients already in their inventory.
+6. VARIETY: Include a mix of meals, snacks, specific ingredients, and nutrient tips.
 
 Generate exactly 6 recommendations. Return ONLY valid JSON in this exact format:
 {

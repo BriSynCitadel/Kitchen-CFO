@@ -430,6 +430,10 @@ export const GetProfileResponse = zod.object({
     .describe(
       "e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance",
     ),
+  culturalBackground: zod
+    .string()
+    .nullish()
+    .describe("e.g. West African, South Asian, Mediterranean, Latin American"),
   dailyCalorieTarget: zod.number().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
@@ -492,6 +496,10 @@ export const UpdateProfileBody = zod.object({
     .describe(
       "e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance",
     ),
+  culturalBackground: zod
+    .string()
+    .nullish()
+    .describe("e.g. West African, South Asian, Mediterranean, Latin American"),
   dailyCalorieTarget: zod.number().nullish(),
 });
 
@@ -557,6 +565,10 @@ export const UpdateProfileResponse = zod.object({
     .describe(
       "e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance",
     ),
+  culturalBackground: zod
+    .string()
+    .nullish()
+    .describe("e.g. West African, South Asian, Mediterranean, Latin American"),
   dailyCalorieTarget: zod.number().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),

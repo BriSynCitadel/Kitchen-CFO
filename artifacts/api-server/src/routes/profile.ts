@@ -70,6 +70,7 @@ router.put("/profile", async (req, res) => {
         medicalConditions: data.medicalConditions ?? existing.medicalConditions,
         labValues: (data.labValues as Record<string, number | null>) ?? existing.labValues,
         symptoms: data.symptoms ?? existing.symptoms,
+        culturalBackground: data.culturalBackground ?? existing.culturalBackground,
         dailyCalorieTarget: data.dailyCalorieTarget ?? existing.dailyCalorieTarget,
         updatedAt: new Date(),
       })

@@ -958,6 +958,10 @@ components:
           items:
             type: string
           description: e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance
+        culturalBackground:
+          type: string
+          nullable: true
+          description: e.g. West African, South Asian, Mediterranean, Latin American
         dailyCalorieTarget:
           type: number
           nullable: true
@@ -1025,6 +1029,10 @@ components:
           items:
             type: string
           description: e.g. fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance
+        culturalBackground:
+          type: string
+          nullable: true
+          description: e.g. West African, South Asian, Mediterranean, Latin American
         dailyCalorieTarget:
           type: number
           nullable: true

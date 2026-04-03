@@ -11,12 +11,26 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { User, Activity, FlaskConical, Zap, Check, ExternalLink, FileUp, Loader2 } from "lucide-react";
+import { User, Activity, FlaskConical, Zap, Check, ExternalLink, FileUp, Loader2, Globe } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fileToBase64 } from "@/lib/utils";
 import { LabImportModal } from "@/components/LabImportModal";
 
 const DIETS = ["vegan", "vegetarian", "keto", "paleo", "gluten_free", "dairy_free", "low_fodmap", "carnivore", "pork", "seafood", "pescatarian"];
+const CULTURAL_BACKGROUNDS = [
+  "No preference",
+  "West African",
+  "Caribbean",
+  "South Asian",
+  "East Asian",
+  "Southeast Asian",
+  "Latin American",
+  "Middle Eastern",
+  "Mediterranean",
+  "Eastern European",
+  "West European",
+  "North American",
+];
 const GOALS = ["weight_loss", "muscle_gain", "energy", "longevity", "gut_health", "hormone_balance", "anti_inflammatory"];
 
 const SYMPTOMS: { id: string; label: string }[] = [
@@ -199,6 +213,7 @@ export default function Profile() {
     dietaryPreferences: [] as string[],
     healthGoals: [] as string[],
     symptoms: [] as string[],
+    culturalBackground: "",
     labValues: {} as Record<keyof LabValues, string>,
   });
 
@@ -218,6 +233,7 @@ export default function Profile() {
         dietaryPreferences: profile.dietaryPreferences ?? [],
         healthGoals: profile.healthGoals ?? [],
         symptoms: profile.symptoms ?? [],
+        culturalBackground: profile.culturalBackground ?? "",
         labValues: labStr,
       });
     }
@@ -251,6 +267,7 @@ export default function Profile() {
         dietaryPreferences: formData.dietaryPreferences,
         healthGoals: formData.healthGoals,
         symptoms: formData.symptoms,
+        culturalBackground: formData.culturalBackground || null,
         labValues: labValuesTyped,
       },
     });
@@ -413,6 +430,32 @@ export default function Profile() {
           </Card>
           )}
 
+        </section>
+
+        {/* ── CULTURAL BACKGROUND ── */}
+        <section>
+          <SectionHeader icon={Globe} label="Cultural Background" color="text-blue-500" />
+          <p className="text-xs text-muted-foreground mb-3 -mt-1">
+            Helps us recommend foods familiar to your culture that meet your nutritional needs.
+          </p>
+          <Card>
+            <CardContent className="p-4">
+              <select
+                value={formData.culturalBackground}
+                onChange={(e) => setFormData((prev) => ({ ...prev, culturalBackground: e.target.value }))}
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+              >
+                {CULTURAL_BACKGROUNDS.map((bg) => (
+                  <option key={bg} value={bg === "No preference" ? "" : bg}>
+                    {bg}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-muted-foreground/70 mt-2">
+                Optional — skip this if you prefer general recommendations.
+              </p>
+            </CardContent>
+          </Card>
         </section>
 
         {/* ── DIETARY PREFERENCES ── */}
