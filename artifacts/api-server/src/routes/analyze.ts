@@ -4,11 +4,13 @@ import { AnalyzeFoodBody, AnalyzeFoodResponse } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
-const FOOD_ANALYSIS_PROMPT = `Analyze this food image and return a JSON object with the following structure. Be precise and thorough.
+const FOOD_ANALYSIS_PROMPT = `Analyze this food or drink image and return a JSON object with the following structure. Be precise and thorough.
+
+CRITICAL DESCRIPTION RULE: The "description" field must describe the food or drink item itself — what it is, its estimated serving size, and key nutritional highlights. Never describe the scene, the person, or the packaging context. Do not mention hands, people, backgrounds, or how the item is being held. If a packaged product is visible, identify the product by name and describe its contents, not the act of holding it. Example of what NOT to write: "A person is holding a bottle of..." or "A hand is visible holding...". Example of what to write: "500ml bottle of Innocent Orange Juice — 225 kcal per serving, high in vitamin C, 44g natural sugars."
 
 {
   "analysisType": "meal",
-  "description": "Brief description of what you see",
+  "description": "What the food/drink IS — its name, estimated serving size, and key nutritional highlights",
   "items": [
     {
       "name": "Food item name",
@@ -87,13 +89,15 @@ const INVENTORY_ANALYSIS_PROMPT = `Analyze this photo of a fridge, pantry, or ki
   ]
 }`;
 
-const FOOD_ANALYSIS_PERMISSIVE_PROMPT = `Look at this image carefully. Even if the food is partially visible, dimly lit, or mixed with other items, identify any food items you can see and estimate their nutritional content. If you see a menu, read the text and identify the dish.
+const FOOD_ANALYSIS_PERMISSIVE_PROMPT = `Look at this image carefully. Even if the food or drink is partially visible, dimly lit, or mixed with other items, identify any food or drink items you can see and estimate their nutritional content. If you see a menu, read the text and identify the dish.
+
+CRITICAL DESCRIPTION RULE: The "description" field must describe the food or drink item itself — what it is, its estimated serving size, and key nutritional highlights. Never describe the scene, person, or packaging context. Do not mention hands, people, backgrounds, or how the item is being held.
 
 Return a JSON object with the same structure as a normal food analysis:
 
 {
   "analysisType": "meal",
-  "description": "Brief description of what you see",
+  "description": "What the food/drink IS — its name, estimated serving size, and key nutritional highlights",
   "items": [
     {
       "name": "Food item name",

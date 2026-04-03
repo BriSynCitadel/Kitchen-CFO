@@ -180,7 +180,14 @@ export const GetFoodLogsResponse = zod.object({
       id: zod.number(),
       foodName: zod.string(),
       quantity: zod.string().optional(),
-      mealType: zod.enum(["breakfast", "lunch", "dinner", "snack", "other"]),
+      mealType: zod.enum([
+        "breakfast",
+        "lunch",
+        "dinner",
+        "snack",
+        "drink",
+        "other",
+      ]),
       nutrients: zod
         .object({
           calories: zod.number(),
@@ -251,7 +258,14 @@ export const GetFoodLogsResponse = zod.object({
 export const CreateFoodLogBody = zod.object({
   foodName: zod.string(),
   quantity: zod.string().optional(),
-  mealType: zod.enum(["breakfast", "lunch", "dinner", "snack", "other"]),
+  mealType: zod.enum([
+    "breakfast",
+    "lunch",
+    "dinner",
+    "snack",
+    "drink",
+    "other",
+  ]),
   nutrients: zod
     .object({
       calories: zod.number(),

@@ -53,7 +53,7 @@ export default function Diary() {
     return acc;
   }, {} as Record<string, typeof logsData.logs>) || {};
 
-  const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack', 'other'];
+  const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack', 'drink', 'other'];
 
   const targetCalories = 2000;
   const calPercent = Math.min(100, ((summary?.totalCalories || 0) / targetCalories) * 100);

@@ -44,8 +44,18 @@ const MEAL_LABELS: Record<string, string> = {
   lunch: "Lunch",
   dinner: "Dinner",
   snack: "Snack",
-  other: "Meal",
+  drink: "Drink",
+  other: "Other",
 };
+
+const MEAL_OPTIONS = [
+  { value: "breakfast", label: "Breakfast", emoji: "🌅" },
+  { value: "lunch", label: "Lunch", emoji: "☀️" },
+  { value: "dinner", label: "Dinner", emoji: "🌙" },
+  { value: "snack", label: "Snack", emoji: "🍎" },
+  { value: "drink", label: "Drink", emoji: "🥤" },
+  { value: "other", label: "Other", emoji: "🍽️" },
+];
 
 interface LeafProps {
   id: number;
@@ -167,6 +177,7 @@ export default function Home() {
       })) ?? [],
     );
     setShowAllMicros(false);
+    setSelectedMealType("other");
     setIsEditingDescription(false);
     setIsEditingItems(false);
   }, [analysis]);
@@ -184,6 +195,7 @@ export default function Home() {
   const [suggestionLoading, setSuggestionLoading] = useState(false);
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
   const [showAllMicros, setShowAllMicros] = useState(false);
+  const [selectedMealType, setSelectedMealType] = useState("other");
   const [editedFoodName, setEditedFoodName] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
   const [isEditingDescription, setIsEditingDescription] = useState(false);
@@ -477,7 +489,7 @@ export default function Home() {
       data: {
         foodName,
         quantity,
-        mealType: "other",
+        mealType: selectedMealType,
         nutrients: analysis.totalNutrients,
       },
     });
@@ -1341,8 +1353,30 @@ export default function Home() {
                       </div>
                     )}
 
+                    {/* Meal type selector */}
+                    <div className="mt-5">
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Log as</p>
+                      <div className="flex flex-wrap gap-2">
+                        {MEAL_OPTIONS.map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => setSelectedMealType(opt.value)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                              selectedMealType === opt.value
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+                            }`}
+                          >
+                            <span>{opt.emoji}</span>
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <Button
-                      className="w-full mt-5 text-lg h-14"
+                      className="w-full mt-4 text-lg h-14"
                       size="lg"
                       onClick={handleLog}
                       disabled={createLogMutation.isPending}

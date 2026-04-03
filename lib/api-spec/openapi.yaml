@@ -727,7 +727,7 @@ components:
           type: string
         mealType:
           type: string
-          enum: [breakfast, lunch, dinner, snack, other]
+          enum: [breakfast, lunch, dinner, snack, drink, other]
         nutrients:
           $ref: "#/components/schemas/NutrientData"
         imageUrl:
@@ -772,7 +772,7 @@ components:
           type: string
         mealType:
           type: string
-          enum: [breakfast, lunch, dinner, snack, other]
+          enum: [breakfast, lunch, dinner, snack, drink, other]
         nutrients:
           $ref: "#/components/schemas/NutrientData"
         imageBase64:

@@ -14,5 +14,6 @@ export const CreateFoodLogRequestMealType = {
   lunch: "lunch",
   dinner: "dinner",
   snack: "snack",
+  drink: "drink",
   other: "other",
 } as const;
