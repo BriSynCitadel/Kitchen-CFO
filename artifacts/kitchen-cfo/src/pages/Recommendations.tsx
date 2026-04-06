@@ -120,13 +120,13 @@ export default function Recommendations() {
             </div>
             <div className="space-y-2 mb-3 pl-1">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                🔋 <span className="text-foreground font-medium">Always tired?</span> Low ferritin, B12, or vitamin D is the most common cause — and it won't show without a blood test.
+                🔋 <span className="text-foreground font-medium">Always tired?</span> Chronically low ferritin, B12, or vitamin D is the most common cause — and it won't show up without a blood test.
               </p>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 🧠 <span className="text-foreground font-medium">Brain fog and poor focus</span> are often low magnesium or omega-3. Both are fixable through food once you know your levels.
               </p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                🌙 <span className="text-foreground font-medium">Waking at 3am?</span> That's frequently low progesterone, high cortisol, or magnesium deficiency — all visible in a standard panel.
+                🌙 <span className="text-foreground font-medium">Waking up at 3am or sleeping badly?</span> That's frequently low progesterone, high cortisol, or magnesium deficiency — all visible in a standard panel.
               </p>
             </div>
             <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
