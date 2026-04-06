@@ -111,22 +111,35 @@ export default function Recommendations() {
         </div>
 
         {!hasAnyLabValue && (
-          <div className="bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4 flex items-start gap-3">
-            <div className="w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+          <div className="bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4">
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+              </div>
+              <p className="text-sm font-semibold text-foreground leading-snug pt-1.5">Your symptoms have a nutritional fingerprint.</p>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground mb-0.5">Unlock personalised recommendations</p>
-              <p className="text-xs text-muted-foreground mb-3">Add your lab results to get food guidance tailored to your specific biology.</p>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-violet-300 text-violet-700 hover:bg-violet-100 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-900/30 text-xs h-8"
-                onClick={() => setLocation("/profile")}
-              >
-                Add Lab Results →
-              </Button>
+            <div className="space-y-2 mb-3 pl-1">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                🔋 <span className="text-foreground font-medium">Always tired?</span> Low ferritin, B12, or vitamin D is the most common cause — and it won't show without a blood test.
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                🧠 <span className="text-foreground font-medium">Brain fog and poor focus</span> are often low magnesium or omega-3. Both are fixable through food once you know your levels.
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                🌙 <span className="text-foreground font-medium">Waking at 3am?</span> That's frequently low progesterone, high cortisol, or magnesium deficiency — all visible in a standard panel.
+              </p>
             </div>
+            <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+              Upload your bloodwork and we'll show you exactly which foods address your specific markers.
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-violet-300 text-violet-700 hover:bg-violet-100 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-900/30 text-xs h-8"
+              onClick={() => setLocation("/profile")}
+            >
+              Add Lab Results →
+            </Button>
           </div>
         )}
 
