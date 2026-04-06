@@ -49,11 +49,6 @@ export default function Recommendations() {
       return next;
     });
 
-  const rawLabValues = profileData?.labValues as Record<string, number | null | undefined> | null | undefined;
-  const hasAnyLabValue = rawLabValues
-    ? Object.values(rawLabValues).some((v) => v !== null && v !== undefined && v !== 0)
-    : false;
-
   const refreshMutation = useRefreshRecommendations({
     mutation: {
       onSuccess: () => queryClient.invalidateQueries({ queryKey: getGetRecommendationsQueryKey() })
@@ -210,34 +205,14 @@ export default function Recommendations() {
             ))}
           </div>
         ) : !data?.recommendations?.length ? (
-          <div className="bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4">
-            <div className="flex items-start gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400" />
-              </div>
-              <p className="text-sm font-semibold text-foreground leading-snug pt-1.5">Your symptoms have a nutritional fingerprint.</p>
+          <div className="text-center py-8 px-4">
+            <div className="w-14 h-14 mx-auto bg-secondary rounded-full flex items-center justify-center mb-3">
+              <Sparkles className="w-6 h-6 text-muted-foreground" />
             </div>
-            <div className="space-y-2 mb-3 pl-1">
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                🔋 <span className="text-foreground font-medium">Always tired?</span> Chronically low ferritin, B12, or vitamin D is the most common cause — and it won't show up without a blood test.
-              </p>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                🧠 <span className="text-foreground font-medium">Brain fog and poor focus</span> are often low magnesium or omega-3. Both are fixable through food once you know your levels.
-              </p>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                🌙 <span className="text-foreground font-medium">Waking up at 3am or sleeping badly?</span> That's frequently low magnesium deficiency — all visible in a standard panel.
-              </p>
-            </div>
-            <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-              Upload your bloodwork and we'll show you exactly which foods address your specific markers.
-            </p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-violet-300 text-violet-700 hover:bg-violet-100 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-900/30 text-xs h-8"
-              onClick={() => setLocation("/profile")}
-            >
-              Add Lab Results →
+            <p className="text-sm font-medium text-foreground mb-1">No meal ideas yet</p>
+            <p className="text-xs text-muted-foreground mb-4">Generate personalised meal ideas based on your profile and kitchen.</p>
+            <Button size="sm" onClick={() => refreshMutation.mutate()} disabled={isRefreshing}>
+              Generate Ideas
             </Button>
           </div>
         ) : (
