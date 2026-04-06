@@ -212,16 +212,36 @@ export default function Recommendations() {
             ))}
           </div>
         ) : !data?.recommendations?.length ? (
-           <div className="text-center py-12 px-4">
-             <div className="w-16 h-16 mx-auto bg-secondary rounded-full flex items-center justify-center mb-4">
-               <Sparkles className="w-8 h-8 text-muted-foreground" />
-             </div>
-             <h3 className="font-display text-xl font-semibold mb-2">No recommendations yet</h3>
-             <p className="text-muted-foreground text-sm mb-6">Complete your profile and add items to your kitchen to get personalized meal ideas.</p>
-             <Button onClick={() => refreshMutation.mutate()} disabled={isRefreshing}>
-                Generate Ideas
-             </Button>
-           </div>
+          <div className="bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4">
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+              </div>
+              <p className="text-sm font-semibold text-foreground leading-snug pt-1.5">Your symptoms have a nutritional fingerprint.</p>
+            </div>
+            <div className="space-y-2 mb-3 pl-1">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                🔋 <span className="text-foreground font-medium">Always tired?</span> Chronically low ferritin, B12, or vitamin D is the most common cause — and it won't show up without a blood test.
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                🧠 <span className="text-foreground font-medium">Brain fog and poor focus</span> are often low magnesium or omega-3. Both are fixable through food once you know your levels.
+              </p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                🌙 <span className="text-foreground font-medium">Waking up at 3am or sleeping badly?</span> That's frequently low magnesium deficiency — all visible in a standard panel.
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+              Upload your bloodwork and we'll show you exactly which foods address your specific markers.
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-violet-300 text-violet-700 hover:bg-violet-100 dark:border-violet-700 dark:text-violet-300 dark:hover:bg-violet-900/30 text-xs h-8"
+              onClick={() => setLocation("/profile")}
+            >
+              Add Lab Results →
+            </Button>
+          </div>
         ) : (
           <div className="space-y-4">
             {(data.recommendations as RecommendationWithLabTarget[]).map((rec, i) => (
