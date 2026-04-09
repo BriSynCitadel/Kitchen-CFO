@@ -7,11 +7,28 @@ export default function SlideFounder() {
         background: "radial-gradient(ellipse 55% 65% at 15% 50%, rgba(30,107,66,0.22) 0%, transparent 65%), radial-gradient(ellipse 40% 40% at 90% 80%, rgba(249,115,22,0.07) 0%, transparent 55%)"
       }} />
 
-      {/* Ghost person icon — right side */}
-      <svg className="absolute right-[5vw] top-[50%] translate-y-[-50%] opacity-[0.05]" width="22vw" height="22vw" viewBox="0 0 100 100" fill="none">
-        <circle cx="50" cy="28" r="20" stroke="white" strokeWidth="3"/>
-        <path d="M10 95c0-22 18-40 40-40s40 18 40 40" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-      </svg>
+      {/* Founder headshot — right side */}
+      <div className="absolute right-[5vw] top-[50%] translate-y-[-50%] flex flex-col items-center gap-[2vh]">
+        <div
+          className="rounded-full overflow-hidden flex items-center justify-center"
+          style={{
+            width: "20vw",
+            height: "20vw",
+            border: "2px solid rgba(249,115,22,0.4)",
+            background: "#0f3320",
+          }}
+        >
+          <img
+            src="/pitch-deck/founder-headshot.jpg"
+            alt="Founder"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+              (e.target as HTMLImageElement).parentElement!.innerHTML = `<svg width="50%" height="50%" viewBox="0 0 100 100" fill="none" style="opacity:0.2"><circle cx="50" cy="28" r="20" stroke="white" stroke-width="3"/><path d="M10 95c0-22 18-40 40-40s40 18 40 40" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>`;
+            }}
+          />
+        </div>
+      </div>
 
       {/* Orange accent line */}
       <div className="absolute left-[7vw] top-[50%] translate-y-[-50%] w-1 h-[22vh] rounded-full" style={{ background: "#f97316" }} />

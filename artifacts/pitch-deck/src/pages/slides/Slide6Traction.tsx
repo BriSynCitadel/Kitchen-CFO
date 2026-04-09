@@ -99,7 +99,7 @@ export default function Slide6Traction() {
             className="font-body text-[1.4vw]"
             style={{ color: "rgba(255,255,255,0.5)" }}
           >
-            "10 reviews · 4.7 avg rating"
+            "11 reviews · 4.5 avg rating"
           </span>
         </div>
       </div>
