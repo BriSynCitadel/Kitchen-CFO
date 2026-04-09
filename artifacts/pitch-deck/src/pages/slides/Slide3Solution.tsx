@@ -17,7 +17,7 @@ export default function Slide3Solution() {
       {/* Headline */}
       <div className="absolute top-[14vh] left-[7vw] right-[7vw] text-center">
         <h2 className="font-display font-black text-[4vw] tracking-tight text-white">
-          Kitchen CFO connects the dots.
+          Now you can know exactly why you feel this way — and what to eat to change it.
         </h2>
       </div>
 
@@ -36,10 +36,10 @@ export default function Slide3Solution() {
             </svg>
           </div>
           <h3 className="font-display font-bold text-[1.9vw] text-white mb-[1.5vh]">
-            Scan Your Food
+            See What Your Meals Are Missing
           </h3>
           <p className="font-body text-[1.4vw] leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
-            30+ micronutrients identified per meal via photo scan. No manual entry required.
+            Snap a photo of any meal and instantly uncover the 30+ micronutrients your body is — or isn't — getting.
           </p>
         </div>
 
@@ -55,10 +55,10 @@ export default function Slide3Solution() {
             </svg>
           </div>
           <h3 className="font-display font-bold text-[1.9vw] text-white mb-[1.5vh]">
-            Enter Your Labs
+            Turn Your Labs Into Answers
           </h3>
           <p className="font-body text-[1.4vw] leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
-            Vitamin D, B12, iron, ferritin, magnesium, zinc — your real numbers powering real guidance.
+            Upload your bloodwork once and stop wondering what those numbers mean — your results finally drive real action.
           </p>
         </div>
 
@@ -70,10 +70,10 @@ export default function Slide3Solution() {
             </svg>
           </div>
           <h3 className="font-display font-bold text-[1.9vw] text-white mb-[1.5vh]">
-            Get Guidance
+            Wake Up With More Energy
           </h3>
           <p className="font-body text-[1.4vw] leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
-            Your Kitchen CFO tells you exactly what to eat next — and explains precisely why.
+            Your Kitchen CFO tells you exactly what to eat next — so tomorrow you feel the difference, not just track it.
           </p>
         </div>
 

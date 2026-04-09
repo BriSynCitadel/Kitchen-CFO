@@ -43,11 +43,11 @@ export default function Slide1Cover() {
         </h1>
 
         <p className="font-display font-semibold text-[2.4vw] text-white leading-snug mb-[2vh]">
-          Food Intelligence for Your Biology
+          Your bloodwork. Your food. Your energy.
         </p>
 
         <p className="font-body text-[1.7vw] leading-relaxed" style={{ color: "#f97316" }}>
-          "Your body is finally being listened to."
+          "Finally understand why you're exhausted."
         </p>
 
       </div>

@@ -18,13 +18,13 @@ export default function Slide2Problem() {
       <div className="absolute left-[7vw] top-0 bottom-0 flex flex-col justify-center" style={{ width: "52vw" }}>
 
         <h2 className="font-display font-black text-[5vw] leading-[1.0] tracking-tight text-white mb-[2.5vh]">
-          One-size-fits-all
+          Exhausted. Foggy.
           <br />
-          nutrition
+          Can't sleep. Can't focus.
         </h2>
 
         <p className="font-display font-bold text-[3.2vw] leading-tight mb-[5vh]" style={{ color: "#f97316" }}>
-          Doesn't fit any body.
+          Most people never find out why.
         </p>
 
         <div className="space-y-[2.2vh]">
@@ -36,7 +36,7 @@ export default function Slide2Problem() {
               </svg>
             </div>
             <p className="font-body text-[1.7vw] leading-snug" style={{ color: "rgba(255,255,255,0.75)" }}>
-              Calorie counters ignore your bloodwork entirely
+              Millions live with nutritional deficiencies they've never been told about
             </p>
           </div>
           <div className="flex items-start gap-[1.2vw]">
@@ -47,7 +47,7 @@ export default function Slide2Problem() {
               </svg>
             </div>
             <p className="font-body text-[1.7vw] leading-snug" style={{ color: "rgba(255,255,255,0.75)" }}>
-              No knowledge of your specific nutrient deficiencies
+              Calorie apps leave you tired because they never look at your bloodwork
             </p>
           </div>
           <div className="flex items-start gap-[1.2vw]">
@@ -58,7 +58,7 @@ export default function Slide2Problem() {
               </svg>
             </div>
             <p className="font-body text-[1.7vw] leading-snug" style={{ color: "rgba(255,255,255,0.75)" }}>
-              Generic advice ignores your unique biology
+              Generic advice keeps you guessing — because it wasn't made for your body
             </p>
           </div>
         </div>

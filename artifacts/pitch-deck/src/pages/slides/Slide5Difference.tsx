@@ -79,28 +79,28 @@ export default function Slide5Difference() {
                 <circle cx="8" cy="8" r="7" fill="rgba(30,107,66,0.3)" stroke="rgba(74,222,128,0.6)" strokeWidth="1.5"/>
                 <path d="M4.5 8l2.5 2.5 4.5-5" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span className="font-body text-[1.5vw] text-white">30+ micronutrients per meal via photo scan</span>
+              <span className="font-body text-[1.5vw] text-white">You see every micronutrient your body actually got</span>
             </div>
             <div className="flex items-center gap-[1vw]">
               <svg width="1.2vw" height="1.2vw" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="8" r="7" fill="rgba(30,107,66,0.3)" stroke="rgba(74,222,128,0.6)" strokeWidth="1.5"/>
                 <path d="M4.5 8l2.5 2.5 4.5-5" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span className="font-body text-[1.5vw] text-white">Connected directly to your lab results</span>
+              <span className="font-body text-[1.5vw] text-white">Your labs finally explain why you've been feeling off</span>
             </div>
             <div className="flex items-center gap-[1vw]">
               <svg width="1.2vw" height="1.2vw" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="8" r="7" fill="rgba(30,107,66,0.3)" stroke="rgba(74,222,128,0.6)" strokeWidth="1.5"/>
                 <path d="M4.5 8l2.5 2.5 4.5-5" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span className="font-body text-[1.5vw] text-white">Knows your kitchen inventory in real time</span>
+              <span className="font-body text-[1.5vw] text-white">Guidance built around what's actually in your kitchen</span>
             </div>
             <div className="flex items-center gap-[1vw]">
               <svg width="1.2vw" height="1.2vw" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="8" r="7" fill="rgba(30,107,66,0.3)" stroke="rgba(74,222,128,0.6)" strokeWidth="1.5"/>
                 <path d="M4.5 8l2.5 2.5 4.5-5" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span className="font-body text-[1.5vw] text-white">Bioindividual recommendations, never generic</span>
+              <span className="font-body text-[1.5vw] text-white">You finally know what YOUR body needs</span>
             </div>
           </div>
         </div>

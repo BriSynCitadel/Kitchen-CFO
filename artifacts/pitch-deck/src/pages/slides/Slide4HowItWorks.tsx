@@ -17,7 +17,7 @@ export default function Slide4HowItWorks() {
       {/* Headline */}
       <div className="absolute top-[14vh] left-[7vw] right-[7vw] text-center">
         <h2 className="font-display font-black text-[4vw] tracking-tight text-white">
-          Three steps. Total clarity.
+          Three steps from confused to clear.
         </h2>
       </div>
 
@@ -40,7 +40,7 @@ export default function Slide4HowItWorks() {
             Photo Scan
           </h3>
           <p className="font-body text-[1.4vw] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
-            Photograph any meal, receipt, or pantry item. Vision technology identifies every nutrient instantly.
+            Photograph any meal or pantry item — and instantly see the nutrients your body is actually receiving.
           </p>
         </div>
 
@@ -65,7 +65,7 @@ export default function Slide4HowItWorks() {
             Lab Upload
           </h3>
           <p className="font-body text-[1.4vw] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
-            Enter your bloodwork once. Vitamin D, B12, ferritin, iron, magnesium, zinc — all stored securely.
+            Enter your bloodwork once — and unlock the missing link between what you eat and how you feel.
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export default function Slide4HowItWorks() {
             Personalized Guidance
           </h3>
           <p className="font-body text-[1.4vw] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
-            Your Kitchen CFO cross-references labs, kitchen inventory, and recent meals to recommend exactly what to eat next.
+            Your Kitchen CFO tells you exactly what to eat tonight — so you wake up tomorrow with more energy, mental clarity, and restful sleep.
           </p>
         </div>
 

@@ -4,7 +4,7 @@
     "position": 1,
     "filepath": "src/pages/slides/Slide1Cover.tsx",
     "title": "Cover",
-    "description": "Kitchen CFO opening title slide with tagline and visual identity.",
+    "description": "Kitchen CFO opening slide — symptom-led tagline: your bloodwork, food, and energy.",
     "speakerNotes": ""
   },
   {
@@ -12,7 +12,7 @@
     "position": 2,
     "filepath": "src/pages/slides/Slide2Problem.tsx",
     "title": "The Problem",
-    "description": "One-size-fits-all nutrition ignores individual biology.",
+    "description": "Leads with fatigue, brain fog, poor sleep, and loss of focus — most people never discover the deficiencies behind them.",
     "speakerNotes": ""
   },
   {
@@ -20,7 +20,7 @@
     "position": 3,
     "filepath": "src/pages/slides/Slide3Solution.tsx",
     "title": "The Solution",
-    "description": "Kitchen CFO connects bloodwork, kitchen inventory, and food scans.",
+    "description": "Outcome-first: see what your meals are missing, turn labs into answers, wake up with more energy.",
     "speakerNotes": ""
   },
   {
@@ -28,7 +28,7 @@
     "position": 4,
     "filepath": "src/pages/slides/Slide4HowItWorks.tsx",
     "title": "How It Works",
-    "description": "Three steps: scan food, enter labs, get personalized guidance.",
+    "description": "Three steps from confused to clear — each step unlocks energy, understanding, and restful sleep.",
     "speakerNotes": ""
   },
   {
@@ -36,7 +36,7 @@
     "position": 5,
     "filepath": "src/pages/slides/Slide5Difference.tsx",
     "title": "The Difference",
-    "description": "Side-by-side comparison: other apps vs Kitchen CFO.",
+    "description": "Side-by-side comparison: other apps vs Kitchen CFO — focused on what users feel and experience.",
     "speakerNotes": ""
   },
   {
@@ -76,7 +76,7 @@
     "position": 10,
     "filepath": "src/pages/slides/Slide8TheAsk.tsx",
     "title": "The Ask",
-    "description": "Try Kitchen CFO today at kitchen-intelligence.replit.app.",
+    "description": "Beta practitioners sought; founder personal quote added as honest human moment below the app URL.",
     "speakerNotes": ""
   }
 ]

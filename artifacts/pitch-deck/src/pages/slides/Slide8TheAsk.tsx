@@ -70,8 +70,12 @@ export default function Slide8TheAsk() {
           If you prescribe it, your patients convert.<br />
           1 practitioner = 200+ users.
         </p>
-        <p className="font-body text-[1.6vw]" style={{ color: "rgba(255,255,255,0.7)" }}>
+        <p className="font-body text-[1.6vw] mb-[2vh]" style={{ color: "rgba(255,255,255,0.7)" }}>
           Try it now: kitchen-intelligence.replit.app
+        </p>
+        <p className="font-body text-[1.3vw] leading-relaxed" style={{ color: "rgba(255,255,255,0.4)", fontStyle: "italic" }}>
+          "I haven't seen my results change yet — but I'm doing this live and you can follow along."
+          <span className="block mt-[0.5vh] not-italic text-[1.1vw]" style={{ color: "rgba(255,255,255,0.28)" }}>— The Founder</span>
         </p>
       </div>
     </div>
