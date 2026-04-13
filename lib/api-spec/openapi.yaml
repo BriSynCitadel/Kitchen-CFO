@@ -953,6 +953,14 @@ components:
           type: number
           description: Free T3 pg/mL
           nullable: true
+        cortisol:
+          type: number
+          description: Cortisol (morning) mcg/dL
+          nullable: true
+        insulin:
+          type: number
+          description: Fasting insulin mIU/L
+          nullable: true
         sodium:
           type: number
           description: Serum Sodium mEq/L

@@ -67,7 +67,24 @@ RECENTLY EATEN (last 3 days):
 ${recentFoods || "No recent logs"}
 
 IMPORTANT ANALYSIS RULES:
-1. LAB VALUES: If labValues are present, identify which markers may be suboptimal based on standard reference ranges (e.g. Vitamin D < 30 ng/mL is insufficient; B12 < 300 pg/mL is low; ferritin < 20 ng/mL is low; CRP > 3 mg/L indicates inflammation; fasting glucose > 100 mg/dL is prediabetic). For each out-of-range marker, prioritize foods that are clinically proven to improve that marker. Name the specific marker in the "reason" field.
+1. LAB VALUES: If labValues are present, identify which markers may be suboptimal based on standard reference ranges below. For each out-of-range marker, prioritize foods that are clinically proven to improve that marker. Name the specific marker in the "reason" field.
+   Reference ranges:
+   - Vitamin D < 30 ng/mL → insufficient (optimal 30–80)
+   - Vitamin B12 < 300 pg/mL → low (optimal 300–900)
+   - Ferritin < 20 ng/mL → low; > 200 ng/mL → high
+   - CRP > 3 mg/L → elevated inflammation
+   - Fasting glucose > 100 mg/dL → prediabetic range
+   - HbA1c > 5.7% → prediabetic; > 6.5% → diabetic (optimal < 5.7%)
+   - Fasting insulin > 6 mIU/L → insulin resistance risk (optimal 2–6)
+   - Cortisol (morning) < 10 mcg/dL → low; > 20 mcg/dL → elevated (optimal 10–20)
+   - Folate < 2.7 ng/mL → deficient (optimal 2.7–17)
+   - Uric acid > 7.0 mg/dL → hyperuricemia risk (optimal 2.4–7.0)
+   - Potassium < 3.5 mEq/L → hypokalemia; > 5.0 → hyperkalemia (optimal 3.5–5.0)
+   - Free T4 < 0.8 ng/dL → low thyroid; > 1.8 → elevated (optimal 0.8–1.8)
+   - Free T3 < 2.3 pg/mL → low thyroid; > 4.2 → elevated (optimal 2.3–4.2)
+   - TSH > 4.0 mIU/L → hypothyroid risk; < 0.4 → hyperthyroid risk
+   - Magnesium < 1.7 mg/dL → deficient (optimal 1.7–2.2)
+   Food-to-marker guidance: HbA1c/insulin elevated → reduce refined carbs, add cinnamon, legumes, vinegar, fiber; cortisol elevated → ashwagandha-containing foods, magnesium-rich foods, dark chocolate; cortisol low → regular balanced meals, complex carbs, adequate protein; folate low → leafy greens, lentils, fortified foods; uric acid high → reduce red meat, alcohol, fructose; add cherries, coffee, low-fat dairy; potassium low → bananas, sweet potato, avocado, spinach; thyroid markers low → selenium-rich foods (Brazil nuts, sardines), iodine (seaweed, eggs), zinc.
 2. SYMPTOMS: If symptoms are listed (fatigue, brain_fog, inflammation, digestive_issues, poor_sleep, hormonal_imbalance), prioritize foods and nutrients with evidence-based support for those symptoms. For example: fatigue → iron, B12, CoQ10-rich foods; brain_fog → omega-3, B vitamins, antioxidants; inflammation → turmeric, omega-3, leafy greens; digestive_issues → fermented foods, fiber, prebiotics; poor_sleep → magnesium, tryptophan, complex carbs; hormonal_imbalance → cruciferous vegetables, flaxseed, zinc-rich foods.
 3. DIETARY PREFERENCES & ALLERGIES: Strictly respect dietary restrictions and allergies.
 4. CULTURAL BACKGROUND: If culturalBackground is set, prioritize foods, dishes, and ingredients that are familiar and traditional within that culinary culture. For example: West African → fufu, egusi, jollof rice, leafy greens; South Asian → dal, turmeric milk, roti, lentils; Mediterranean → olive oil, legumes, grilled fish; Latin American → beans, plantains, achiote, corn. Always frame recommendations using culturally relevant ingredients that also address the user's nutritional deficiencies.

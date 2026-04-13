@@ -268,6 +268,10 @@ export interface LabValues {
   freeT4?: number | null;
   /** Free T3 pg/mL */
   freeT3?: number | null;
+  /** Cortisol (morning) mcg/dL */
+  cortisol?: number | null;
+  /** Fasting insulin mIU/L */
+  insulin?: number | null;
   /** Serum Sodium mEq/L */
   sodium?: number | null;
 }

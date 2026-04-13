@@ -583,6 +583,8 @@ export const GetProfileResponse = zod.object({
       potassium: zod.number().nullish().describe("Potassium mEq\/L"),
       freeT4: zod.number().nullish().describe("Free T4 ng\/dL"),
       freeT3: zod.number().nullish().describe("Free T3 pg\/mL"),
+      cortisol: zod.number().nullish().describe("Cortisol (morning) mcg\/dL"),
+      insulin: zod.number().nullish().describe("Fasting insulin mIU\/L"),
       sodium: zod.number().nullish().describe("Serum Sodium mEq\/L"),
     })
     .nullish(),
@@ -648,6 +650,8 @@ export const UpdateProfileBody = zod.object({
       potassium: zod.number().nullish().describe("Potassium mEq\/L"),
       freeT4: zod.number().nullish().describe("Free T4 ng\/dL"),
       freeT3: zod.number().nullish().describe("Free T3 pg\/mL"),
+      cortisol: zod.number().nullish().describe("Cortisol (morning) mcg\/dL"),
+      insulin: zod.number().nullish().describe("Fasting insulin mIU\/L"),
       sodium: zod.number().nullish().describe("Serum Sodium mEq\/L"),
     })
     .nullish(),
@@ -718,6 +722,8 @@ export const UpdateProfileResponse = zod.object({
       potassium: zod.number().nullish().describe("Potassium mEq\/L"),
       freeT4: zod.number().nullish().describe("Free T4 ng\/dL"),
       freeT3: zod.number().nullish().describe("Free T3 pg\/mL"),
+      cortisol: zod.number().nullish().describe("Cortisol (morning) mcg\/dL"),
+      insulin: zod.number().nullish().describe("Fasting insulin mIU\/L"),
       sodium: zod.number().nullish().describe("Serum Sodium mEq\/L"),
     })
     .nullish(),
