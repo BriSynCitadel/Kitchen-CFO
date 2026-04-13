@@ -49,8 +49,8 @@ export default function Privacy() {
           <h2 className="font-semibold text-foreground text-base">Your Rights</h2>
           <p className="text-muted-foreground">
             You may delete your account and all associated data at any time by contacting us at{" "}
-            <a href="mailto:brisyncitadel@proton.me" className="text-primary underline underline-offset-2">
-              brisyncitadel@proton.me
+            <a href="mailto:privacy@brisyncitadel.com" className="text-primary underline underline-offset-2">
+              privacy@brisyncitadel.com
             </a>
             . You may also request a copy of your data at any time.
           </p>
@@ -75,8 +75,8 @@ export default function Privacy() {
           <p className="text-muted-foreground">
             BriSyn Citadel LLC
             <br />
-            <a href="mailto:brisyncitadel@proton.me" className="text-primary underline underline-offset-2">
-              brisyncitadel@proton.me
+            <a href="mailto:privacy@brisyncitadel.com" className="text-primary underline underline-offset-2">
+              privacy@brisyncitadel.com
             </a>
           </p>
         </section>

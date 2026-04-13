@@ -71,8 +71,8 @@ export default function Terms() {
           <p className="text-muted-foreground">
             BriSyn Citadel LLC
             <br />
-            <a href="mailto:brisyncitadel@proton.me" className="text-primary underline underline-offset-2">
-              brisyncitadel@proton.me
+            <a href="mailto:privacy@brisyncitadel.com" className="text-primary underline underline-offset-2">
+              privacy@brisyncitadel.com
             </a>
           </p>
         </section>
