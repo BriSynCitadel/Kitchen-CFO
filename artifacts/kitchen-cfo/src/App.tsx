@@ -17,6 +17,8 @@ import Recommendations from "@/pages/Recommendations";
 import Profile from "@/pages/Profile";
 import Settings from "@/pages/Settings";
 import Landing from "@/pages/Landing";
+import Privacy from "@/pages/Privacy";
+import Terms from "@/pages/Terms";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,21 +50,27 @@ function Router() {
         <Route path="/profile" component={Profile} />
         <Route path="/settings" component={Settings} />
         <Route path="/landing" component={Landing} />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/terms" component={Terms} />
         <Route component={NotFound} />
       </Switch>
       
-      {/* Show bottom nav on main app routes (hidden on settings and landing) */}
+      {/* Show bottom nav on main app routes */}
       <Switch>
-        <Route path="/settings" /> {/* Hide on settings */}
-        <Route path="/landing" /> {/* Hide on landing page */}
+        <Route path="/settings" />
+        <Route path="/landing" />
+        <Route path="/privacy" />
+        <Route path="/terms" />
         <Route>
           <BottomNav />
         </Route>
       </Switch>
 
-      {/* Feedback widget — hidden on landing page */}
+      {/* Feedback widget */}
       <Switch>
         <Route path="/landing" />
+        <Route path="/privacy" />
+        <Route path="/terms" />
         <Route>
           <FeedbackWidget />
         </Route>

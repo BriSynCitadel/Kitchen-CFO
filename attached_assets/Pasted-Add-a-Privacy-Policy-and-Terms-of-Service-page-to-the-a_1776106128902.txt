@@ -1,0 +1,39 @@
+Add a Privacy Policy and Terms of Service page to the app. Create a new route at /privacy and /terms that users can access from the app footer or profile page.
+Use the following content:
+Privacy Policy content:
+Kitchen CFO Privacy Policy
+Last updated: April 13, 2026
+Information We Collect
+When you use Kitchen CFO, you may voluntarily provide personal health information including lab results, biomarker values, food logs, and dietary preferences. This information is provided at your own discretion.
+How We Use Your Information
+Your health data is used solely to generate personalized food recommendations within the app. We do not sell, share, or transfer your personal health information to any third parties.
+How We Store Your Information
+Your data is stored securely in an encrypted database. We use industry-standard security practices to protect your information.
+Your Rights
+You may delete your account and all associated data at any time by contacting us at brisyncitadel@proton.me. You may also request a copy of your data at any time.
+Health Disclaimer
+Kitchen CFO is a wellness tool designed to help you understand the relationship between your nutrition and your biomarkers. It is not a medical device, does not provide medical advice, and is not a substitute for professional medical care. Always consult a qualified healthcare provider before making changes to your diet or health regimen.
+FTC Health Breach Notification
+In the event of a data breach involving your health information, we will notify affected users promptly in accordance with the FTC Health Breach Notification Rule.
+Contact
+BriSyn Citadel LLC
+brisyncitadel@proton.me
+Terms of Service content:
+Kitchen CFO Terms of Service
+Last updated: April 13, 2026
+Acceptance of Terms
+By using Kitchen CFO you agree to these terms. If you do not agree, do not use the app.
+Not Medical Advice
+Kitchen CFO provides general nutritional information based on data you voluntarily enter. Nothing in this app constitutes medical advice, diagnosis, or treatment. Always seek the advice of a qualified healthcare professional with any questions you have regarding a medical condition.
+Your Data
+You own your health data. You voluntarily provide it to receive personalized recommendations. You may delete it at any time.
+User Responsibilities
+You are responsible for the accuracy of the information you enter. Kitchen CFO recommendations are only as accurate as the data you provide.
+Limitation of Liability
+BriSyn Citadel LLC is not liable for any health decisions made based on information provided by Kitchen CFO.
+Changes to Terms
+We may update these terms at any time. Continued use of the app constitutes acceptance of updated terms.
+Contact
+BriSyn Citadel LLC
+brisyncitadel@proton.me
+Also add links to /privacy and /terms in the app footer and in the Profile page settings area so users can easily find them.

@@ -11,7 +11,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { User, Activity, FlaskConical, Zap, Check, ExternalLink, FileUp, Loader2, Globe } from "lucide-react";
+import { User, Activity, FlaskConical, Zap, Check, ExternalLink, FileUp, Loader2, Globe, Shield } from "lucide-react";
+import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { fileToBase64 } from "@/lib/utils";
 import { LabImportModal } from "@/components/LabImportModal";
@@ -102,6 +103,7 @@ function ToggleChip({ active, onClick, children }: { active: boolean; onClick: (
 export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const { data: profile, isLoading } = useGetProfile();
 
   const labFileInputRef = useRef<HTMLInputElement>(null);
@@ -520,6 +522,24 @@ export default function Profile() {
         >
           {updateMutation.isPending ? "Saving..." : "Save Profile"}
         </Button>
+
+        {/* ── LEGAL ── */}
+        <div className="flex items-center justify-center gap-1 pt-2 pb-2">
+          <Shield className="w-3 h-3 text-muted-foreground/50" />
+          <button
+            onClick={() => setLocation("/privacy")}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+          >
+            Privacy Policy
+          </button>
+          <span className="text-xs text-muted-foreground/40 mx-1">·</span>
+          <button
+            onClick={() => setLocation("/terms")}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+          >
+            Terms of Service
+          </button>
+        </div>
       </div>
 
       <input
