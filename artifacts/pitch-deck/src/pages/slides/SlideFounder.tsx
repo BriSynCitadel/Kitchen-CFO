@@ -66,14 +66,6 @@ export default function SlideFounder() {
           <div className="flex items-start gap-[2vw]">
             <div className="w-[0.25vw] self-stretch rounded-full flex-shrink-0" style={{ background: "rgba(249,115,22,0.5)" }} />
             <div>
-              <p className="font-body text-[1.1vw] tracking-[0.12em] uppercase mb-[0.5vh]" style={{ color: "rgba(255,255,255,0.3)" }}>Profession</p>
-              <p className="font-display font-semibold text-[1.9vw] text-white">Security Coordinator, NY Presbyterian Queens</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-[2vw]">
-            <div className="w-[0.25vw] self-stretch rounded-full flex-shrink-0" style={{ background: "rgba(249,115,22,0.5)" }} />
-            <div>
               <p className="font-body text-[1.1vw] tracking-[0.12em] uppercase mb-[0.5vh]" style={{ color: "rgba(255,255,255,0.3)" }}>Company</p>
               <p className="font-display font-semibold text-[1.9vw] text-white">BriSyn Citadel LLC</p>
             </div>
