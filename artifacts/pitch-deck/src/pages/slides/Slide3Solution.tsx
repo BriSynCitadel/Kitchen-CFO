@@ -22,7 +22,7 @@ export default function Slide3Solution() {
       </div>
 
       {/* Three cards */}
-      <div className="absolute left-[5vw] right-[5vw] flex gap-[2.5vw]" style={{ top: "30vh" }}>
+      <div className="absolute left-[5vw] right-[5vw] flex gap-[2.5vw]" style={{ top: "38vh" }}>
 
         {/* Card 1 */}
         <div className="flex-1 rounded-2xl p-[3vh_2.5vw] flex flex-col" style={{ background: "#0f3320", border: "1px solid rgba(30,107,66,0.4)" }}>

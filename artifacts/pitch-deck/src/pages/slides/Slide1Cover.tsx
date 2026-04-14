@@ -25,9 +25,6 @@ export default function Slide1Cover() {
         </svg>
       </div>
 
-      {/* Orange accent line */}
-      <div className="absolute left-[7vw] top-[50%] translate-y-[-50%] w-1 h-[28vh] rounded-full" style={{ background: "#f97316" }} />
-
       {/* Main content */}
       <div className="relative z-10 flex flex-col justify-center h-full pl-[10vw] pr-[30vw]">
 

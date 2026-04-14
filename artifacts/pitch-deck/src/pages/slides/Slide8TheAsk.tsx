@@ -45,12 +45,6 @@ export default function Slide8TheAsk() {
         <line x1="5" y1="98" x2="105" y2="98" stroke="white" strokeWidth="3"/>
       </svg>
 
-      {/* Orange accent line — left side */}
-      <div
-        className="absolute left-[7vw] top-[50%] translate-y-[-50%] w-1 h-[20vh] rounded-full"
-        style={{ background: "#f97316" }}
-      />
-
       {/* Main content — centered */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-[15vw]">
         <p
