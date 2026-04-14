@@ -30,9 +30,6 @@ export default function SlideFounder() {
         </div>
       </div>
 
-      {/* Orange accent line */}
-      <div className="absolute left-[7vw] top-[50%] translate-y-[-50%] w-1 h-[22vh] rounded-full" style={{ background: "#f97316" }} />
-
       {/* Slide label */}
       <div className="absolute top-[5vh] left-[7vw]">
         <span className="font-body text-[1.2vw] tracking-[0.15em] uppercase" style={{ color: "#f97316" }}>
