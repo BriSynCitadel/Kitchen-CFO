@@ -114,3 +114,10 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Hide Replit badge */
+#replit-badge,
+#replit-badge-container,
+[id^="replit-badge"] {
+  display: none !important;
+}
