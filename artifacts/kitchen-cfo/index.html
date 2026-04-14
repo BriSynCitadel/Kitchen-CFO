@@ -18,9 +18,45 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+  <style>
+    #replit-badge,
+    #replit-badge-container,
+    .replit-badge,
+    [id^="replit"],
+    [class^="replit"],
+    [class*="replit-badge"],
+    iframe[src*="replit.com/badge"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      (function () {
+        var observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            mutation.addedNodes.forEach(function (node) {
+              if (node.nodeType !== 1) return;
+              var el = node;
+              var id = el.id || "";
+              var cls = el.className || "";
+              if (
+                id.toLowerCase().includes("replit") ||
+                (typeof cls === "string" && cls.toLowerCase().includes("replit")) ||
+                (el.tagName === "IFRAME" && (el.src || "").includes("replit"))
+              ) {
+                el.style.cssText = "display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;";
+              }
+            });
+          });
+        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+      })();
+    </script>
   </body>
 </html>
