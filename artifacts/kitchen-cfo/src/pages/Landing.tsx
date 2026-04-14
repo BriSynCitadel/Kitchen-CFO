@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import QRCode from "qrcode";
 
-const APP_URL = "https://kitchen-intelligence.replit.app";
+const APP_URL = "https://app.brisyncitadel.com";
 
 export default function Landing() {
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
