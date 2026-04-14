@@ -466,7 +466,8 @@ export default function Home() {
           setBusyError(null);
         },
         onError: (err) => {
-          if ((err as { status?: number }).status === 503) {
+          const e = err as { status?: number; data?: { error?: string } };
+          if (e.status === 503 || e.data?.error === "ai_busy") {
             setBusyError("scan");
           } else {
             toast({
@@ -1104,7 +1105,8 @@ export default function Home() {
                             {
                               onSuccess: (res) => setAnalysis(res),
                               onError: (err) => {
-                                if ((err as { status?: number }).status === 503) {
+                                const e = err as { status?: number; data?: { error?: string } };
+                                if (e.status === 503 || e.data?.error === "ai_busy") {
                                   setBusyError("text");
                                 } else {
                                   toast({
@@ -1161,7 +1163,8 @@ export default function Home() {
                         {
                           onSuccess: (res) => setAnalysis(res),
                           onError: (err) => {
-                            if ((err as { status?: number }).status === 503) {
+                            const e = err as { status?: number; data?: { error?: string } };
+                            if (e.status === 503 || e.data?.error === "ai_busy") {
                               setBusyError("text");
                             } else {
                               toast({
