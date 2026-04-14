@@ -2,7 +2,7 @@ import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
 import { profilesTable, inventoryTable, foodLogsTable, recommendationsTable } from "@workspace/db/schema";
 import { desc, sql, eq, and } from "drizzle-orm";
-import { generateText } from "../lib/gemini";
+import { generateText, isOverloadedError } from "../lib/gemini";
 
 function getUserId(req: Request): string {
   return req.user?.id ?? "demo_user";
@@ -185,6 +185,10 @@ router.post("/recommendations", async (req, res) => {
       const message = geminiErr instanceof Error ? geminiErr.message : "Unknown error";
       if (message.includes("No Gemini API key")) {
         res.status(400).json({ error: "no_api_key", message });
+        return;
+      }
+      if (isOverloadedError(geminiErr)) {
+        res.status(503).json({ error: "ai_busy", message: "Our AI is a little busy right now — please try again in a moment" });
         return;
       }
       throw geminiErr;

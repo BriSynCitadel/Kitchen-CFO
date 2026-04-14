@@ -15,6 +15,40 @@ async function getGeminiApiKey(overrideKey?: string): Promise<string> {
   );
 }
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 2000;
+
+export function isOverloadedError(err: unknown): boolean {
+  const msg = (err instanceof Error ? err.message : String(err)).toLowerCase();
+  return (
+    msg.includes("503") ||
+    msg.includes("overloaded") ||
+    msg.includes("high demand") ||
+    msg.includes("unavailable") ||
+    msg.includes("service unavailable") ||
+    msg.includes("resource_exhausted") ||
+    msg.includes("too many requests") ||
+    msg.includes("rate limit")
+  );
+}
+
+async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (isOverloadedError(err) && attempt < MAX_RETRIES) {
+        await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+        lastErr = err;
+      } else {
+        throw err;
+      }
+    }
+  }
+  throw lastErr;
+}
+
 export async function analyzeImage(
   imageBase64: string,
   mimeType: string,
@@ -24,28 +58,30 @@ export async function analyzeImage(
   const apiKey = await getGeminiApiKey(overrideKey);
   const ai = new GoogleGenAI({ apiKey });
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: [
-      {
-        parts: [
-          {
-            inlineData: {
-              mimeType: mimeType as "image/jpeg" | "image/png" | "image/webp" | "application/pdf",
-              data: imageBase64,
+  return withRetry(async () => {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          parts: [
+            {
+              inlineData: {
+                mimeType: mimeType as "image/jpeg" | "image/png" | "image/webp" | "application/pdf",
+                data: imageBase64,
+              },
             },
-          },
-          { text: prompt },
-        ],
+            { text: prompt },
+          ],
+        },
+      ],
+      config: {
+        responseMimeType: "application/json",
+        maxOutputTokens: 8192,
       },
-    ],
-    config: {
-      responseMimeType: "application/json",
-      maxOutputTokens: 8192,
-    },
-  });
+    });
 
-  return response.text ?? "{}";
+    return response.text ?? "{}";
+  });
 }
 
 export async function generateText(
@@ -55,14 +91,16 @@ export async function generateText(
   const apiKey = await getGeminiApiKey(overrideKey);
   const ai = new GoogleGenAI({ apiKey });
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: [{ parts: [{ text: prompt }] }],
-    config: {
-      responseMimeType: "application/json",
-      maxOutputTokens: 8192,
-    },
-  });
+  return withRetry(async () => {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [{ parts: [{ text: prompt }] }],
+      config: {
+        responseMimeType: "application/json",
+        maxOutputTokens: 8192,
+      },
+    });
 
-  return response.text ?? "{}";
+    return response.text ?? "{}";
+  });
 }

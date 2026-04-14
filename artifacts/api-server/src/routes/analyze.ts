@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { z } from "zod";
-import { analyzeImage, generateText } from "../lib/gemini";
+import { analyzeImage, generateText, isOverloadedError } from "../lib/gemini";
 import { AnalyzeFoodBody, AnalyzeFoodResponse } from "@workspace/api-zod";
 
 const router: IRouter = Router();
@@ -249,6 +249,10 @@ router.post("/analyze/text", async (req, res) => {
       res.status(400).json({ error: "no_api_key", message });
       return;
     }
+    if (isOverloadedError(err)) {
+      res.status(503).json({ error: "ai_busy", message: "Our AI is a little busy right now — please try again in a moment" });
+      return;
+    }
     req.log.error({ err }, "Text food analysis error");
     res.status(500).json({ error: "analysis_failed", message });
   }
@@ -312,6 +316,10 @@ router.post("/analyze", async (req, res) => {
     const message = err instanceof Error ? err.message : "Analysis failed";
     if (message.includes("No Gemini API key")) {
       res.status(400).json({ error: "no_api_key", message });
+      return;
+    }
+    if (isOverloadedError(err)) {
+      res.status(503).json({ error: "ai_busy", message: "Our AI is a little busy right now — please try again in a moment" });
       return;
     }
     req.log.error({ err }, "Food analysis error");

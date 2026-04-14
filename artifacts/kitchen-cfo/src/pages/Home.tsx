@@ -17,6 +17,7 @@ import {
   Plus,
   Trash2,
   PenLine,
+  RefreshCw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
@@ -200,6 +201,8 @@ export default function Home() {
   const [showAllMicros, setShowAllMicros] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState("other");
   const [showManualEntry, setShowManualEntry] = useState(false);
+  const [busyError, setBusyError] = useState<"scan" | "text" | null>(null);
+  const [pendingScanData, setPendingScanData] = useState<{ base64: string; mimeType: string } | null>(null);
   const [manualFoodName, setManualFoodName] = useState("");
   const [manualIngredients, setManualIngredients] = useState("");
   const [manualPortionSize, setManualPortionSize] = useState("");
@@ -453,6 +456,36 @@ export default function Home() {
     }
   };
 
+  const runScanMutation = (base64: string, mimeType: string) => {
+    setBusyError(null);
+    analyzeMutation.mutate(
+      { data: { imageBase64: base64, mimeType, analysisType: "meal" } },
+      {
+        onSuccess: (res) => {
+          setAnalysis(res);
+          setBusyError(null);
+        },
+        onError: (err) => {
+          if ((err as { status?: number }).status === 503) {
+            setBusyError("scan");
+          } else {
+            toast({
+              title: "Analysis failed",
+              description: err.message,
+              variant: "destructive",
+            });
+            setImagePreview(null);
+          }
+        },
+      },
+    );
+  };
+
+  const retryScan = () => {
+    if (!pendingScanData) return;
+    runScanMutation(pendingScanData.base64, pendingScanData.mimeType);
+  };
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -460,24 +493,13 @@ export default function Home() {
     const objectUrl = URL.createObjectURL(file);
     setImagePreview(objectUrl);
     setAnalysis(null);
+    setBusyError(null);
 
     try {
       const compressed = await compressImage(file);
       const { base64, mimeType } = await fileToBase64(compressed);
-      analyzeMutation.mutate(
-        { data: { imageBase64: base64, mimeType, analysisType: "meal" } },
-        {
-          onSuccess: (res) => setAnalysis(res),
-          onError: (err) => {
-            toast({
-              title: "Analysis failed",
-              description: err.message,
-              variant: "destructive",
-            });
-            setImagePreview(null);
-          },
-        },
-      );
+      setPendingScanData({ base64, mimeType });
+      runScanMutation(base64, mimeType);
     } catch {
       toast({
         title: "Error",
@@ -1082,11 +1104,15 @@ export default function Home() {
                             {
                               onSuccess: (res) => setAnalysis(res),
                               onError: (err) => {
-                                toast({
-                                  title: "Could not estimate nutrition",
-                                  description: err.message,
-                                  variant: "destructive",
-                                });
+                                if ((err as { status?: number }).status === 503) {
+                                  setBusyError("text");
+                                } else {
+                                  toast({
+                                    title: "Could not estimate nutrition",
+                                    description: err.message,
+                                    variant: "destructive",
+                                  });
+                                }
                               },
                             },
                           );
@@ -1112,6 +1138,49 @@ export default function Home() {
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {busyError === "text" && !analyzeTextMutation.isPending && (
+                <div className="mx-4 mt-2 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-4 flex flex-col items-center gap-3 text-center">
+                  <p className="text-sm font-medium text-foreground">
+                    Our AI is a little busy right now — please try again in a moment
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-2 border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/30"
+                    onClick={() => {
+                      setBusyError(null);
+                      analyzeTextMutation.mutate(
+                        {
+                          data: {
+                            foodName: manualFoodName.trim(),
+                            ingredients: manualIngredients.trim() || null,
+                            portionSize: manualPortionSize.trim() || null,
+                          },
+                        },
+                        {
+                          onSuccess: (res) => setAnalysis(res),
+                          onError: (err) => {
+                            if ((err as { status?: number }).status === 503) {
+                              setBusyError("text");
+                            } else {
+                              toast({
+                                title: "Could not estimate nutrition",
+                                description: err.message,
+                                variant: "destructive",
+                              });
+                            }
+                          },
+                        },
+                      );
+                    }}
+                    disabled={analyzeTextMutation.isPending}
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Retry
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* ── Recent Scans ── */}
@@ -1244,6 +1313,24 @@ export default function Home() {
                 </div>
               )}
             </div>
+
+            {busyError === "scan" && !analyzeMutation.isPending && (
+              <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 p-4 flex flex-col items-center gap-3 text-center">
+                <p className="text-sm font-medium text-foreground">
+                  Our AI is a little busy right now — please try again in a moment
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2 border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/30"
+                  onClick={retryScan}
+                  disabled={analyzeMutation.isPending}
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Retry
+                </Button>
+              </div>
+            )}
 
             {analysis && (
               <motion.div
