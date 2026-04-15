@@ -374,10 +374,15 @@ export default function Profile() {
           <button
             type="button"
             onClick={() => setShowLabFields((v) => !v)}
-            className="w-full text-xs text-muted-foreground text-center mb-3 hover:text-foreground transition-colors py-1"
+            className="w-full text-xs text-muted-foreground text-center mb-2 hover:text-foreground transition-colors py-1"
           >
             {showLabFields ? "Hide manual entry ↑" : "Or enter values manually below ↓"}
           </button>
+
+          <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground/70 mb-3">
+            <Shield className="w-3 h-3 shrink-0" />
+            Your lab data is stored securely, tied only to your account, and never used for AI training.
+          </p>
 
           <div className="mb-3 bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-1.5">
