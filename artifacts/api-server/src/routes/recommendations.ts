@@ -67,7 +67,7 @@ RECENTLY EATEN (last 3 days):
 ${recentFoods || "No recent logs"}
 
 IMPORTANT ANALYSIS RULES:
-1. LAB VALUES: If labValues are present, identify which markers may be suboptimal based on standard reference ranges below. For each out-of-range marker, prioritize foods that are clinically proven to improve that marker. Name the specific marker in the "reason" field.
+1. LAB VALUES: If labValues are present, identify which markers may be suboptimal based on standard reference ranges below. For each out-of-range marker, prioritize foods that are well-supported by nutritional research for that marker. Name the specific marker in the "reason" field.
    Reference ranges:
    - Vitamin D < 30 ng/mL → insufficient (optimal 30–80)
    - Vitamin B12 < 300 pg/mL → low (optimal 300–900)
@@ -105,7 +105,8 @@ Generate exactly 6 recommendations. Return ONLY valid JSON in this exact format:
       "difficulty": "Easy",
       "targetMarker": "Vitamin D",
       "userValue": 18,
-      "optimalRange": "≥50 ng/mL"
+      "optimalRange": "≥50 ng/mL",
+      "insight": "Your Vitamin D came back at 18 ng/mL, which sits below the 30–80 ng/mL optimal range. Vitamin D plays a central role in immune signalling, muscle function, and mood regulation — when levels run low, fatigue and reduced immune resilience are commonly reported. Foods that are naturally rich in Vitamin D include fatty fish like salmon and mackerel, egg yolks, beef liver, and fortified dairy or plant-based milks."
     }
   ]
 }
@@ -116,6 +117,7 @@ Field rules:
 - "targetMarker": Include ONLY when this recommendation primarily addresses a specific lab marker that is outside the normal range. Use the human-readable name (e.g., "Vitamin D", "Vitamin B12", "CRP", "Ferritin", "Magnesium", "Zinc"). Set to null if no specific lab marker is targeted.
 - "userValue": The user's actual current lab value as a number (e.g., 18). Set to null if targetMarker is null.
 - "optimalRange": The reference range string (e.g., "≥50 ng/mL", "≥400 pg/mL", "≤1.0 mg/L"). Set to null if targetMarker is null.
+- "insight": A 2–4 sentence explanation written in second person, warm and educational. Structure it as: (1) cite the user's actual lab value with unit and state where it sits relative to the optimal range OR describe the relevant symptom/goal connection; (2) explain the biological or nutritional mechanism in plain language — what role this nutrient or food plays in the body; (3) name 3–5 specific foods that are naturally rich in the relevant nutrient. Set to null ONLY when this recommendation is purely inventory-based with no clear nutritional deficiency or symptom connection. NEVER use any of these words: treat, cure, diagnose, prescribe, medical advice, guarantee, proven to, clinically proven.
 
 Assign "high" priority to recommendations that directly address lab values outside normal ranges or active symptoms. Be specific — mention the lab marker or symptom by name in the reason field.`;
 

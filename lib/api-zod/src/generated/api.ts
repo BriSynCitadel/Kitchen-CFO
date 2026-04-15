@@ -866,6 +866,12 @@ export const GetRecommendationsResponse = zod.object({
       reason: zod
         .string()
         .describe("Why this is recommended based on user's profile\/inventory"),
+      insight: zod
+        .string()
+        .nullish()
+        .describe(
+          "Deeper explanation — cites actual lab value, explains biological connection, names specific food sources. Null when not applicable.",
+        ),
       category: zod.enum(["meal", "snack", "ingredient", "nutrient_tip"]),
       ingredients: zod
         .array(zod.string())
@@ -951,6 +957,12 @@ export const RefreshRecommendationsResponse = zod.object({
       reason: zod
         .string()
         .describe("Why this is recommended based on user's profile\/inventory"),
+      insight: zod
+        .string()
+        .nullish()
+        .describe(
+          "Deeper explanation — cites actual lab value, explains biological connection, names specific food sources. Null when not applicable.",
+        ),
       category: zod.enum(["meal", "snack", "ingredient", "nutrient_tip"]),
       ingredients: zod
         .array(zod.string())

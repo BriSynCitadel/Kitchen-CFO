@@ -3,7 +3,7 @@ import { useGetRecommendations, useRefreshRecommendations, useGetProfile } from 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, RefreshCw, FlaskConical, Brain, ShoppingBasket, ClipboardList, Loader2 } from "lucide-react";
+import { Sparkles, RefreshCw, FlaskConical, Brain, ShoppingBasket, ClipboardList, Loader2, BookOpen } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetRecommendationsQueryKey } from "@workspace/api-client-react";
 import { formatNumber } from "@/lib/utils";
@@ -23,6 +23,7 @@ type RecommendationWithLabTarget = {
   targetMarker?: string | null;
   userValue?: number | null;
   optimalRange?: string | null;
+  insight?: string | null;
 };
 
 const LOADING_STEPS = [
@@ -260,25 +261,16 @@ export default function Recommendations() {
                         <Sparkles className="w-3 h-3 text-primary" /> Why this fits you:
                       </p>
                       <p className="text-xs text-muted-foreground">{rec.reason}</p>
-                      {rec.userValue != null && (() => {
-                        const m = rec.targetMarker?.toLowerCase() ?? "";
-                        if (m.includes("b12") || m.includes("b-12")) {
-                          return (
-                            <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/40">
-                              B12 works alongside folate in your methylation cycle. Low levels can impair energy metabolism and neurological function.
-                            </p>
-                          );
-                        }
-                        if (m.includes("b9") || m.includes("folate") || m.includes("folic")) {
-                          return (
-                            <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/40">
-                              Low folate directly impacts your methylation cycle — a biological process that affects energy production, mood regulation, and cellular repair.
-                            </p>
-                          );
-                        }
-                        return null;
-                      })()}
                     </div>
+
+                    {expandedCards.has(i) && rec.insight && (
+                      <div className="bg-primary/5 border border-primary/10 rounded-xl p-3 mb-3">
+                        <p className="text-xs font-medium text-foreground flex items-center gap-1.5 mb-1.5">
+                          <BookOpen className="w-3 h-3 text-primary" /> Why this recommendation:
+                        </p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{rec.insight}</p>
+                      </div>
+                    )}
 
                     {rec.targetMarker && (
                       <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-primary/10 border border-primary/15">

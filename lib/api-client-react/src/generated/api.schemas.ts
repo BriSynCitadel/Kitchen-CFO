@@ -500,6 +500,8 @@ export interface Recommendation {
   description: string;
   /** Why this is recommended based on user's profile/inventory */
   reason: string;
+  /** Deeper explanation — cites actual lab value, explains biological connection, names specific food sources. Null when not applicable. */
+  insight?: string | null;
   category: RecommendationCategory;
   /** Ingredients needed (from inventory if possible) */
   ingredients?: string[];
