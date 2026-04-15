@@ -8,6 +8,35 @@ function getUserId(req: Request): string {
   return req.user?.id ?? "demo_user";
 }
 
+const INSIGHT_BANNED_TERMS = [
+  "treat",
+  "cure",
+  "diagnose",
+  "prescribe",
+  "medical advice",
+  "guarantee",
+  "proven to",
+  "clinically proven",
+];
+
+function sanitizeInsight(insight: unknown): string | null {
+  if (typeof insight !== "string" || !insight.trim()) return null;
+  const lower = insight.toLowerCase();
+  for (const term of INSIGHT_BANNED_TERMS) {
+    if (lower.includes(term)) return null;
+  }
+  return insight;
+}
+
+type RawRecommendation = Record<string, unknown>;
+
+function sanitizeItems(items: RawRecommendation[]): RawRecommendation[] {
+  return items.map((item) => ({
+    ...item,
+    insight: sanitizeInsight(item.insight),
+  }));
+}
+
 const router: IRouter = Router();
 
 async function buildRecommendationPrompt(userId: string): Promise<{
@@ -169,7 +198,7 @@ router.post("/recommendations", async (req, res) => {
     try {
       const raw = await generateText(prompt);
       const parsed = JSON.parse(raw);
-      const items = parsed.recommendations || [];
+      const items = sanitizeItems(parsed.recommendations || []);
       const basedOn = { profileComplete, inventoryItemCount, recentLogCount };
 
       const [saved] = await db
