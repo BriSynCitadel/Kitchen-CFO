@@ -353,11 +353,11 @@ export default function Profile() {
             onDrop={handleDrop}
             className={`w-full flex flex-col items-center justify-center gap-2 py-5 px-4 rounded-2xl border-2 transition-colors shadow-sm mb-2 disabled:opacity-50 disabled:cursor-not-allowed ${
               isDragging
-                ? "border-violet-500 bg-violet-100 dark:bg-violet-900/50 scale-[1.01]"
-                : "border-violet-300 dark:border-violet-700 bg-violet-50 dark:bg-violet-950/30 hover:bg-violet-100 dark:hover:bg-violet-900/40"
+                ? "border-primary bg-primary/10 dark:bg-primary/20 scale-[1.01]"
+                : "border-primary/30 dark:border-primary/40 bg-primary/5 dark:bg-primary/10 hover:bg-primary/10 dark:hover:bg-primary/15"
             }`}
           >
-            <div className="flex items-center gap-3 text-violet-700 dark:text-violet-300">
+            <div className="flex items-center gap-3 text-primary">
               {labImportLoading ? (
                 <Loader2 className="w-6 h-6 animate-spin" />
               ) : (
@@ -367,7 +367,7 @@ export default function Profile() {
                 {labImportLoading ? "Reading your lab report…" : "Import Lab Results"}
               </span>
             </div>
-            <span className="text-xs text-violet-500 dark:text-violet-400 font-medium">
+            <span className="text-xs text-primary/60 font-medium">
               PDF or image · Gemini AI reads your bloodwork instantly
             </span>
           </button>
@@ -384,9 +384,9 @@ export default function Profile() {
             Your lab data is stored securely, tied only to your account, and never used for AI training.
           </p>
 
-          <div className="mb-3 bg-violet-50 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800 rounded-2xl p-4">
+          <div className="mb-3 bg-primary/5 dark:bg-primary/10 border border-primary/15 dark:border-primary/25 rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-1.5">
-              <FlaskConical className="w-4 h-4 text-violet-600 dark:text-violet-400 flex-shrink-0" />
+              <FlaskConical className="w-4 h-4 text-accent flex-shrink-0" />
               <p className="text-sm font-semibold text-foreground">Don't have bloodwork yet?</p>
             </div>
             <p className="text-xs text-muted-foreground mb-3">
@@ -404,7 +404,7 @@ export default function Profile() {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-between gap-2 w-full rounded-xl border border-violet-200 dark:border-violet-700 px-4 py-2.5 text-sm font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors"
+                  className="inline-flex items-center justify-between gap-2 w-full rounded-xl border border-primary/20 dark:border-primary/30 px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/8 dark:hover:bg-primary/15 transition-colors"
                 >
                   {label}
                   <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 opacity-70" />
