@@ -522,6 +522,39 @@ export interface RecommendationsResponse {
 }
 
 /**
+ * Category of the grocery item
+ */
+export type GroceryItemCategory =
+  (typeof GroceryItemCategory)[keyof typeof GroceryItemCategory];
+
+export const GroceryItemCategory = {
+  whole_food: "whole_food",
+  produce: "produce",
+  spice: "spice",
+  condiment: "condiment",
+  pantry: "pantry",
+} as const;
+
+export interface GroceryItem {
+  /** Name of the food, spice, or ingredient to purchase */
+  name: string;
+  /** Category of the grocery item */
+  category: GroceryItemCategory;
+  /** 1–2 sentence explanation of the nutritional benefit for this user */
+  why?: string | null;
+  /** Lab marker this item primarily addresses, if applicable */
+  targetMarker?: string | null;
+  /** Whether this item is already in the user's kitchen inventory */
+  alreadyOwned: boolean;
+}
+
+export interface GroceryListResponse {
+  items: GroceryItem[];
+  generatedAt?: string | null;
+  cached?: boolean;
+}
+
+/**
  * Where the Gemini API key comes from
  */
 export type UserSettingsGeminiApiKeySource =

@@ -3,4 +3,5 @@ export * from "./users";
 export * from "./food-logs";
 export * from "./inventory";
 export * from "./recommendations";
+export * from "./grocery-list";
 export * from "./feedback";

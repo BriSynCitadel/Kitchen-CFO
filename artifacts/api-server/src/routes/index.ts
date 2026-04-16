@@ -11,6 +11,7 @@ import feedbackRouter from "./feedback";
 import quantitySuggestionsRouter from "./quantity-suggestions";
 import quickSuggestionRouter from "./quick-suggestion";
 import importLabsRouter from "./import-labs";
+import groceryListRouter from "./grocery-list";
 import authRouter from "./auth";
 
 const router: IRouter = Router();
@@ -28,5 +29,6 @@ router.use(feedbackRouter);
 router.use(quantitySuggestionsRouter);
 router.use(quickSuggestionRouter);
 router.use(importLabsRouter);
+router.use(groceryListRouter);
 
 export default router;

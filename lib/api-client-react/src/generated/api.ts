@@ -32,6 +32,7 @@ import type {
   FoodLogsResponse,
   GetFoodLogSummaryParams,
   GetFoodLogsParams,
+  GroceryListResponse,
   HandleBrowserLoginCallbackParams,
   HealthStatus,
   InventoryItem,
@@ -1320,6 +1321,164 @@ export const useRefreshRecommendations = <
   TContext
 > => {
   return useMutation(getRefreshRecommendationsMutationOptions(options));
+};
+
+/**
+ * Returns the most recently generated grocery list for the user, or an empty list if none exists
+ * @summary Get the current weekly grocery list
+ */
+export const getGetGroceryListUrl = () => {
+  return `/api/grocery-list`;
+};
+
+export const getGroceryList = async (
+  options?: RequestInit,
+): Promise<GroceryListResponse> => {
+  return customFetch<GroceryListResponse>(getGetGroceryListUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetGroceryListQueryKey = () => {
+  return [`/api/grocery-list`] as const;
+};
+
+export const getGetGroceryListQueryOptions = <
+  TData = Awaited<ReturnType<typeof getGroceryList>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getGroceryList>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetGroceryListQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getGroceryList>>> = ({
+    signal,
+  }) => getGroceryList({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getGroceryList>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetGroceryListQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getGroceryList>>
+>;
+export type GetGroceryListQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get the current weekly grocery list
+ */
+
+export function useGetGroceryList<
+  TData = Awaited<ReturnType<typeof getGroceryList>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getGroceryList>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetGroceryListQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * Uses Gemini AI to generate a personalised grocery list based on lab results, symptoms, inventory, and cultural background
+ * @summary Generate a new weekly grocery list
+ */
+export const getRefreshGroceryListUrl = () => {
+  return `/api/grocery-list`;
+};
+
+export const refreshGroceryList = async (
+  options?: RequestInit,
+): Promise<GroceryListResponse> => {
+  return customFetch<GroceryListResponse>(getRefreshGroceryListUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getRefreshGroceryListMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof refreshGroceryList>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof refreshGroceryList>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["refreshGroceryList"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof refreshGroceryList>>,
+    void
+  > = () => {
+    return refreshGroceryList(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RefreshGroceryListMutationResult = NonNullable<
+  Awaited<ReturnType<typeof refreshGroceryList>>
+>;
+
+export type RefreshGroceryListMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Generate a new weekly grocery list
+ */
+export const useRefreshGroceryList = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof refreshGroceryList>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof refreshGroceryList>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getRefreshGroceryListMutationOptions(options));
 };
 
 /**

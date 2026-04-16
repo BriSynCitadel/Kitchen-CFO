@@ -1037,6 +1037,74 @@ export const RefreshRecommendationsResponse = zod.object({
 });
 
 /**
+ * Returns the most recently generated grocery list for the user, or an empty list if none exists
+ * @summary Get the current weekly grocery list
+ */
+export const GetGroceryListResponse = zod.object({
+  items: zod.array(
+    zod.object({
+      name: zod
+        .string()
+        .describe("Name of the food, spice, or ingredient to purchase"),
+      category: zod
+        .enum(["whole_food", "produce", "spice", "condiment", "pantry"])
+        .describe("Category of the grocery item"),
+      why: zod
+        .string()
+        .nullish()
+        .describe(
+          "1–2 sentence explanation of the nutritional benefit for this user",
+        ),
+      targetMarker: zod
+        .string()
+        .nullish()
+        .describe("Lab marker this item primarily addresses, if applicable"),
+      alreadyOwned: zod
+        .boolean()
+        .describe(
+          "Whether this item is already in the user's kitchen inventory",
+        ),
+    }),
+  ),
+  generatedAt: zod.date().nullish(),
+  cached: zod.boolean().optional(),
+});
+
+/**
+ * Uses Gemini AI to generate a personalised grocery list based on lab results, symptoms, inventory, and cultural background
+ * @summary Generate a new weekly grocery list
+ */
+export const RefreshGroceryListResponse = zod.object({
+  items: zod.array(
+    zod.object({
+      name: zod
+        .string()
+        .describe("Name of the food, spice, or ingredient to purchase"),
+      category: zod
+        .enum(["whole_food", "produce", "spice", "condiment", "pantry"])
+        .describe("Category of the grocery item"),
+      why: zod
+        .string()
+        .nullish()
+        .describe(
+          "1–2 sentence explanation of the nutritional benefit for this user",
+        ),
+      targetMarker: zod
+        .string()
+        .nullish()
+        .describe("Lab marker this item primarily addresses, if applicable"),
+      alreadyOwned: zod
+        .boolean()
+        .describe(
+          "Whether this item is already in the user's kitchen inventory",
+        ),
+    }),
+  ),
+  generatedAt: zod.date().nullish(),
+  cached: zod.boolean().optional(),
+});
+
+/**
  * @summary Get user settings
  */
 export const GetSettingsResponse = zod.object({

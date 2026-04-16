@@ -363,6 +363,44 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /grocery-list:
+    get:
+      operationId: getGroceryList
+      tags: [grocery]
+      summary: Get the current weekly grocery list
+      description: Returns the most recently generated grocery list for the user, or an empty list if none exists
+      responses:
+        "200":
+          description: Grocery list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroceryListResponse"
+    post:
+      operationId: refreshGroceryList
+      tags: [grocery]
+      summary: Generate a new weekly grocery list
+      description: Uses Gemini AI to generate a personalised grocery list based on lab results, symptoms, inventory, and cultural background
+      responses:
+        "200":
+          description: Fresh grocery list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroceryListResponse"
+        "503":
+          description: AI temporarily busy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Generation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /settings:
     get:
       operationId: getSettings
@@ -1253,6 +1291,49 @@ components:
       required:
         - recommendations
         - generatedAt
+
+    # ── GROCERY LIST ─────────────────────────────────────────────────────────────
+    GroceryItem:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the food, spice, or ingredient to purchase
+        category:
+          type: string
+          enum: [whole_food, produce, spice, condiment, pantry]
+          description: Category of the grocery item
+        why:
+          type: string
+          nullable: true
+          description: 1–2 sentence explanation of the nutritional benefit for this user
+        targetMarker:
+          type: string
+          nullable: true
+          description: Lab marker this item primarily addresses, if applicable
+        alreadyOwned:
+          type: boolean
+          description: Whether this item is already in the user's kitchen inventory
+      required:
+        - name
+        - category
+        - alreadyOwned
+
+    GroceryListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroceryItem"
+        generatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        cached:
+          type: boolean
+      required:
+        - items
 
     # ── SETTINGS ────────────────────────────────────────────────────────────────
     UserSettings:
