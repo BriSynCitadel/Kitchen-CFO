@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
-import { profilesTable, inventoryTable, groceryListsTable } from "@workspace/db/schema";
+import { profilesTable, inventoryTable, groceryListsTable, type GroceryItem } from "@workspace/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { generateText, isOverloadedError } from "../lib/gemini";
 
@@ -19,6 +19,10 @@ const WHY_BANNED_TERMS = [
   "clinically proven",
 ];
 
+const VALID_CATEGORIES = new Set(["whole_food", "produce", "spice", "condiment", "pantry"]);
+const MAX_ITEMS = 12;
+const MIN_ITEMS = 10;
+
 function sanitizeWhy(why: unknown): string | null {
   if (typeof why !== "string" || !why.trim()) return null;
   const lower = why.toLowerCase();
@@ -28,17 +32,47 @@ function sanitizeWhy(why: unknown): string | null {
   return why;
 }
 
-type RawGroceryItem = Record<string, unknown>;
-
-function sanitizeItems(items: RawGroceryItem[]): RawGroceryItem[] {
-  return items.map((item) => ({
-    ...item,
-    why: sanitizeWhy(item.why),
-    alreadyOwned: Boolean(item.alreadyOwned),
-  }));
+function normalizeItemName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim();
 }
 
-async function buildGroceryListPrompt(userId: string): Promise<string> {
+function isAlreadyOwned(itemName: string, inventoryNormalized: string[]): boolean {
+  const normalized = normalizeItemName(itemName);
+  if (!normalized) return false;
+  return inventoryNormalized.some(
+    (inv) => inv === normalized || inv.includes(normalized) || normalized.includes(inv)
+  );
+}
+
+function processItems(
+  rawItems: Record<string, unknown>[],
+  inventoryNormalized: string[]
+): GroceryItem[] {
+  const processed: GroceryItem[] = rawItems
+    .filter((item) => typeof item.name === "string" && item.name.trim())
+    .map((item) => ({
+      name: String(item.name).trim(),
+      category: VALID_CATEGORIES.has(String(item.category))
+        ? (String(item.category) as GroceryItem["category"])
+        : "pantry",
+      why: sanitizeWhy(item.why),
+      targetMarker:
+        typeof item.targetMarker === "string" && item.targetMarker.trim()
+          ? item.targetMarker.trim()
+          : null,
+      alreadyOwned: isAlreadyOwned(String(item.name), inventoryNormalized),
+    }));
+
+  return processed.slice(0, MAX_ITEMS);
+}
+
+async function buildGroceryListContext(userId: string): Promise<{
+  prompt: string;
+  inventoryNormalized: string[];
+}> {
   const [profile] = await db
     .select()
     .from(profilesTable)
@@ -50,6 +84,10 @@ async function buildGroceryListPrompt(userId: string): Promise<string> {
     .from(inventoryTable)
     .where(eq(inventoryTable.replitUserId, userId))
     .orderBy(desc(inventoryTable.addedAt));
+
+  const inventoryNormalized = inventory.map((i) => normalizeItemName(i.name));
+  const inventoryNames = inventory.map((i) => i.name.toLowerCase());
+  const inventorySummary = inventoryNames.join(", ") || "Nothing logged yet";
 
   const profileSummary = profile
     ? {
@@ -66,10 +104,7 @@ async function buildGroceryListPrompt(userId: string): Promise<string> {
       }
     : null;
 
-  const inventoryNames = inventory.map((i) => i.name.toLowerCase());
-  const inventorySummary = inventoryNames.join(", ") || "Nothing logged yet";
-
-  return `You are a functional medicine nutrition advisor. Generate a weekly grocery list for this user based on their health profile, lab results, symptoms, and kitchen inventory.
+  const prompt = `You are a functional medicine nutrition advisor. Generate a weekly grocery list for this user based on their health profile, lab results, symptoms, and kitchen inventory.
 
 USER PROFILE:
 ${JSON.stringify(profileSummary, null, 2)}
@@ -104,9 +139,8 @@ RULES:
    - Latin American → achiote, epazote, chayote, nopales, piloncillo, dried chiles
    - Ethiopian → berbere, injera teff flour, niter kibbeh, mitmita, fenugreek
    These culturally relevant items should STILL address the same underlying lab marker or symptom needs.
-4. ALREADY OWNED: If an item is already in the user's kitchen inventory (listed above), set alreadyOwned to true. Still include it in the list so the user can see the complete picture.
-5. DIETARY RESTRICTIONS: Strictly respect all allergies and dietary preferences.
-6. QUANTITY: Generate exactly 10–12 items total, ordered from most to least relevant to the user's specific lab markers and symptoms.
+4. DIETARY RESTRICTIONS: Strictly respect all allergies and dietary preferences.
+5. QUANTITY: Generate exactly ${MIN_ITEMS}–${MAX_ITEMS} items total, ordered from most to least relevant to the user's specific lab markers and symptoms.
 
 Return ONLY valid JSON in this exact format:
 {
@@ -115,8 +149,7 @@ Return ONLY valid JSON in this exact format:
       "name": "Turmeric",
       "category": "spice",
       "why": "Your CRP came back at 4.2 mg/L, above the optimal range of below 3 mg/L. Curcumin, the active compound in turmeric, is well-supported in nutritional research for its role in modulating the body's inflammatory response.",
-      "targetMarker": "CRP",
-      "alreadyOwned": false
+      "targetMarker": "CRP"
     }
   ]
 }
@@ -126,7 +159,9 @@ Field rules:
 - "category": One of "whole_food", "produce", "spice", "condiment", "pantry".
 - "why": 1–2 sentences explaining the nutritional connection. Cite the user's actual lab value and unit where applicable. Use warm, educational language. NEVER use these words: treat, cure, diagnose, prescribe, medical advice, guarantee, proven to, clinically proven.
 - "targetMarker": The specific lab marker name this item addresses (e.g. "CRP", "Vitamin D", "HbA1c"). Set to null if tied to a symptom or general goal rather than a specific out-of-range lab value.
-- "alreadyOwned": true if this item name (case-insensitive) appears in the user's current inventory, otherwise false.`;
+- Do NOT include an "alreadyOwned" field — this is determined server-side.`;
+
+  return { prompt, inventoryNormalized };
 }
 
 const router: IRouter = Router();
@@ -160,12 +195,20 @@ router.get("/grocery-list", async (req, res) => {
 router.post("/grocery-list", async (req, res) => {
   try {
     const userId = getUserId(req);
-    const prompt = await buildGroceryListPrompt(userId);
+    const { prompt, inventoryNormalized } = await buildGroceryListContext(userId);
 
     try {
       const raw = await generateText(prompt);
-      const parsed = JSON.parse(raw);
-      const items = sanitizeItems(parsed.items || []);
+
+      let parsed: { items?: Record<string, unknown>[] };
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        req.log.warn({ raw: raw.slice(0, 500) }, "Gemini returned non-JSON for grocery list");
+        throw new Error("Invalid JSON response from AI");
+      }
+
+      const items = processItems(parsed.items ?? [], inventoryNormalized);
 
       const [saved] = await db
         .insert(groceryListsTable)
