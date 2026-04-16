@@ -21,7 +21,7 @@ export function Header({ title, showSettings = false }: { title: string; showSet
             <button
               type="button"
               onClick={handleExitDemo}
-              className="flex items-center gap-1.5 bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:hover:bg-amber-900/50 px-3 py-2.5 rounded-full text-xs font-semibold transition-colors min-h-[44px]"
+              className="flex items-center gap-1.5 bg-amber-500 text-white hover:bg-amber-600 dark:bg-amber-500 dark:text-white dark:hover:bg-amber-600 px-3 py-2.5 rounded-full text-xs font-semibold transition-colors min-h-[44px]"
             >
               <LogOut className="w-3 h-3" />
               Exit Demo
