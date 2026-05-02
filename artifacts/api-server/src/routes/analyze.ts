@@ -212,7 +212,6 @@ const AnalyzeTextBody = z.object({
   foodName: z.string().min(1),
   ingredients: z.string().nullable().optional(),
   portionSize: z.string().nullable().optional(),
-  geminiApiKey: z.string().nullable().optional(),
 });
 
 router.post("/analyze/text", async (req, res) => {
@@ -222,11 +221,11 @@ router.post("/analyze/text", async (req, res) => {
     return;
   }
 
-  const { foodName, ingredients, portionSize, geminiApiKey } = parseResult.data;
+  const { foodName, ingredients, portionSize } = parseResult.data;
 
   try {
     const prompt = TEXT_ANALYSIS_PROMPT(foodName, ingredients, portionSize);
-    const raw = await generateText(prompt, geminiApiKey ?? undefined);
+    const raw = await generateText(prompt);
 
     let parsed: Record<string, unknown>;
     try {
@@ -265,7 +264,7 @@ router.post("/analyze", async (req, res) => {
     return;
   }
 
-  const { imageBase64, mimeType = "image/jpeg", analysisType = "meal", geminiApiKey } = parseResult.data;
+  const { imageBase64, mimeType = "image/jpeg", analysisType = "meal" } = parseResult.data;
 
   const prompt =
     analysisType === "receipt"
@@ -289,7 +288,7 @@ router.post("/analyze", async (req, res) => {
   };
 
   try {
-    const raw = await analyzeImage(imageBase64, mimeType, prompt, geminiApiKey ?? undefined);
+    const raw = await analyzeImage(imageBase64, mimeType, prompt);
     let parsed = parseRaw(raw);
 
     // Auto-retry meal scans that return zero items using a more permissive prompt
@@ -298,7 +297,7 @@ router.post("/analyze", async (req, res) => {
       if (!Array.isArray(items) || items.length === 0) {
         req.log.info("Meal scan returned no items — retrying with permissive prompt");
         try {
-          const retryRaw = await analyzeImage(imageBase64, mimeType, FOOD_ANALYSIS_PERMISSIVE_PROMPT, geminiApiKey ?? undefined);
+          const retryRaw = await analyzeImage(imageBase64, mimeType, FOOD_ANALYSIS_PERMISSIVE_PROMPT);
           parsed = parseRaw(retryRaw);
         } catch {
           // Retry failed — fall through and return the original empty result

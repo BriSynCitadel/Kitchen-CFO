@@ -1,15 +1,23 @@
-import { Router, type IRouter, type Request } from "express";
+import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { db } from "@workspace/db";
 import { feedbackTable } from "@workspace/db/schema";
 import { desc, eq } from "drizzle-orm";
 
 function getUserId(req: Request): string {
-  return req.user?.id ?? "demo_user";
+  return req.user!.id;
+}
+
+function requireUserId(req: Request, res: Response, next: NextFunction): void {
+  if (!req.user?.id) {
+    res.status(401).json({ error: "unauthorized", message: "Authentication required" });
+    return;
+  }
+  next();
 }
 
 const router: IRouter = Router();
 
-router.post("/feedback", async (req, res) => {
+router.post("/feedback", requireUserId, async (req, res) => {
   const { rating, liked, improvements } = req.body ?? {};
 
   if (typeof rating !== "number" || !Number.isInteger(rating) || rating < 1 || rating > 5) {
@@ -45,7 +53,7 @@ router.post("/feedback", async (req, res) => {
   }
 });
 
-router.get("/feedback", async (req, res) => {
+router.get("/feedback", requireUserId, async (req, res) => {
   try {
     const rows = await db
       .select()

@@ -168,9 +168,9 @@ router.get("/food-logs", async (req, res) => {
 
     const total = logs.length;
     res.json({
-      logs: logs.map((l) => ({
-        ...l,
-        imageUrl: l.imageBase64 ? "data-available" : null,
+      logs: logs.map(({ imageBase64, ...rest }) => ({
+        ...rest,
+        imageUrl: imageBase64 ? "data-available" : null,
       })),
       total,
     });
