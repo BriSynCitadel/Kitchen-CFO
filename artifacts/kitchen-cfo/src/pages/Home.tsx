@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import {
   Camera,
   Upload,
@@ -18,6 +18,7 @@ import {
   Trash2,
   PenLine,
   RefreshCw,
+  CalendarIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
@@ -39,6 +40,8 @@ import CulturalFoodBackground from "@/components/ui/CulturalFoodBackground";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { FoodAnalysisResult } from "@workspace/api-client-react";
 import { useAuth } from "@workspace/replit-auth-web";
 
@@ -145,6 +148,7 @@ export default function Home() {
   const todayStr = format(new Date(), "yyyy-MM-dd");
   const leafConfig = useMemo(() => generateLeafConfig(6), []);
   const [, setLocation] = useLocation();
+  const search = useSearch();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
@@ -213,6 +217,16 @@ export default function Home() {
     { name: string; quantity: string }[]
   >([]);
   const [isEditingItems, setIsEditingItems] = useState(false);
+  const [logDate, setLogDate] = useState<Date>(() => {
+    const params = new URLSearchParams(search);
+    const d = params.get("date");
+    if (d) {
+      const parsed = new Date(d + "T00:00:00");
+      if (!isNaN(parsed.getTime())) return parsed;
+    }
+    return new Date();
+  });
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const fetchSuggestion = async () => {
     setSuggestionLoading(true);
@@ -522,6 +536,7 @@ export default function Home() {
         quantity,
         mealType: selectedMealType,
         nutrients: analysis.totalNutrients,
+        loggedAt: logDate,
       },
     });
   };
@@ -1576,6 +1591,42 @@ export default function Home() {
                           </button>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Log date picker */}
+                    <div className="mt-4">
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Log date</p>
+                      <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background text-sm hover:border-primary/50 transition-colors w-full text-left"
+                          >
+                            <CalendarIcon className="w-4 h-4 text-muted-foreground shrink-0" />
+                            <span className={format(logDate, "yyyy-MM-dd") === todayStr ? "text-muted-foreground" : "font-medium text-foreground"}>
+                              {format(logDate, "yyyy-MM-dd") === todayStr ? "Today" : format(logDate, "EEE, MMM d")}
+                            </span>
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={logDate}
+                            onSelect={(d) => {
+                              if (d) { setLogDate(d); setIsDatePickerOpen(false); }
+                            }}
+                            disabled={(d) => {
+                              const today = new Date();
+                              today.setHours(23, 59, 59, 999);
+                              const minDate = new Date();
+                              minDate.setDate(minDate.getDate() - 30);
+                              minDate.setHours(0, 0, 0, 0);
+                              return d > today || d < minDate;
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
 
                     <Button

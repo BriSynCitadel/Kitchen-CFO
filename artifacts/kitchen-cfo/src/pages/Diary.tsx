@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Header } from "@/components/layout/Header";
 import { useGetFoodLogs, useGetFoodLogSummary, useDeleteFoodLog } from "@workspace/api-client-react";
 import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatNumber } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Flame, Trash2, Utensils, TrendingUp, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, Trash2, Utensils, TrendingUp, Sparkles, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { getGetFoodLogsQueryKey, getGetFoodLogSummaryQueryKey } from "@workspace/api-client-react";
@@ -14,6 +15,7 @@ type WeeklyTrendsData = { nutrients: WeeklyNutrient[]; insight: string | null };
 
 export default function Diary() {
   const [date, setDate] = useState(new Date());
+  const [, setLocation] = useLocation();
   const dateStr = format(date, 'yyyy-MM-dd');
   const queryClient = useQueryClient();
 
@@ -67,8 +69,15 @@ export default function Diary() {
         <button onClick={() => changeDate(-1)} className="p-2 hover:bg-secondary rounded-full">
           <ChevronLeft className="w-5 h-5 text-muted-foreground" />
         </button>
-        <h2 className="font-display font-medium text-lg">
+        <h2 className="font-display font-medium text-lg flex items-center gap-2">
           {format(date, 'EEEE, MMM d')}
+          <button
+            onClick={() => setLocation(`/?date=${dateStr}`)}
+            className="p-1 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+            title="Log food for this date"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
         </h2>
         <button onClick={() => changeDate(1)} className="p-2 hover:bg-secondary rounded-full" disabled={dateStr === format(new Date(), 'yyyy-MM-dd')}>
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -143,7 +152,12 @@ export default function Diary() {
           <div className="text-center py-12 flex flex-col items-center opacity-60">
             <img src={`${import.meta.env.BASE_URL}images/empty-diary.png`} alt="Empty Diary" className="w-32 h-32 mb-4" />
             <p className="text-lg font-medium text-foreground">Nothing logged yet</p>
-            <p className="text-sm text-muted-foreground mt-1">Tap the Scan tab to analyze your first meal.</p>
+            <button
+              onClick={() => setLocation(`/?date=${dateStr}`)}
+              className="text-sm text-primary font-medium mt-1 hover:underline"
+            >
+              Log food for this date →
+            </button>
           </div>
         )}
 

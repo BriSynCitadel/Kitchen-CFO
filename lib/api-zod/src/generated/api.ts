@@ -460,7 +460,7 @@ export const CreateFoodLogBody = zod.object({
     .describe("Complete nutritional data for a food item"),
   imageBase64: zod.string().nullish(),
   notes: zod.string().nullish(),
-  loggedAt: zod.date().nullish(),
+  loggedAt: zod.coerce.date().nullish(),
 });
 
 /**

@@ -189,6 +189,21 @@ router.post("/food-logs", async (req, res) => {
 
   const { foodName, quantity, mealType, nutrients, imageBase64, notes, loggedAt } = parseResult.data;
 
+  if (loggedAt) {
+    const now = new Date();
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() - 30);
+    minDate.setHours(0, 0, 0, 0);
+    if (loggedAt > now) {
+      res.status(400).json({ error: "validation_error", message: "Log date cannot be in the future" });
+      return;
+    }
+    if (loggedAt < minDate) {
+      res.status(400).json({ error: "validation_error", message: "Log date cannot be more than 30 days in the past" });
+      return;
+    }
+  }
+
   try {
     const [created] = await db
       .insert(foodLogsTable)
