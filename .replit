@@ -1,29 +1,79 @@
+# =============================================================================
+# .replit — Kitchen CFO
+# Optimized for: Node.js 24 · pnpm workspace monorepo · Replit Autoscale
+# Generated: 2026-06-05
+# =============================================================================
+
 modules = ["nodejs-24", "postgresql-16"]
 
-[[artifacts]]
-id = "artifacts/api-server"
-
-[[artifacts]]
-id = "artifacts/mockup-sandbox"
-
-[deployment]
-router = "application"
-deploymentTarget = "autoscale"
-
-[deployment.postBuild]
-args = ["pnpm", "store", "prune"]
-env = { "CI" = "true" }
-
-[workflows]
-runButton = "Project"
+[nix]
+channel = "stable-25_05"
 
 [agent]
 stack = "PNPM_WORKSPACE"
 expertMode = true
 
-[postMerge]
-path = "scripts/post-merge.sh"
-timeoutMs = 20000
+[[artifacts]]
+id = "artifacts/api-server"
 
-[nix]
-channel = "stable-25_05"
+[[artifacts]]
+id = "artifacts/kitchen-cfo"
+
+# ---------------------------------------------------------------------------
+# Development workflows
+# ---------------------------------------------------------------------------
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+
+  [[workflows.workflow.tasks]]
+  name = "api-server"
+  task = "shell.exec"
+  args = "cd artifacts/api-server && pnpm run dev"
+  env = { PORT = "3001", NODE_ENV = "development" }
+  waitForPort = 3001
+
+  [[workflows.workflow.tasks]]
+  name = "frontend"
+  task = "shell.exec"
+  args = "cd artifacts/kitchen-cfo && pnpm run dev"
+  env = { PORT = "5173", BASE_PATH = "/", NODE_ENV = "development" }
+  waitForPort = 5173
+  dependsOn = ["api-server"]
+
+# ---------------------------------------------------------------------------
+# Deployment — Replit Autoscale
+# ---------------------------------------------------------------------------
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+
+build = [
+  "pnpm install --frozen-lockfile",
+  "pnpm run build",
+]
+
+run = [
+  "node",
+  "--enable-source-maps",
+  "artifacts/api-server/dist/index.mjs",
+]
+
+[[deployment.ports]]
+localPort    = 3001
+externalPort = 443
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env  = { CI = "true" }
+
+# ---------------------------------------------------------------------------
+# Post-merge hook — dependency sync + Drizzle schema push
+# ---------------------------------------------------------------------------
+[postMerge]
+path      = "scripts/post-merge.sh"
+timeoutMs = 120000
+
