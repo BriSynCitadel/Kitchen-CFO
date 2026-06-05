@@ -1,11 +1,15 @@
-import { Router, type IRouter, type Request } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { profilesTable, inventoryTable, foodLogsTable, recommendationsTable } from "@workspace/db/schema";
 import { desc, sql, eq, and } from "drizzle-orm";
 import { generateText, isOverloadedError } from "../lib/gemini";
 
-function getUserId(req: Request): string {
-  return req.user?.id ?? "demo_user";
+function getUserId(req: Request, res: Response): string | null {
+  if (!req.user?.id) {
+    res.status(401).json({ error: "unauthorized", message: "Authentication required" });
+    return null;
+  }
+  return req.user.id;
 }
 
 const INSIGHT_BANNED_TERMS = [
@@ -159,8 +163,10 @@ Assign "high" priority to recommendations that directly address lab values outsi
 }
 
 router.get("/recommendations", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   try {
-    const userId = getUserId(req);
     const [cached] = await db
       .select()
       .from(recommendationsTable)
@@ -191,8 +197,10 @@ router.get("/recommendations", async (req, res) => {
 });
 
 router.post("/recommendations", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   try {
-    const userId = getUserId(req);
     const { prompt, profileComplete, inventoryItemCount, recentLogCount } = await buildRecommendationPrompt(userId);
 
     try {

@@ -1,4 +1,4 @@
-import { Router, type IRouter, type Request } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { foodLogsTable } from "@workspace/db/schema";
 import { eq, desc, sql, gte, and, lte } from "drizzle-orm";
@@ -11,8 +11,12 @@ import {
 } from "@workspace/api-zod";
 import { generateText } from "../lib/gemini";
 
-function getUserId(req: Request): string {
-  return req.user?.id ?? "demo_user";
+function getUserId(req: Request, res: Response): string | null {
+  if (!req.user?.id) {
+    res.status(401).json({ error: "unauthorized", message: "Authentication required" });
+    return null;
+  }
+  return req.user.id;
 }
 
 const router: IRouter = Router();
@@ -27,6 +31,9 @@ const WEEKLY_NUTRIENTS = [
 ] as const;
 
 router.get("/food-logs/weekly", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   try {
     // Strict 7-day window: start of day 6 days ago → end of today
     const startDate = new Date();
@@ -36,7 +43,6 @@ router.get("/food-logs/weekly", async (req, res) => {
     const endDate = new Date();
     endDate.setHours(23, 59, 59, 999);
 
-    const userId = getUserId(req);
     const logs = await db
       .select()
       .from(foodLogsTable)
@@ -95,13 +101,15 @@ router.get("/food-logs/weekly", async (req, res) => {
 });
 
 router.get("/food-logs/summary", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   const parseResult = GetFoodLogSummaryQueryParams.safeParse(req.query);
   const date = parseResult.success && parseResult.data.date
     ? parseResult.data.date
     : new Date().toISOString().split("T")[0];
 
   try {
-    const userId = getUserId(req);
     const logs = await db
       .select()
       .from(foodLogsTable)
@@ -148,11 +156,13 @@ router.get("/food-logs/summary", async (req, res) => {
 });
 
 router.get("/food-logs", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   const parseResult = GetFoodLogsQueryParams.safeParse(req.query);
   const { date, limit = 50, offset = 0 } = parseResult.success ? parseResult.data : {};
 
   try {
-    const userId = getUserId(req);
     let query = db.select().from(foodLogsTable).$dynamic();
 
     if (date) {
@@ -181,6 +191,9 @@ router.get("/food-logs", async (req, res) => {
 });
 
 router.post("/food-logs", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   const parseResult = CreateFoodLogBody.safeParse(req.body);
   if (!parseResult.success) {
     res.status(400).json({ error: "validation_error", message: parseResult.error.message });
@@ -208,7 +221,7 @@ router.post("/food-logs", async (req, res) => {
     const [created] = await db
       .insert(foodLogsTable)
       .values({
-        replitUserId: getUserId(req),
+        replitUserId: userId,
         foodName,
         quantity: quantity ?? null,
         mealType,
@@ -230,6 +243,9 @@ router.post("/food-logs", async (req, res) => {
 });
 
 router.delete("/food-logs/:id", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   const parseResult = DeleteFoodLogParams.safeParse(req.params);
   if (!parseResult.success) {
     res.status(400).json({ error: "validation_error", message: "Invalid ID" });
@@ -239,7 +255,7 @@ router.delete("/food-logs/:id", async (req, res) => {
   try {
     const deleted = await db
       .delete(foodLogsTable)
-      .where(and(eq(foodLogsTable.id, parseResult.data.id), eq(foodLogsTable.replitUserId, getUserId(req))))
+      .where(and(eq(foodLogsTable.id, parseResult.data.id), eq(foodLogsTable.replitUserId, userId)))
       .returning();
 
     if (deleted.length === 0) {

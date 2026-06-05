@@ -1,4 +1,4 @@
-import { Router, type IRouter, type Request } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { inventoryTable } from "@workspace/db/schema";
 import { eq, desc, sql, and } from "drizzle-orm";
@@ -10,15 +10,21 @@ import {
   DeleteInventoryItemParams,
 } from "@workspace/api-zod";
 
-function getUserId(req: import("express").Request): string {
-  return req.user?.id ?? "demo_user";
+function getUserId(req: Request, res: Response): string | null {
+  if (!req.user?.id) {
+    res.status(401).json({ error: "unauthorized", message: "Authentication required" });
+    return null;
+  }
+  return req.user.id;
 }
 
 const router: IRouter = Router();
 
 router.get("/inventory", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   try {
-    const userId = getUserId(req);
     const items = await db
       .select()
       .from(inventoryTable)
@@ -33,6 +39,9 @@ router.get("/inventory", async (req, res) => {
 });
 
 router.post("/inventory", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   const parseResult = AddInventoryItemBody.safeParse(req.body);
   if (!parseResult.success) {
     res.status(400).json({ error: "validation_error", message: parseResult.error.message });
@@ -42,7 +51,6 @@ router.post("/inventory", async (req, res) => {
   const { name, category, quantity, unit, expiryDate, notes } = parseResult.data;
 
   try {
-    const userId = getUserId(req);
     // Check for an existing item with the same name (case-insensitive) for this user
     const [existing] = await db
       .select()
@@ -77,6 +85,9 @@ router.post("/inventory", async (req, res) => {
 });
 
 router.put("/inventory/:id", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   const paramsResult = UpdateInventoryItemParams.safeParse(req.params);
   if (!paramsResult.success) {
     res.status(400).json({ error: "validation_error", message: "Invalid ID" });
@@ -104,7 +115,7 @@ router.put("/inventory/:id", async (req, res) => {
         notes: notes ?? null,
         updatedAt: new Date(),
       })
-      .where(and(eq(inventoryTable.id, id), eq(inventoryTable.replitUserId, getUserId(req))))
+      .where(and(eq(inventoryTable.id, id), eq(inventoryTable.replitUserId, userId)))
       .returning();
 
     if (!updated) {
@@ -120,6 +131,9 @@ router.put("/inventory/:id", async (req, res) => {
 });
 
 router.delete("/inventory/:id", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   const paramsResult = DeleteInventoryItemParams.safeParse(req.params);
   if (!paramsResult.success) {
     res.status(400).json({ error: "validation_error", message: "Invalid ID" });
@@ -129,7 +143,7 @@ router.delete("/inventory/:id", async (req, res) => {
   try {
     const deleted = await db
       .delete(inventoryTable)
-      .where(and(eq(inventoryTable.id, paramsResult.data.id), eq(inventoryTable.replitUserId, getUserId(req))))
+      .where(and(eq(inventoryTable.id, paramsResult.data.id), eq(inventoryTable.replitUserId, userId)))
       .returning();
 
     if (deleted.length === 0) {
