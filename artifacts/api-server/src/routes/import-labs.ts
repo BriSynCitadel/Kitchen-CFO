@@ -1,4 +1,4 @@
-import { Router, type IRouter, type Request } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { analyzeImage } from "../lib/gemini";
 
 const router: IRouter = Router();
@@ -72,8 +72,12 @@ Return ONLY valid JSON with all 18 keys. Example (if only vitaminD and tsh were 
   "sodium": null
 }`;
 
-function getUserId(req: Request): string {
-  return req.user?.id ?? "demo_user";
+function getUserId(req: Request, res: Response): string | null {
+  if (!req.user?.id) {
+    res.status(401).json({ error: "unauthorized", message: "Authentication required" });
+    return null;
+  }
+  return req.user.id;
 }
 
 router.post("/import-labs", async (req, res) => {
@@ -93,7 +97,8 @@ router.post("/import-labs", async (req, res) => {
 
   const fileBase64 = body.fileBase64;
   const mimeType = body.mimeType;
-  const userId = getUserId(req);
+  const userId = getUserId(req, res);
+  if (!userId) return;
 
   req.log.info({ userId, mimeType }, "Lab import request received");
 

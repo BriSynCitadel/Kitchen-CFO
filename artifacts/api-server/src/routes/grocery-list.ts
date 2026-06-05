@@ -1,11 +1,15 @@
-import { Router, type IRouter, type Request } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { profilesTable, inventoryTable, groceryListsTable, type GroceryItem } from "@workspace/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { generateText, isOverloadedError } from "../lib/gemini";
 
-function getUserId(req: Request): string {
-  return req.user?.id ?? "demo_user";
+function getUserId(req: Request, res: Response): string | null {
+  if (!req.user?.id) {
+    res.status(401).json({ error: "unauthorized", message: "Authentication required" });
+    return null;
+  }
+  return req.user.id;
 }
 
 const WHY_BANNED_TERMS = [
@@ -167,8 +171,10 @@ Field rules:
 const router: IRouter = Router();
 
 router.get("/grocery-list", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   try {
-    const userId = getUserId(req);
     const [cached] = await db
       .select()
       .from(groceryListsTable)
@@ -193,8 +199,10 @@ router.get("/grocery-list", async (req, res) => {
 });
 
 router.post("/grocery-list", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   try {
-    const userId = getUserId(req);
     const { prompt, inventoryNormalized } = await buildGroceryListContext(userId);
 
     try {

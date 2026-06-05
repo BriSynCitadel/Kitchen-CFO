@@ -1,4 +1,4 @@
-import { Router, type IRouter, type Request } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { profilesTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
@@ -6,8 +6,12 @@ import { UpdateProfileBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
-function getUserId(req: Request): string {
-  return req.user?.id ?? "demo_user";
+function getUserId(req: Request, res: Response): string | null {
+  if (!req.user?.id) {
+    res.status(401).json({ error: "unauthorized", message: "Authentication required" });
+    return null;
+  }
+  return req.user.id;
 }
 
 async function getOrCreateProfile(userId: string) {
@@ -34,8 +38,11 @@ async function getOrCreateProfile(userId: string) {
 }
 
 router.get("/profile", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   try {
-    const profile = await getOrCreateProfile(getUserId(req));
+    const profile = await getOrCreateProfile(userId);
     res.json(profile);
   } catch (err) {
     req.log.error({ err }, "Failed to get profile");
@@ -44,6 +51,9 @@ router.get("/profile", async (req, res) => {
 });
 
 router.put("/profile", async (req, res) => {
+  const userId = getUserId(req, res);
+  if (!userId) return;
+
   const parseResult = UpdateProfileBody.safeParse(req.body);
   if (!parseResult.success) {
     res.status(400).json({ error: "validation_error", message: parseResult.error.message });
@@ -51,7 +61,6 @@ router.put("/profile", async (req, res) => {
   }
 
   try {
-    const userId = getUserId(req);
     const existing = await getOrCreateProfile(userId);
     const data = parseResult.data;
 
